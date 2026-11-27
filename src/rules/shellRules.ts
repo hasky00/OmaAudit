@@ -107,12 +107,22 @@ function argText(c: ShellCommand): string {
 }
 
 /** A function named after a downloader shadows it only when its body never calls a real downloader. */
+/**
+ * What a local `fetch` function is, if there is one: a wrapper that reaches a real downloader, an opaque body
+ * (eval or an unresolved variable command) that cannot be cleared, or a plain function that shadows the BSD tool.
+ * Only `fetch` can be shadowed: on Linux it is normally a user function, while curl/wget/aria2c/xh are the real tools
+ * and a same-named function elsewhere is no reason to stop reporting them. The engine makes a `fetch` visible only in
+ * the unit that defines it and in units that source that file.
+ */
+function localFetch(u?: ShellUnit): 'wrapper' | 'opaque' | 'plain' | null {
+  if (!u) return null;
+  if (u.downloaderWrappers.has('fetch')) return 'wrapper';
+  if (u.opaqueFunctions.has('fetch')) return 'opaque';
+  if (u.definedFunctions.has('fetch')) return 'plain';
+  return null;
+}
 function shadowsDownloader(name: string, u?: ShellUnit): boolean {
-  // Only `fetch` can be shadowed: on Linux it is normally a user function, while curl/wget/aria2c/xh are the real
-  // tools and a same-named function elsewhere in the repository is no reason to stop reporting them. The engine
-  // puts `fetch` into definedFunctions only for the unit that defines it and for units that source that file.
-  if (name !== 'fetch') return false;
-  return u !== undefined && u.definedFunctions.has(name) && !u.downloaderWrappers.has(name);
+  return name === 'fetch' && localFetch(u) === 'plain';
 }
 
 /** `command fetch …`, `builtin`, or a path such as /usr/bin/fetch bypasses shell functions: the real tool runs. */
@@ -126,8 +136,12 @@ function unquoteWord(w: string): string {
 }
 
 function isDownloader(c: ShellCommand, u?: ShellUnit): boolean {
+  if (u && u.downloaderWrappers.has(c.name) && !DOWNLOADERS.has(c.name)) return true; // a local function that downloads
   if (!DOWNLOADERS.has(c.name)) return false;
-  if (shadowsDownloader(c.name, u) && !bypassesFunctions(c)) return false; // a plain shell function named fetch is not the network tool
+  // A local `fetch`: a wrapper is a downloader; a plain body shadows the tool; an opaque body is neither here and is
+  // reported at low confidence by isOpaqueDownloader. `command fetch` or a path always reaches the real tool.
+  const lf = c.name === 'fetch' ? localFetch(u) : null;
+  if (lf && !bypassesFunctions(c)) return lf === 'wrapper';
   return !(c.name === 'curl' && c.args.some((a) => /^-[a-zA-Z]*I/.test(a) || a === '--head'));
 }
 
@@ -136,7 +150,31 @@ function isInterpreter(c: ShellCommand): boolean {
 }
 
 /** True when the text runs a downloader as a command (not merely mentions one, e.g. in a path like bin/deen-fetch). */
+/** A local function whose body runs `eval` or an unresolved variable command: cannot be cleared, reported at low confidence. */
+function isOpaqueDownloader(c: ShellCommand, u?: ShellUnit): boolean {
+  if (!u || !u.opaqueFunctions.has(c.name)) return false;
+  if (c.name === 'fetch') return !bypassesFunctions(c);
+  return !DOWNLOADERS.has(c.name);
+}
+/** A local function the rules treat as a downloader (wrapper) or as unresolvable (opaque), by name. */
+function isLocalDownloadFunction(c: ShellCommand, u: ShellUnit): boolean {
+  return (u.downloaderWrappers.has(c.name) && (!DOWNLOADERS.has(c.name) || c.name === 'fetch')) || isOpaqueDownloader(c, u);
+}
+function wordsOf(text: string): string[] {
+  return text.split(/[\s(|;&`{}"']+/).map((w) => w.replace(/^\\/, '').split('/').pop() ?? '').filter(Boolean);
+}
+function containsOpaqueDownload(text: string, u?: ShellUnit): boolean {
+  return u !== undefined && u.opaqueFunctions.size > 0 && wordsOf(text).some((w) => u.opaqueFunctions.has(w) && (!DOWNLOADERS.has(w) || w === 'fetch'));
+}
+function localFunctionNote(c: ShellCommand, u: ShellUnit): string {
+  const chain = u.downloaderChains.get(c.name);
+  if (chain) return ` (a local function that downloads: ${chain})`; // also for a local `fetch` wrapper
+  if (isOpaqueDownloader(c, u)) return ' (a local function whose body runs eval or a variable-named command and cannot be resolved statically)';
+  return '';
+}
+
 function containsDownload(text: string, u?: ShellUnit): boolean {
+  if (u && u.downloaderWrappers.size > 0 && wordsOf(text).some((w) => u.downloaderWrappers.has(w) && !DOWNLOADERS.has(w))) return true; // a local function that downloads
   // A downloader behind any path prefix (/usr/local/bin/curl), a leading backslash (\curl) or quotes counts; a
   // name that merely contains one (bin/deen-fetch) does not, because `-` and `_` are not word boundaries here.
   const re = /(?:^|[\s(|;&`{"'])(\\?(?:\/?(?:[\w.~+-]+\/)+)?)(curl|wget|aria2c|xh|fetch)(?=[\s"')|;&`}]|$)/g;
@@ -144,7 +182,8 @@ function containsDownload(text: string, u?: ShellUnit): boolean {
   while ((m = re.exec(text))) {
     const name = m[2]!;
     const viaCommand = /(?:^|[\s(|;&`{])(?:command|builtin|exec|env)\s+$/.test(text.slice(0, m.index + (m[0].length - m[1]!.length - name.length)));
-    if (shadowsDownloader(name, u) && m[1] === '' && !viaCommand) continue;
+    const lf = name === 'fetch' ? localFetch(u) : null;
+    if (lf && lf !== 'wrapper' && m[1] === '' && !viaCommand) continue; // plain shadows; opaque is containsOpaqueDownload's
     return true;
   }
   return false;
@@ -186,30 +225,35 @@ export const remoteScriptExecution: Rule = {
     const out: FindingDraft[] = [];
     for (const u of ctx.shellUnits) {
       for (const c of u.commands) {
-        // curl … | bash   /   wget -qO- … | sudo sh
-        if (c.pipeline && isDownloader(c, u)) {
+        // curl … | bash   /   wget -qO- … | sudo sh   /   dl … | bash where dl() calls curl
+        if (c.pipeline && (isDownloader(c, u) || isOpaqueDownloader(c, u))) {
           const later = c.pipeline.slice(c.pipelineIndex + 1);
           const interp = later.find((m) => isInterpreter(m));
           if (interp) {
+            const opaque = !isDownloader(c, u);
             out.push({
               ...loc(u, c),
-              message: `${c.name} output is piped into ${interp.privileged ? `${interp.wrappers.join(' ')} ` : ''}${interp.name}${docNote(u)}`,
+              message: `${c.name}${localFunctionNote(c, u)} output is piped into ${interp.privileged ? `${interp.wrappers.join(' ')} ` : ''}${interp.name}${docNote(u)}`,
               evidence: c.pipeline.map((m) => m.text).join(' | '),
               severity: u.origin === 'embedded' && /GitHub Actions|Makefile|Dockerfile|package\.json/.test(u.context) ? 'high' : 'critical',
-              confidence: confidenceFor(u, 'high'),
+              confidence: confidenceFor(u, opaque ? 'low' : 'high'),
             });
             continue;
           }
         }
-        // bash <(curl …) / source <(wget …)
-        if (isInterpreter(c) && c.processSubstitutions.some((p) => containsDownload(p, u))) {
-          out.push({ ...loc(u, c), message: `${c.name} executes a process substitution that downloads from the network${docNote(u)}`, evidence: c.text, confidence: confidenceFor(u, 'high') });
-          continue;
-        }
-        // bash -c "$(curl …)" / eval "$(curl …)" / sh -c "`wget …`"
-        if (isInterpreter(c) && c.commandSubstitutions.some((s) => containsDownload(s, u))) {
-          out.push({ ...loc(u, c), message: `${c.name} executes the output of a network download via command substitution${docNote(u)}`, evidence: c.text, confidence: confidenceFor(u, 'high') });
-          continue;
+        if (isInterpreter(c)) {
+          // bash <(curl …) / source <(wget …) / bash <(dl …)
+          const proc = c.processSubstitutions.some((p) => containsDownload(p, u)) ? 'high' : c.processSubstitutions.some((p) => containsOpaqueDownload(p, u)) ? 'low' : null;
+          if (proc) {
+            out.push({ ...loc(u, c), message: `${c.name} executes a process substitution that downloads from the network${proc === 'low' ? ' through a local function whose body cannot be resolved statically' : ''}${docNote(u)}`, evidence: c.text, confidence: confidenceFor(u, proc) });
+            continue;
+          }
+          // bash -c "$(curl …)" / eval "$(curl …)" / sh -c "`wget …`" / eval "$(dl …)"
+          const cmd = c.commandSubstitutions.some((s) => containsDownload(s, u)) ? 'high' : c.commandSubstitutions.some((s) => containsOpaqueDownload(s, u)) ? 'low' : null;
+          if (cmd) {
+            out.push({ ...loc(u, c), message: `${c.name} executes the output of a network download via command substitution${cmd === 'low' ? ' through a local function whose body cannot be resolved statically' : ''}${docNote(u)}`, evidence: c.text, confidence: confidenceFor(u, cmd) });
+            continue;
+          }
         }
         // python3 -c "$(curl …)" handled above; python <(curl) handled above.
       }
@@ -249,7 +293,18 @@ export const downloadThenExecute: Rule = {
         }
       };
       for (const c of u.commands) {
-        if (isDownloader(c, u)) {
+        if (isDownloader(c, u) || isOpaqueDownloader(c, u)) {
+          if (isLocalDownloadFunction(c, u)) {
+            // dl URL /tmp/x.sh: the function's parameter order is unknown, so every path-like non-URL argument may be
+            // the output file.
+            for (const a of c.args) {
+              const w = unquote(a);
+              if (w.startsWith('-') || /^[a-z][a-z0-9+.-]*:\/\//i.test(w) || !/[\/$]|\.\w{1,8}$/.test(w)) continue;
+              downloaded.set(w.split('/').pop() ?? w, c);
+              noteVar(a, c);
+            }
+            continue;
+          }
           for (let i = 0; i < c.args.length; i++) {
             const a = c.args[i]!;
             if (a === '-o' || a === '--output' || a === '-O' || a === '--output-document') {

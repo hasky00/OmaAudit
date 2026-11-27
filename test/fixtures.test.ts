@@ -16,6 +16,7 @@ interface Expectation {
   maxSeverityAt?: Record<string, Severity>;
   scopeAt?: Record<string, string>;
   unknownMustNotMention?: string[];
+  confidenceAt?: Record<string, string>;
 }
 
 const fixturesDir = path.resolve(__dirname, 'fixtures');
@@ -60,6 +61,10 @@ describe('labeled fixtures', async () => {
         expect(f?.scope, `${k} scope`).toBe(scope);
       }
       for (const m of exp.notesMention ?? []) expect((report.coverage.notes ?? []).join('\n')).toContain(m);
+      for (const [k, conf] of Object.entries(exp.confidenceAt ?? {})) {
+        const f = report.findings.find((x) => `${x.ruleId}@${x.location?.path}:${x.location?.startLine}` === k);
+        expect(f?.confidence, `${k} confidence`).toBe(conf);
+      }
     });
   }
 
