@@ -400,9 +400,24 @@
     ]
   },
   "round3": {
-    "expected": [],
+    "expected": [
+      "OA-SH-005@lnsrc/check.sh:9",
+      "OA-SH-005@lnsrc/check.sh:10"
+    ],
+    "expectedMessages": [
+      "ln modifies /usr/share/omarchy/shell/plugins/mine as root",
+      "cp modifies /etc/udev/rules.d as root"
+    ],
     "forbidden": [
       "OA-SH-002"
-    ]
+    ],
+    "forbiddenAt": [
+      "OA-SH-005@lnsrc/check.sh:7",
+      "OA-SH-005@lnsrc/check.sh:8"
+    ],
+    "minSeverityAt": {
+      "OA-SH-005@lnsrc/check.sh:9": "medium",
+      "OA-SH-005@lnsrc/check.sh:10": "medium"
+    }
   }
 }

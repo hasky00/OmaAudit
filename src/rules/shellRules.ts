@@ -444,6 +444,22 @@ export const privilegeEscalation: Rule = {
   },
 };
 
+/**
+ * The operands a writer modifies. `ln -s SOURCE DEST`, `cp`, `mv`, `install` and `rsync` change only their destination:
+ * the last operand, or the directory named by -t/--target-directory. A lone operand (`ln -s /usr/share/x`) links into
+ * the current directory. `install -d DIR…` creates every operand. Every other writer touches each path it names.
+ */
+function writeTargets(c: ShellCommand): string[] {
+  if (!/^(?:ln|cp|mv|install|rsync)$/.test(c.name)) return c.args;
+  const t = c.args.findIndex((a) => a === '-t' || a === '--target-directory');
+  if (t >= 0 && c.args[t + 1]) return [c.args[t + 1]!];
+  const tEq = c.args.find((a) => a.startsWith('--target-directory='));
+  if (tEq) return [tEq.slice('--target-directory='.length)];
+  const operands = c.args.filter((a) => !a.startsWith('-'));
+  if (c.name === 'install' && c.args.some((a) => /^-[a-zA-Z]*d|^--directory$/.test(a))) return operands;
+  return operands.length >= 2 ? [operands[operands.length - 1]!] : [];
+}
+
 export const systemPathWrite: Rule = {
   id: 'OA-SH-005',
   title: 'Files under system paths are written or modified',
@@ -468,7 +484,7 @@ export const systemPathWrite: Rule = {
         if (!writers.has(c.name)) continue;
         if (c.name === 'sed' && !c.args.some((a) => /^-[a-zA-Z]*i/.test(a) || a === '--in-place')) continue;
         if (c.name === 'rm' || c.name === 'unlink') continue; // destructive rule covers these
-        const targetRaw = c.args.find((a) => targetsSystemPath(expandWord(a, vars)));
+        const targetRaw = writeTargets(c).find((a) => targetsSystemPath(expandWord(a, vars)));
         const target = targetRaw ? expandWord(targetRaw, vars) : undefined;
         if (target && (/\/etc\/sudoers/.test(target) || POLKIT_PATHS.test(target))) continue; // OA-SH-006 covers policy paths
         if (target) {
