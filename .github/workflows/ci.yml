@@ -1,0 +1,53 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      matrix:
+        node: [24, 26]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run build
+      - run: npm test
+      - name: Self-audit (OmaAudit scans its own tree)
+        run: node bin/omaaudit.js scan src --fail-on medium --no-color && node bin/omaaudit.js scan .github --fail-on medium --no-color
+      - name: Dependency inventory
+        run: npm ls --all --omit=dev --json > dependency-inventory.json && node -e "const d=require('./dependency-inventory.json');console.log(Object.keys(d.dependencies||{}).length,'direct runtime deps')"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dependency-inventory-node${{ matrix.node }}
+          path: dependency-inventory.json
+
+  external-scanners:
+    # Exercises the optional ShellCheck and OSV-Scanner integrations on a host that has them.
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: sudo apt-get update && sudo apt-get install -y shellcheck
+      - run: npm ci --ignore-scripts && npm run build
+      - run: node bin/omaaudit.js doctor --offline --no-color
+      - run: node bin/omaaudit.js scan test/fixtures/malicious --fail-on never --json --no-color | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const r=JSON.parse(s);const sc=r.coverage.scanners.find(x=>x.name==='shellcheck');console.log('shellcheck status:',sc.status,sc.note||'');if(sc.status!=='ran')process.exit(1);console.log('shellcheck findings:',r.findings.filter(f=>f.scanner.name==='shellcheck').length)})"
