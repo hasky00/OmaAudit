@@ -1,0 +1,12 @@
+pkgname=tool-git
+pkgver=1.0
+pkgrel=1
+arch=('x86_64')
+depends=('gtk4' 'libadwaita>=1.4')
+makedepends=('git' 'rust')
+install=tool.install
+source=("git+https://github.com/acme/tool.git" "http://mirror.example.org/data.tar.gz" "icon.png")
+sha256sums=('SKIP' 'SKIP' 'deadbeef')
+pkgver() { curl -s https://api.github.com/repos/acme/tool/releases/latest | jq -r .tag_name; }
+build() { cargo build --release; }
+package() { install -Dm755 target/release/tool "$pkgdir/usr/bin/tool"; }

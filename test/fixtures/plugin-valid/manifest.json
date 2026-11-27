@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "id": "acme.weather",
+  "name": "Weather",
+  "version": "1.0.0",
+  "author": "Acme",
+  "description": "Weather widget",
+  "kinds": ["bar-widget", "service"],
+  "entryPoints": { "barWidget": "ui/Widget.qml", "service": "ui/Service.qml" },
+  "barWidget": { "displayName": "Weather", "defaultSection": "right" }
+}

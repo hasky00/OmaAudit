@@ -1,0 +1,736 @@
+import type { Rule, RuleContext, FindingDraft } from './types.js';
+import type { ShellCommand, ShellUnit } from '../parsers/shell.js';
+import { unquote } from '../parsers/shell.js';
+
+const DOWNLOADERS = new Set(['curl', 'wget', 'fetch', 'aria2c', 'http', 'https', 'xh']);
+const INTERPRETERS = new Set(['bash', 'sh', 'zsh', 'dash', 'ksh', 'fish', 'python', 'python3', 'python2', 'perl', 'ruby', 'node', 'deno', 'bun', 'php', 'lua', 'source', '.', 'eval']);
+const SYSTEM_PREFIXES = ['/etc/', '/usr/', '/boot/', '/opt/', '/var/lib/', '/var/spool/', '/lib/', '/bin/', '/sbin/', '/root/', '/srv/'];
+const CREDENTIAL_PATHS = [
+  /(?:~|\$HOME|\$\{HOME\}|\/home\/[\w-]+|\/root)\/\.ssh\b/,
+  /(?:~|\$HOME|\$\{HOME\}|\/home\/[\w-]+|\/root)\/\.gnupg\b/,
+  /(?:~|\$HOME|\$\{HOME\}|\/home\/[\w-]+)\/\.aws\b/,
+  /(?:~|\$HOME|\$\{HOME\}|\/home\/[\w-]+)\/\.netrc\b/,
+  /(?:~|\$HOME|\$\{HOME\}|\/home\/[\w-]+)\/\.config\/gh\/hosts\.yml/,
+  /(?:~|\$HOME|\$\{HOME\}|\/home\/[\w-]+)\/\.local\/share\/keyrings\b/,
+  /(?:~|\$HOME|\$\{HOME\}|\/home\/[\w-]+)\/\.(?:mozilla|config\/(?:google-chrome|chromium|BraveSoftware|microsoft-edge))\b/,
+  /(?:~|\$HOME|\$\{HOME\}|\/home\/[\w-]+)\/\.password-store\b/,
+  /(?:~|\$HOME|\$\{HOME\}|\/home\/[\w-]+)\/\.config\/(?:1Password|op)\b/,
+  /(?:~|\$HOME|\$\{HOME\}|\/home\/[\w-]+)\/\.docker\/config\.json/,
+  /(?:~|\$HOME|\$\{HOME\}|\/home\/[\w-]+)\/\.npmrc\b/,
+  /(?:~|\$HOME|\$\{HOME\}|\/home\/[\w-]+)\/\.kube\/config\b/,
+  /\/etc\/shadow\b/,
+];
+const CREDENTIAL_COMMANDS = /^(?:secret-tool|pass|gopass|op|bw|gh auth token|security)$/;
+const SHELL_RC = /(?:~|\$HOME|\$\{HOME\}|\/home\/[\w-]+)\/\.(?:bashrc|zshrc|profile|bash_profile|zprofile|zshenv|bash_login|xprofile|xinitrc|config\/fish\/config\.fish)\b|\/etc\/(?:profile(?:\.d\/[^\s]*)?|bash\.bashrc|zsh\/zshrc|environment)\b/;
+const AUTOSTART_PATHS = /(?:~|\$HOME|\$\{HOME\}|\/home\/[\w-]+)\/\.config\/(?:autostart|hypr|systemd\/user|omarchy\/plugins)\b|\/etc\/xdg\/autostart\b|\/etc\/systemd\/system\b|\/usr\/lib\/systemd\/system\b|\/etc\/cron\.|\/var\/spool\/cron/;
+
+/**
+ * Collapse drafts that share a key (normally file + program) into one finding that
+ * keeps the first location, lists up to three evidence lines and counts the rest.
+ * Keeps large repositories readable without hiding that the pattern repeats.
+ */
+export function aggregate(drafts: FindingDraft[], keyOf: (d: FindingDraft) => string): FindingDraft[] {
+  const groups = new Map<string, FindingDraft[]>();
+  for (const d of drafts) {
+    const k = keyOf(d);
+    const g = groups.get(k);
+    if (g) g.push(d);
+    else groups.set(k, [d]);
+  }
+  const out: FindingDraft[] = [];
+  for (const g of groups.values()) {
+    const first = g[0]!;
+    if (g.length === 1) {
+      out.push(first);
+      continue;
+    }
+    const lines = [...new Set(g.map((d) => d.startLine ?? 0))].filter(Boolean);
+    out.push({
+      ...first,
+      message: `${first.message} (${g.length} occurrences in this file: lines ${lines.slice(0, 8).join(', ')}${lines.length > 8 ? ', …' : ''})`,
+      evidence: g.slice(0, 3).map((d) => d.evidence).join('\n'),
+    });
+  }
+  return out;
+}
+
+function loc(u: ShellUnit, c: ShellCommand): Pick<FindingDraft, 'path' | 'startLine' | 'endLine'> {
+  return { path: u.path, startLine: c.startLine, endLine: c.endLine };
+}
+
+function argText(c: ShellCommand): string {
+  return c.args.map(unquote).join(' ');
+}
+
+function isDownloader(c: ShellCommand): boolean {
+  return DOWNLOADERS.has(c.name) && !(c.name === 'curl' && c.args.some((a) => /^-[a-zA-Z]*I/.test(a) || a === '--head'));
+}
+
+function isInterpreter(c: ShellCommand): boolean {
+  return INTERPRETERS.has(c.name);
+}
+
+function containsDownload(text: string): boolean {
+  return /\b(?:curl|wget|fetch|aria2c)\b/.test(text);
+}
+
+function docNote(u: ShellUnit): string {
+  return u.origin === 'documentation' ? ' (found in documentation: this is what users are told to run)' : u.origin === 'embedded' ? ` (embedded in ${u.context})` : '';
+}
+
+function confidenceFor(u: ShellUnit, base: FindingDraft['confidence']): FindingDraft['confidence'] {
+  if (u.origin === 'documentation' && base === 'high') return 'medium';
+  return base;
+}
+
+function targetsSystemPath(word: string): boolean {
+  const w = unquote(word);
+  return SYSTEM_PREFIXES.some((p) => w.startsWith(p)) || w === '/';
+}
+
+function urlsIn(c: ShellCommand): string[] {
+  return c.args.map(unquote).filter((a) => /^(?:https?|ftp):\/\//i.test(a));
+}
+
+function hasVariable(word: string): boolean {
+  return /\$[{(A-Za-z_]/.test(word);
+}
+
+export const remoteScriptExecution: Rule = {
+  id: 'OA-SH-001',
+  title: 'Remote content is executed by a shell or interpreter without inspection',
+  severity: 'critical',
+  confidence: 'high',
+  kind: 'heuristic',
+  capabilities: ['remote-code-execution', 'network-download'],
+  description: 'Content fetched from the network is piped or substituted straight into an interpreter. Whatever the server returns at install time runs with the user\'s privileges; a compromised or redirected host, a CDN edit, or a mutable branch changes the code without changing the instruction.',
+  remediation: 'Download the script to a file, verify a checksum or signature, read it, then run it. Pin the source to an exact release or commit.',
+  references: ['https://www.omarchy.org', 'https://github.com/omacom/omarchy-plugin-marketplace/blob/main/SECURITY.md'],
+  evaluate(ctx) {
+    const out: FindingDraft[] = [];
+    for (const u of ctx.shellUnits) {
+      for (const c of u.commands) {
+        // curl … | bash   /   wget -qO- … | sudo sh
+        if (c.pipeline && isDownloader(c)) {
+          const later = c.pipeline.slice(c.pipelineIndex + 1);
+          const interp = later.find((m) => isInterpreter(m));
+          if (interp) {
+            out.push({
+              ...loc(u, c),
+              message: `${c.name} output is piped into ${interp.privileged ? `${interp.wrappers.join(' ')} ` : ''}${interp.name}${docNote(u)}`,
+              evidence: c.pipeline.map((m) => m.text).join(' | '),
+              severity: u.origin === 'embedded' && /GitHub Actions|Makefile|Dockerfile|package\.json/.test(u.context) ? 'high' : 'critical',
+              confidence: confidenceFor(u, 'high'),
+            });
+            continue;
+          }
+        }
+        // bash <(curl …) / source <(wget …)
+        if (isInterpreter(c) && c.processSubstitutions.some((p) => containsDownload(p))) {
+          out.push({ ...loc(u, c), message: `${c.name} executes a process substitution that downloads from the network${docNote(u)}`, evidence: c.text, confidence: confidenceFor(u, 'high') });
+          continue;
+        }
+        // bash -c "$(curl …)" / eval "$(curl …)" / sh -c "`wget …`"
+        if (isInterpreter(c) && c.commandSubstitutions.some((s) => containsDownload(s))) {
+          out.push({ ...loc(u, c), message: `${c.name} executes the output of a network download via command substitution${docNote(u)}`, evidence: c.text, confidence: confidenceFor(u, 'high') });
+          continue;
+        }
+        // python3 -c "$(curl …)" handled above; python <(curl) handled above.
+      }
+    }
+    return out;
+  },
+};
+
+export const downloadThenExecute: Rule = {
+  id: 'OA-SH-002',
+  title: 'A downloaded file is executed in the same script',
+  severity: 'high',
+  confidence: 'medium',
+  kind: 'heuristic',
+  capabilities: ['remote-code-execution', 'network-download'],
+  description: 'A script downloads a file and later executes it (chmod +x then run, or passes it to an interpreter). This is equivalent to piping to a shell unless the file is verified before execution.',
+  remediation: 'Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.',
+  evaluate(ctx) {
+    const out: FindingDraft[] = [];
+    for (const u of ctx.shellUnits) {
+      const downloaded = new Map<string, ShellCommand>();
+      const verified = /\b(?:sha256sum|sha512sum|shasum|b2sum|gpg\s+--verify|gpgv|minisign|cosign|signify)\b/.test(u.text);
+      for (const c of u.commands) {
+        if (isDownloader(c)) {
+          for (let i = 0; i < c.args.length; i++) {
+            const a = c.args[i]!;
+            if (a === '-o' || a === '--output' || a === '-O' || a === '--output-document') {
+              const t = c.args[i + 1];
+              if (t) downloaded.set(unquote(t).split('/').pop() ?? t, c);
+            }
+            const m = /^(?:-o|--output=|-O|--output-document=)(.+)$/.exec(a);
+            if (m && m[1]) downloaded.set(unquote(m[1]).split('/').pop() ?? m[1], c);
+          }
+          if (c.name === 'wget' && !c.args.some((a) => /^-O|^--output-document|^-q?O-$/.test(a))) {
+            const url = urlsIn(c)[0];
+            if (url) downloaded.set(url.split('/').pop()?.split('?')[0] ?? '', c);
+          }
+          continue;
+        }
+        if (downloaded.size === 0) continue;
+        const runsFile = (name: string): boolean => {
+          const base = name.split('/').pop() ?? name;
+          return downloaded.has(base);
+        };
+        if (isInterpreter(c) && c.args.some((a) => runsFile(unquote(a)))) {
+          const src = downloaded.get(c.args.map(unquote).map((a) => a.split('/').pop() ?? a).find((a) => downloaded.has(a))!)!;
+          out.push({ ...loc(u, c), message: `downloaded file is executed by ${c.name}${verified ? ' (a checksum or signature tool appears elsewhere in the script; confirm it guards this file)' : ' with no checksum or signature verification in the script'}${docNote(u)}`, evidence: `${src.text}\n${c.text}`, severity: verified ? 'medium' : 'high', confidence: confidenceFor(u, verified ? 'low' : 'medium') });
+        } else if (runsFile(c.name) || (c.name.startsWith('./') && runsFile(c.name.slice(2)))) {
+          out.push({ ...loc(u, c), message: `downloaded file is executed directly${verified ? ' (verification tool present elsewhere; confirm it guards this file)' : ' without verification'}${docNote(u)}`, evidence: c.text, severity: verified ? 'medium' : 'high', confidence: confidenceFor(u, verified ? 'low' : 'medium') });
+        } else if (c.name === 'chmod' && c.args.some((a) => /\+x|7[0-7]{2}|[0-7]*[1357][0-7]*/.test(a)) && c.args.some((a) => runsFile(unquote(a)))) {
+          out.push({ ...loc(u, c), message: `downloaded file is made executable${docNote(u)}`, evidence: c.text, severity: 'medium', confidence: confidenceFor(u, 'medium') });
+        }
+      }
+    }
+    return out;
+  },
+};
+
+export const unpinnedRemoteSource: Rule = {
+  id: 'OA-SH-003',
+  title: 'Code is obtained from a mutable remote reference and built or installed',
+  severity: 'medium',
+  confidence: 'medium',
+  kind: 'heuristic',
+  capabilities: ['build-from-source', 'network-download'],
+  description: 'git clone, cargo install --git, go install @latest or pip git+ obtain whatever the branch head is at install time. Reviews of the repository do not cover code that changes afterwards.',
+  remediation: 'Pin to a full 40-character commit (git checkout <sha>, cargo --rev <sha>, go @<version>, pip @<sha>) or to a signed release.',
+  evaluate(ctx) {
+    const out: FindingDraft[] = [];
+    for (const u of ctx.shellUnits) {
+      for (const c of u.commands) {
+        const a = argText(c);
+        if (c.name === 'git' && c.args[0] === 'clone') {
+          if (c.args.some((x) => /[<>]/.test(x))) continue; // placeholder like <your-fork>
+          if (ctx.targetName && new RegExp(`github\\.com[/:]${ctx.targetName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:\\.git)?(?:\\s|$)`, 'i').test(a)) continue; // cloning the audited repository itself
+          const pinnedNearby = u.commands.some((o) => o.name === 'git' && /\b(?:checkout|switch|reset)\b/.test(o.args.join(' ')) && /\b[0-9a-f]{40}\b/.test(o.args.join(' ')));
+          const hasTag = /--branch\s+v?\d|-b\s+v?\d/.test(a);
+          if (!pinnedNearby && !hasTag) out.push({ ...loc(u, c), message: `git clone of a mutable reference${docNote(u)}`, evidence: c.text, severity: /github\.com\/omacom\/|aur\.archlinux\.org/.test(a) ? 'low' : 'medium' });
+        } else if (c.name === 'cargo' && c.args[0] === 'install' && /--git\b/.test(a) && !/--rev\s+[0-9a-f]{40}\b/.test(a)) {
+          out.push({ ...loc(u, c), message: `cargo install --git without a full --rev commit${docNote(u)}`, evidence: c.text });
+        } else if (c.name === 'go' && c.args[0] === 'install' && /@(?:latest|master|main|HEAD)\b/.test(a)) {
+          out.push({ ...loc(u, c), message: `go install of a mutable module reference${docNote(u)}`, evidence: c.text });
+        } else if (/^pip3?$|^pipx$|^uv$/.test(c.name) && /git\+/.test(a) && !/@[0-9a-f]{40}\b/.test(a)) {
+          out.push({ ...loc(u, c), message: `pip install from a git URL without a commit pin${docNote(u)}`, evidence: c.text });
+        } else if ((c.name === 'npm' || c.name === 'npx' || c.name === 'pnpm' || c.name === 'bun' || c.name === 'yarn') && /(?:github:|git\+|https:\/\/github\.com\/)\S+/.test(a) && !/#[0-9a-f]{40}\b/.test(a)) {
+          out.push({ ...loc(u, c), message: `${c.name} installs from a git URL without a commit pin${docNote(u)}`, evidence: c.text });
+        }
+      }
+    }
+    return out;
+  },
+};
+
+export const privilegeEscalation: Rule = {
+  id: 'OA-SH-004',
+  title: 'Commands run with elevated privileges',
+  severity: 'medium',
+  confidence: 'high',
+  kind: 'heuristic',
+  capabilities: ['privilege-escalation'],
+  description: 'sudo, doas, pkexec, run0 or su give the command full system access. Each privileged command is listed so the reader can judge whether the privilege is proportionate.',
+  remediation: 'Confirm every privileged command is necessary, scoped to a fixed command surface, and documented. Prefer user-level installation where possible.',
+  evaluate(ctx) {
+    const out: FindingDraft[] = [];
+    for (const u of ctx.shellUnits) {
+      for (const c of u.commands) {
+        if (!c.privileged) continue;
+        const dangerous = /^(?:rm|dd|mkfs(?:\.\w+)?|chmod|chown|chattr|tee|cp|mv|ln|install|sed|bash|sh|zsh|python3?|perl|eval|curl|wget|su|passwd|usermod|useradd)$/.test(c.name);
+        out.push({
+          ...loc(u, c),
+          message: `${c.wrappers.filter((w) => ['sudo', 'doas', 'pkexec', 'run0', 'su'].includes(w)).join(' ')} runs ${c.name}${docNote(u)}`,
+          evidence: c.text,
+          severity: dangerous ? 'medium' : 'low',
+          confidence: confidenceFor(u, 'high'),
+        });
+      }
+    }
+    return aggregate(out, (d) => `${d.path}|${d.message.replace(/ \(.*$/, '')}`);
+  },
+};
+
+export const systemPathWrite: Rule = {
+  id: 'OA-SH-005',
+  title: 'Files under system paths are written or modified',
+  severity: 'medium',
+  confidence: 'high',
+  kind: 'heuristic',
+  capabilities: ['system-file-write'],
+  description: 'Writes to /etc, /usr, /boot, /opt, /var/lib or similar change the system for every user and survive uninstalling the tool.',
+  remediation: 'Prefer per-user locations (~/.local, ~/.config). If a system path is required, ship a package (PKGBUILD) so pacman tracks the files and can remove them.',
+  evaluate(ctx) {
+    const out: FindingDraft[] = [];
+    const writers = new Set(['cp', 'mv', 'install', 'tee', 'ln', 'mkdir', 'touch', 'rsync', 'sed', 'chmod', 'chown', 'chattr', 'truncate', 'dd', 'rm', 'unlink']);
+    for (const u of ctx.shellUnits) {
+      for (const c of u.commands) {
+        const hitRedirect = c.redirects.find((r) => /^>/.test(r.op) && targetsSystemPath(r.target) && !/\/etc\/sudoers/.test(r.target));
+        if (hitRedirect) {
+          out.push({ ...loc(u, c), message: `output is redirected to ${unquote(hitRedirect.target)}${docNote(u)}`, evidence: c.text });
+          continue;
+        }
+        if (!writers.has(c.name)) continue;
+        if (c.name === 'sed' && !c.args.some((a) => /^-[a-zA-Z]*i/.test(a) || a === '--in-place')) continue;
+        if (c.name === 'rm' || c.name === 'unlink') continue; // destructive rule covers these
+        const target = c.args.find((a) => targetsSystemPath(a));
+        if (target && /\/etc\/sudoers/.test(unquote(target))) continue;
+        if (target) {
+          const boot = /^\/boot\b/.test(unquote(target)) || /\/etc\/(?:sudoers|pam\.d|ssh\/sshd_config|ld\.so)/.test(unquote(target));
+          out.push({ ...loc(u, c), message: `${c.name} modifies ${unquote(target)}${docNote(u)}`, evidence: c.text, severity: boot ? 'high' : 'medium' });
+        }
+      }
+    }
+    return aggregate(out, (d) => `${d.path}|${d.severity ?? ''}|${d.message.split(' ')[0]}|${(d.message.match(/modifies (\/[^/\s]+\/[^/\s]+)/) ?? [])[1] ?? d.message}`);
+  },
+};
+
+export const sudoersModification: Rule = {
+  id: 'OA-SH-006',
+  title: 'sudoers policy is created or modified',
+  severity: 'high',
+  confidence: 'high',
+  kind: 'heuristic',
+  capabilities: ['privilege-escalation', 'system-file-write'],
+  description: 'A sudoers rule, especially NOPASSWD, permanently changes who can become root and how. Broad rules (ALL, shells, interpreters, package managers) are equivalent to passwordless root.',
+  remediation: 'Avoid sudoers changes. If unavoidable, grant a single root-owned helper with a fixed argument surface, validate with visudo -c, and document removal.',
+  evaluate(ctx) {
+    const out: FindingDraft[] = [];
+    for (const u of ctx.shellUnits) {
+      for (const c of u.commands) {
+        const text = c.pipeline ? c.pipeline.map((m) => m.text).join(' | ') : c.text;
+        const touches = /\/etc\/sudoers(?:\.d\/\S*)?/.test(c.text) || c.name === 'visudo' || c.redirects.some((r) => /\/etc\/sudoers/.test(r.target));
+        if (!touches) continue;
+        const corpus = text + '\n' + (c.heredoc ?? '');
+        const nopasswd = /NOPASSWD/.test(corpus);
+        const broad = /NOPASSWD:\s*ALL\b|NOPASSWD:[^\n]*\b(?:\/bin\/(?:ba)?sh|\/usr\/bin\/(?:ba|z)?sh|python|perl|pacman|systemctl|kill|rm|chmod|chown|tee|dd|su|visudo)\b/.test(corpus);
+        out.push({
+          ...loc(u, c),
+          message: broad ? `sudoers rule grants passwordless access to a broad or unrestricted command surface${docNote(u)}` : nopasswd ? `sudoers rule grants NOPASSWD access${docNote(u)}` : `sudoers policy is modified${docNote(u)}`,
+          evidence: c.heredoc ? `${text}\n${c.heredoc}` : text,
+          severity: broad ? 'critical' : nopasswd ? 'high' : 'medium',
+        });
+      }
+    }
+    return out;
+  },
+};
+
+export const servicePersistence: Rule = {
+  id: 'OA-SH-007',
+  title: 'A service, timer or autostart entry is installed',
+  severity: 'medium',
+  confidence: 'medium',
+  kind: 'heuristic',
+  capabilities: ['persistence'],
+  description: 'systemctl enable, systemd-run, cron entries and autostart files make code run at every boot or login, independently of the user launching the tool.',
+  remediation: 'Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.',
+  evaluate(ctx) {
+    const out: FindingDraft[] = [];
+    for (const u of ctx.shellUnits) {
+      for (const c of u.commands) {
+        const a = argText(c);
+        if (c.name === 'systemctl' && /\b(?:enable|--now|link|preset|edit)\b/.test(a)) {
+          const user = /--user\b/.test(a);
+          out.push({ ...loc(u, c), message: `systemctl ${user ? '--user ' : ''}enables a unit${docNote(u)}`, evidence: c.text, severity: user && !c.privileged ? 'low' : 'medium' });
+        } else if (c.name === 'systemd-run' || c.name === 'loginctl' && /enable-linger/.test(a)) {
+          out.push({ ...loc(u, c), message: `${c.name} creates a transient or lingering unit${docNote(u)}`, evidence: c.text });
+        } else if (c.name === 'crontab' || /@reboot|\/etc\/cron/.test(c.text)) {
+          out.push({ ...loc(u, c), message: `cron persistence${docNote(u)}`, evidence: c.text });
+        } else if (['cp', 'mv', 'install', 'tee', 'ln', 'cat', 'echo', 'printf'].includes(c.name) && (c.args.some((x) => AUTOSTART_PATHS.test(unquote(x))) || c.redirects.some((r) => AUTOSTART_PATHS.test(unquote(r.target))))) {
+          out.push({ ...loc(u, c), message: `writes into an autostart or unit directory${docNote(u)}`, evidence: c.text });
+        }
+      }
+    }
+    return out;
+  },
+};
+
+export const shellStartupModification: Rule = {
+  id: 'OA-SH-008',
+  title: 'Shell startup files are modified',
+  severity: 'medium',
+  confidence: 'medium',
+  kind: 'heuristic',
+  capabilities: ['shell-config-change', 'persistence'],
+  description: 'Appending to ~/.bashrc, ~/.zshrc, /etc/profile.d or Hyprland config makes code run in every new shell or session.',
+  remediation: 'Ask before editing dotfiles, show the exact lines, and provide an uninstall that removes them.',
+  evaluate(ctx) {
+    const out: FindingDraft[] = [];
+    for (const u of ctx.shellUnits) {
+      for (const c of u.commands) {
+        const hits = [...c.args.map(unquote), ...c.redirects.map((r) => unquote(r.target))].filter((x) => SHELL_RC.test(x));
+        if (hits.length === 0) continue;
+        if (!['echo', 'printf', 'cat', 'tee', 'sed', 'cp', 'mv', 'ln', 'install', 'source', '.', 'bash', 'sh'].includes(c.name) && !c.redirects.some((r) => /^>/.test(r.op))) continue;
+        if ((c.name === 'source' || c.name === '.') && c.redirects.length === 0) continue; // reading rc is fine
+        out.push({ ...loc(u, c), message: `${hits[0]} is modified${docNote(u)}`, evidence: c.text });
+      }
+    }
+    return out;
+  },
+};
+
+export const packageInstallation: Rule = {
+  id: 'OA-SH-009',
+  title: 'Packages are installed',
+  severity: 'info',
+  confidence: 'high',
+  kind: 'heuristic',
+  capabilities: ['package-management'],
+  description: 'Package manager invocations are listed so the reader knows exactly what lands on the system. AUR helpers (yay, paru) install unvetted user-submitted recipes; pacman -U installs an arbitrary package file.',
+  remediation: 'Prefer official repositories or the Omarchy package repo. For AUR packages, read the PKGBUILD. Avoid pacman -U from URLs.',
+  evaluate(ctx) {
+    const out: FindingDraft[] = [];
+    for (const u of ctx.shellUnits) {
+      for (const c of u.commands) {
+        const a = argText(c);
+        if (c.name === 'pacman') {
+          if (/(?:^|\s)-U\b|--upgrade\b/.test(a)) {
+            const fromUrl = /https?:\/\//.test(a);
+            out.push({ ...loc(u, c), message: `pacman -U installs a package file${fromUrl ? ' from a URL' : ''}${docNote(u)}`, evidence: c.text, severity: fromUrl ? 'high' : 'medium', capabilities: ['package-management', 'network-download'] });
+          } else if (/(?:^|\s)-S\w*\b|--sync\b/.test(a)) {
+            out.push({ ...loc(u, c), message: `pacman installs: ${c.args.filter((x) => !x.startsWith('-')).map(unquote).join(' ') || '(packages from variables)'}${/--overwrite|-dd\b|--assume-installed|--nodeps/.test(a) ? ' with dependency or conflict checks bypassed' : ''}${docNote(u)}`, evidence: c.text, severity: /--overwrite|-dd\b|--nodeps/.test(a) ? 'medium' : 'info' });
+          } else if (/(?:^|\s)-R\w*\b|--remove\b/.test(a)) {
+            out.push({ ...loc(u, c), message: `pacman removes packages${docNote(u)}`, evidence: c.text, severity: /-Rdd|-Rns\s+(?:base|linux|systemd|pacman)\b/.test(a) ? 'high' : 'low' });
+          }
+        } else if (c.name === 'yay' || c.name === 'paru' || c.name === 'pikaur' || c.name === 'trizen') {
+          if (/(?:^|\s)-S\w*\b/.test(a) || !/^-/.test(c.args[0] ?? '')) {
+            out.push({ ...loc(u, c), message: `${c.name} installs from the AUR: ${c.args.filter((x) => !x.startsWith('-')).map(unquote).join(' ') || '(packages from variables)'}${docNote(u)}`, evidence: c.text, severity: 'low', capabilities: ['package-management', 'aur-install'] });
+          }
+        } else if (/^omarchy-pkg-(?:add|aur-add|aur-install|add-curated)$/.test(c.name)) {
+          const aur = /aur/.test(c.name);
+          out.push({ ...loc(u, c), message: `${c.name} installs ${c.args.map(unquote).join(' ') || '(packages from variables)'}${docNote(u)}`, evidence: c.text, severity: 'info', capabilities: aur ? ['package-management', 'aur-install'] : ['package-management'] });
+        } else if ((c.name === 'makepkg' && /-\w*i/.test(a)) || c.name === 'omarchy-plugin-add') {
+          out.push({ ...loc(u, c), message: `${c.name} installs a local build or plugin${docNote(u)}`, evidence: c.text, severity: 'low' });
+        } else if (/^(?:apt|apt-get|dnf|yum|zypper|apk|brew|flatpak|snap)$/.test(c.name) && /\b(?:install|add)\b/.test(a)) {
+          out.push({ ...loc(u, c), message: `${c.name} installs packages (not native to Omarchy/Arch)${docNote(u)}`, evidence: c.text, severity: 'info' });
+        } else if ((/^pip3?$|^pipx$/.test(c.name) && /\binstall\b/.test(a)) || (/^npm$|^pnpm$|^yarn$|^bun$/.test(c.name) && /\b(?:install|add|i)\b/.test(a) && /(?:^|\s)(?:-g|--global)\b/.test(a)) || (c.name === 'cargo' && c.args[0] === 'install') || (c.name === 'go' && c.args[0] === 'install') || (c.name === 'gem' && c.args[0] === 'install') || (c.name === 'mise' && /\b(?:install|use)\b/.test(a))) {
+          out.push({ ...loc(u, c), message: `${c.name} installs ${c.args.filter((x) => !x.startsWith('-') && !/^(?:install|add|i|use)$/.test(x)).map(unquote).join(' ') || '(from manifest)'}${docNote(u)}`, evidence: c.text, severity: 'info' });
+        }
+      }
+    }
+    return out;
+  },
+};
+
+export const destructiveOperation: Rule = {
+  id: 'OA-SH-010',
+  title: 'Destructive filesystem or disk operation',
+  severity: 'high',
+  confidence: 'medium',
+  kind: 'heuristic',
+  capabilities: ['destructive-operation'],
+  description: 'rm -rf on roots, home directories or unquoted variables, dd to block devices, mkfs, or writes to /dev/sd* can destroy data when a variable is empty or a path is wrong.',
+  remediation: 'Quote and validate every path before rm -rf, never recurse on $HOME or / and refuse to run when a variable is empty (set -u, [[ -n $var ]]).',
+  evaluate(ctx) {
+    const out: FindingDraft[] = [];
+    for (const u of ctx.shellUnits) {
+      for (const c of u.commands) {
+        if (c.name === 'rm') {
+          const recursive = c.args.some((a) => /^-[a-zA-Z]*[rR]/.test(a) || a === '--recursive');
+          if (!recursive) continue;
+          const targets = c.args.filter((a) => !a.startsWith('-')).map(unquote);
+          for (const t of targets) {
+            const stripped = t.replace(/\/+$/, '');
+            if (stripped === '' || stripped === '/' || /^\/(?:usr|etc|boot|bin|lib|home|var|opt|root)$/.test(stripped)) {
+              out.push({ ...loc(u, c), message: `rm -rf targets ${t || '/'}${docNote(u)}`, evidence: c.text, severity: 'critical', confidence: 'high' });
+            } else if (/^(?:~|\$HOME|\$\{HOME\})\/?$/.test(stripped) || /^(?:\$HOME|\$\{HOME\}|~)\/\.config\/?$/.test(stripped)) {
+              out.push({ ...loc(u, c), message: `rm -rf targets the home directory${docNote(u)}`, evidence: c.text, severity: 'critical', confidence: 'high' });
+            } else if (/^\$[{(]?[A-Za-z_][A-Za-z0-9_]*[})]?\/?\*?$/.test(stripped) || /^\/\$[{]?[A-Za-z_]/.test(stripped) || /^(?:~|\$HOME|\$\{HOME\})\/\$[{(]?[A-Za-z_]/.test(stripped)) {
+              const varName = /\$[{(]?([A-Za-z_][A-Za-z0-9_]*)/.exec(stripped)?.[1] ?? '';
+              const quoted = c.args.some((x) => x !== unquote(x) && unquote(x) === t);
+              const guarded = /\$\{[A-Za-z_][A-Za-z0-9_]*:\?/.test(t);
+              const fromMktemp = varName !== '' && new RegExp(`(?:^|\\n)\\s*(?:local\\s+|declare\\s+\\S*\\s+|readonly\\s+)?${varName}=["']?\\$\\(\\s*mktemp`).test(u.text);
+              const sev = guarded || fromMktemp ? 'low' : quoted ? (u.hasStrictMode ? 'low' : 'medium') : u.hasStrictMode ? 'medium' : 'high';
+              if (sev !== 'low') out.push({ ...loc(u, c), message: `rm -rf on a path built only from a variable (${t})${quoted ? '' : ', unquoted'}; an empty variable deletes the parent${fromMktemp ? '' : u.hasStrictMode ? ' (set -u is on, which aborts on unset but not on empty)' : ' and the script has no set -u'}${docNote(u)}`, evidence: c.text, severity: sev, confidence: 'medium' });
+            } else if (/\*/.test(stripped) && stripped.split('/').length <= 3) {
+              out.push({ ...loc(u, c), message: `rm -rf with a broad wildcard (${t})${docNote(u)}`, evidence: c.text, severity: 'medium' });
+            }
+          }
+        } else if (c.name === 'dd' && c.args.some((a) => /^of=\/dev\/(?:sd|nvme|vd|mmcblk|hd|disk)/.test(unquote(a)))) {
+          out.push({ ...loc(u, c), message: `dd writes directly to a block device${docNote(u)}`, evidence: c.text, severity: 'critical', confidence: 'high' });
+        } else if (/^mkfs(?:\.\w+)?$|^wipefs$|^sgdisk$|^parted$|^fdisk$|^cryptsetup$/.test(c.name)) {
+          out.push({ ...loc(u, c), message: `${c.name} modifies partitions or filesystems${docNote(u)}`, evidence: c.text, severity: c.name === 'cryptsetup' && /\b(?:luksFormat|erase)\b/.test(c.text) ? 'critical' : 'high' });
+        } else if (c.redirects.some((r) => /^\/dev\/(?:sd|nvme|vd|mmcblk)/.test(unquote(r.target)))) {
+          out.push({ ...loc(u, c), message: `output is redirected to a block device${docNote(u)}`, evidence: c.text, severity: 'critical', confidence: 'high' });
+        } else if (c.name === 'chattr' && /\+i/.test(c.text)) {
+          out.push({ ...loc(u, c), message: `chattr makes files immutable${docNote(u)}`, evidence: c.text, severity: 'medium' });
+        }
+      }
+      if (/:\(\)\s*\{\s*:\s*\|\s*:\s*&\s*\}\s*;\s*:/.test(u.text)) {
+        out.push({ path: u.path, startLine: 1, endLine: 1, message: 'fork bomb pattern', evidence: ':(){ :|:& };:', severity: 'critical', confidence: 'high' });
+      }
+    }
+    return out;
+  },
+};
+
+export const obfuscatedExecution: Rule = {
+  id: 'OA-SH-011',
+  title: 'Obfuscated or dynamically constructed code is executed',
+  severity: 'high',
+  confidence: 'medium',
+  kind: 'heuristic',
+  capabilities: ['obfuscation', 'remote-code-execution'],
+  description: 'base64 or hex decoding piped into an interpreter, eval of variables, or interpreters executing decoded strings hide what actually runs from a reader of the source.',
+  remediation: 'Replace encoded payloads with plain, reviewable source. Avoid eval; use arrays and functions instead.',
+  evaluate(ctx) {
+    const out: FindingDraft[] = [];
+    for (const u of ctx.shellUnits) {
+      for (const c of u.commands) {
+        const a = argText(c);
+        if (c.pipeline && (c.name === 'base64' && /-d|--decode|-D/.test(a) || c.name === 'xxd' && /-r/.test(a) || c.name === 'openssl' && /\benc\b.*-d/.test(a) || c.name === 'gunzip' || c.name === 'zcat' || c.name === 'xz' && /-d/.test(a) || c.name === 'tr' && /\\x|[A-Za-z]-[A-Za-z]\s+[N-ZA-Mn-za-m]/.test(a))) {
+          const later = c.pipeline.slice(c.pipelineIndex + 1);
+          if (later.some((m) => isInterpreter(m))) {
+            out.push({ ...loc(u, c), message: `${c.name} output is decoded and executed${docNote(u)}`, evidence: c.pipeline.map((m) => m.text).join(' | '), confidence: 'high' });
+            continue;
+          }
+        }
+        if (c.name === 'eval') {
+          const dynamic = c.args.some((x) => hasVariable(x)) || c.commandSubstitutions.length > 0;
+          if (dynamic && !/^\s*eval\s+"?\$\(\s*(?:ssh-agent|dircolors|keychain|mise|direnv|starship|zoxide|fnm|nvm|rbenv|pyenv|brew\s+shellenv|opam|luarocks|thefuck|gpg-agent)\b/.test(c.text)) {
+            out.push({ ...loc(u, c), message: `eval executes dynamically built code${docNote(u)}`, evidence: c.text, severity: 'medium', confidence: 'low' });
+          }
+        }
+        if (isInterpreter(c) && c.args.some((x) => /^-[a-zA-Z]*c$/.test(x)) && /\b(?:base64|b64decode|fromhex|unhexlify|\\x[0-9a-f]{2}\\x[0-9a-f]{2}|exec\s*\(|chr\(\d+\)\s*\+)/.test(c.text)) {
+          out.push({ ...loc(u, c), message: `${c.name} -c executes decoded or escaped content${docNote(u)}`, evidence: c.text, confidence: 'medium' });
+        }
+        if ((c.name === 'printf' || c.name === 'echo') && /(?:\\x[0-9a-fA-F]{2}){8,}|(?:\\[0-7]{3}){8,}/.test(c.text) && c.pipeline && c.pipeline.slice(c.pipelineIndex + 1).some((m) => isInterpreter(m))) {
+          out.push({ ...loc(u, c), message: `escaped byte sequence is executed${docNote(u)}`, evidence: c.text, confidence: 'high' });
+        }
+      }
+      const longB64 = /\b[A-Za-z0-9+/]{200,}={0,2}\b/.exec(u.text);
+      if (longB64 && /base64\s+(?:-d|--decode)/.test(u.text)) {
+        const line = u.text.slice(0, longB64.index).split('\n').length + u.lineOffset;
+        out.push({ path: u.path, startLine: line, endLine: line, message: `long base64 blob with a decoder present in the same file${docNote(u)}`, evidence: `${longB64[0].slice(0, 60)}… (${longB64[0].length} chars)`, severity: 'medium', confidence: 'low' });
+      }
+    }
+    return out;
+  },
+};
+
+export const exfiltrationOrReverseShell: Rule = {
+  id: 'OA-SH-012',
+  title: 'Network exfiltration or reverse-shell pattern',
+  severity: 'high',
+  confidence: 'medium',
+  kind: 'heuristic',
+  capabilities: ['network-exfiltration'],
+  description: '/dev/tcp redirections, netcat with -e, interactive shells bound to sockets, or uploads of local files (curl -d @file, -T, -F file=@) move data or control off the machine.',
+  remediation: 'Remove the pattern, or document precisely what is uploaded, to where, and how consent is obtained.',
+  evaluate(ctx) {
+    const out: FindingDraft[] = [];
+    for (const u of ctx.shellUnits) {
+      for (const c of u.commands) {
+        const a = argText(c);
+        if (c.redirects.some((r) => /\/dev\/(?:tcp|udp)\//.test(r.target)) || /\/dev\/(?:tcp|udp)\/[\w.-]+\/\d+/.test(c.text)) {
+          out.push({ ...loc(u, c), message: `/dev/tcp network redirection${docNote(u)}`, evidence: c.text, severity: 'critical', confidence: 'high' });
+        } else if ((c.name === 'nc' || c.name === 'ncat' || c.name === 'netcat') && /(?:^|\s)-[a-zA-Z]*[ce]\b/.test(a)) {
+          out.push({ ...loc(u, c), message: `netcat executes a program on connection${docNote(u)}`, evidence: c.text, severity: 'critical', confidence: 'high' });
+        } else if (c.name === 'socat' && /exec:|system:/i.test(a)) {
+          out.push({ ...loc(u, c), message: `socat binds a command to a socket${docNote(u)}`, evidence: c.text, severity: 'critical', confidence: 'high' });
+        } else if ((c.name === 'bash' || c.name === 'sh') && /-i\b/.test(a) && c.redirects.some((r) => /^>&|^<&|^>/.test(r.op))) {
+          out.push({ ...loc(u, c), message: `interactive shell with redirected I/O${docNote(u)}`, evidence: c.text, severity: 'critical', confidence: 'medium' });
+        } else if (c.name === 'curl' && (/(?:^|\s)(?:-d|--data(?:-binary|-raw|-urlencode)?|-F|--form|-T|--upload-file)\s+@?["']?[@~/$-]/.test(a) || /(?:^|\s)-F\s+\S*=@/.test(a) || /--data(?:-binary)?\s+@/.test(a))) {
+          const upstream = c.pipeline ? c.pipeline.slice(0, c.pipelineIndex).map((m) => m.text).join(' ') : '';
+          const sensitive = CREDENTIAL_PATHS.some((p) => p.test(a) || p.test(upstream)) || /\/etc\/(?:passwd|shadow)|\.env\b|id_rsa|id_ed25519/.test(a + ' ' + upstream);
+          out.push({ ...loc(u, c), message: `curl uploads local ${upstream ? 'piped ' : 'file '}content${sensitive ? ' from a credential or system path' : ''}${docNote(u)}`, evidence: c.pipeline ? c.pipeline.map((m) => m.text).join(' | ') : c.text, severity: sensitive ? 'critical' : 'medium', confidence: sensitive ? 'high' : 'low', capabilities: sensitive ? ['network-exfiltration', 'credential-access'] : ['network-exfiltration'] });
+        } else if ((c.name === 'scp' || c.name === 'rsync' || c.name === 'rclone') && CREDENTIAL_PATHS.some((p) => p.test(a))) {
+          out.push({ ...loc(u, c), message: `${c.name} transfers a credential directory${docNote(u)}`, evidence: c.text, severity: 'critical', confidence: 'high', capabilities: ['network-exfiltration', 'credential-access'] });
+        }
+      }
+    }
+    return out;
+  },
+};
+
+export const securityDowngrade: Rule = {
+  id: 'OA-SH-013',
+  title: 'A security control is disabled or weakened',
+  severity: 'medium',
+  confidence: 'high',
+  kind: 'heuristic',
+  capabilities: ['security-downgrade'],
+  description: 'Skipping TLS verification, disabling host key checks, turning off firewalls or package signature checks, or granting world-writable permissions removes protections the rest of the system relies on.',
+  remediation: 'Remove the flag. Fix certificates or keys properly instead of bypassing verification. Use the narrowest permissions that work.',
+  evaluate(ctx) {
+    const out: FindingDraft[] = [];
+    for (const u of ctx.shellUnits) {
+      for (const c of u.commands) {
+        const a = argText(c);
+        if ((c.name === 'curl' && /(?:^|\s)(?:-k|--insecure)\b/.test(a)) || (c.name === 'wget' && /--no-check-certificate/.test(a))) {
+          out.push({ ...loc(u, c), message: `${c.name} disables TLS certificate verification${docNote(u)}`, evidence: c.text, severity: 'high' });
+        } else if (/GIT_SSL_NO_VERIFY|PYTHONHTTPSVERIFY=0|NODE_TLS_REJECT_UNAUTHORIZED=0|--trusted-host|sslVerify\s+false|http\.sslVerify/.test(c.text)) {
+          out.push({ ...loc(u, c), message: `TLS verification disabled via environment or config${docNote(u)}`, evidence: c.text, severity: 'high' });
+        } else if (/StrictHostKeyChecking[= ]no|UserKnownHostsFile[= ]\/dev\/null/.test(c.text)) {
+          out.push({ ...loc(u, c), message: `SSH host key checking disabled${docNote(u)}`, evidence: c.text });
+        } else if ((c.name === 'setenforce' && /0|permissive/i.test(a)) || (c.name === 'ufw' && /\bdisable\b/.test(a)) || (c.name === 'iptables' && /(?:^|\s)-F\b/.test(a)) || (c.name === 'nft' && /flush ruleset/.test(a)) || (c.name === 'systemctl' && /\b(?:stop|disable|mask)\b.*\b(?:firewalld|ufw|apparmor|auditd|fail2ban|sshd)\b/.test(a))) {
+          out.push({ ...loc(u, c), message: `${c.name} disables a firewall or mandatory access control${docNote(u)}`, evidence: c.text, severity: 'high' });
+        } else if (/SigLevel\s*=\s*(?:Never|Optional\s+TrustAll)|--disable-download-timeout\s+--noconfirm\s+-U/.test(c.text + '\n' + (c.heredoc ?? ''))) {
+          out.push({ ...loc(u, c), message: `pacman signature checking is weakened${docNote(u)}`, evidence: c.text, severity: 'high' });
+        } else if (c.name === 'chmod' && c.args.some((x) => /^(?:-R\s+)?(?:0?777|0?666|a\+rwx?|o\+w|ugo\+rwx?)$/.test(unquote(x)))) {
+          out.push({ ...loc(u, c), message: `chmod grants world-writable permissions${docNote(u)}`, evidence: c.text, severity: c.args.some((x) => targetsSystemPath(x)) ? 'high' : 'medium' });
+        } else if (c.name === 'pacman-key' && /--lsign-key|--recv-keys/.test(a)) {
+          out.push({ ...loc(u, c), message: `pacman-key trusts a new signing key${docNote(u)}`, evidence: c.text, severity: 'medium' });
+        } else if ((c.name === 'passwd' && /-d\b/.test(a)) || (c.name === 'usermod' && /-p\s*''|--password\s*''/.test(a))) {
+          out.push({ ...loc(u, c), message: `account password removed${docNote(u)}`, evidence: c.text, severity: 'critical', confidence: 'high' });
+        }
+      }
+    }
+    return out;
+  },
+};
+
+export const credentialAccess: Rule = {
+  id: 'OA-SH-014',
+  title: 'Credential stores or private keys are read',
+  severity: 'high',
+  confidence: 'medium',
+  kind: 'heuristic',
+  capabilities: ['credential-access'],
+  description: 'Reading ~/.ssh, ~/.gnupg, cloud credentials, browser profiles, keyrings or token stores is rarely needed by a desktop tool and is the first step of credential theft.',
+  remediation: 'Remove the access or explain exactly why it is required and how the data is protected. Never copy or transmit key material.',
+  evaluate(ctx) {
+    const out: FindingDraft[] = [];
+    const readers = new Set(['cat', 'cp', 'tar', 'zip', 'base64', 'xxd', 'head', 'tail', 'less', 'more', 'grep', 'rg', 'find', 'ls', 'scp', 'rsync', 'curl', 'wget', 'python', 'python3', 'tee', 'dd', 'od', 'strings', 'zstd', 'gzip', '7z']);
+    for (const u of ctx.shellUnits) {
+      for (const c of u.commands) {
+        const words = [...c.args.map(unquote), ...c.redirects.filter((r) => r.op === '<').map((r) => unquote(r.target))];
+        const hit = words.find((w) => CREDENTIAL_PATHS.some((p) => p.test(w)));
+        if (hit && (readers.has(c.name) || c.redirects.some((r) => r.op === '<'))) {
+          const write = c.redirects.some((r) => /^>/.test(r.op)) && !CREDENTIAL_PATHS.some((p) => p.test(c.redirects.find((r) => /^>/.test(r.op))!.target));
+          const sshKeygenOwn = c.name === 'ssh-keygen';
+          if (sshKeygenOwn) continue;
+          // Writing authorized_keys or known_hosts is configuration, not theft; keep as medium.
+          const config = /authorized_keys|known_hosts|config$/.test(hit);
+          out.push({ ...loc(u, c), message: `${c.name} accesses ${hit}${docNote(u)}`, evidence: c.text, severity: config ? 'medium' : write || c.name === 'curl' || c.name === 'scp' ? 'critical' : 'high', confidence: config ? 'medium' : 'medium' });
+        } else if (CREDENTIAL_COMMANDS.test(c.name) && /\b(?:lookup|show|get|item get|read|find-generic-password|find-internet-password)\b/.test(c.text)) {
+          out.push({ ...loc(u, c), message: `${c.name} reads a secret from a password manager or keyring${docNote(u)}`, evidence: c.text, severity: 'medium', confidence: 'medium' });
+        } else if (c.name === 'gh' && c.args[0] === 'auth' && c.args[1] === 'token') {
+          out.push({ ...loc(u, c), message: `gh auth token exposes the GitHub token${docNote(u)}`, evidence: c.text, severity: 'medium', confidence: 'medium' });
+        }
+      }
+    }
+    return out;
+  },
+};
+
+export const kernelOrBoot: Rule = {
+  id: 'OA-SH-015',
+  title: 'Kernel modules, initramfs or bootloader are modified',
+  severity: 'high',
+  confidence: 'medium',
+  kind: 'heuristic',
+  capabilities: ['kernel-or-driver', 'system-file-write'],
+  description: 'modprobe/insmod/dkms, mkinitcpio, limine or GRUB changes affect whether the machine boots and run code at the highest privilege level.',
+  remediation: 'Hardware tools may legitimately need this; verify the module source and ship changes through a package with a pacman hook so they are reversible.',
+  evaluate(ctx) {
+    const out: FindingDraft[] = [];
+    for (const u of ctx.shellUnits) {
+      for (const c of u.commands) {
+        if (/^(?:insmod|modprobe|rmmod|dkms)$/.test(c.name) && !(c.name === 'modprobe' && /^-[a-zA-Z]*[rc]/.test(c.args[0] ?? ''))) {
+          out.push({ ...loc(u, c), message: `${c.name} loads or installs a kernel module${docNote(u)}`, evidence: c.text });
+        } else if (/^(?:mkinitcpio|dracut|limine(?:-entry-tool|-update|-mkinitcpio)?|grub-mkconfig|grub-install|bootctl|efibootmgr|update-grub|sbctl)$/.test(c.name)) {
+          out.push({ ...loc(u, c), message: `${c.name} modifies boot configuration${docNote(u)}`, evidence: c.text, severity: /efibootmgr|sbctl|grub-install/.test(c.name) ? 'high' : 'medium' });
+        } else if (c.args.some((x) => /^\/etc\/(?:modprobe\.d|modules-load\.d|mkinitcpio|default\/limine|default\/grub|kernel\/cmdline)/.test(unquote(x))) || c.redirects.some((r) => /^\/etc\/(?:modprobe\.d|modules-load\.d|mkinitcpio|default\/limine|default\/grub)|^\/boot\//.test(unquote(r.target)))) {
+          out.push({ ...loc(u, c), message: `${c.name} writes kernel or boot configuration${docNote(u)}`, evidence: c.text, severity: 'medium' });
+        } else if (c.name === 'sysctl' && /-w|--write/.test(c.text) || c.redirects.some((r) => /^\/proc\/sys\//.test(unquote(r.target)))) {
+          out.push({ ...loc(u, c), message: `kernel parameter changed at runtime${docNote(u)}`, evidence: c.text, severity: 'low' });
+        }
+      }
+    }
+    return aggregate(out, (d) => `${d.path}|${d.message.replace(/ \(.*$/, '')}`);
+  },
+};
+
+export const insecureDownload: Rule = {
+  id: 'OA-SH-016',
+  title: 'Download over plain HTTP or FTP',
+  severity: 'medium',
+  confidence: 'high',
+  kind: 'heuristic',
+  capabilities: ['network-download'],
+  description: 'Unencrypted downloads can be modified in transit by anyone on the path.',
+  remediation: 'Use https:// and verify a checksum published out of band.',
+  evaluate(ctx) {
+    const out: FindingDraft[] = [];
+    for (const u of ctx.shellUnits) {
+      for (const c of u.commands) {
+        if (!isDownloader(c) && !(c.name === 'git' && c.args[0] === 'clone') && c.name !== 'pip' && c.name !== 'pip3') continue;
+        const bad = urlsIn(c).find((x) => /^(?:http|ftp):\/\//i.test(x) && !/^http:\/\/(?:localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0)/.test(x));
+        if (bad) out.push({ ...loc(u, c), message: `${c.name} fetches ${bad.slice(0, 120)} over an unencrypted protocol${docNote(u)}`, evidence: c.text });
+      }
+    }
+    return out;
+  },
+};
+
+export const unverifiedArtifactDownload: Rule = {
+  id: 'OA-SH-017',
+  title: 'Artifacts are downloaded without any checksum or signature check in the script',
+  severity: 'low',
+  confidence: 'low',
+  kind: 'heuristic',
+  capabilities: ['network-download'],
+  description: 'A script that downloads files and never mentions sha256sum, gpg or a similar verifier relies entirely on TLS and the hosting account for integrity.',
+  remediation: 'Publish checksums with each release and verify them in the installer.',
+  evaluate(ctx) {
+    const out: FindingDraft[] = [];
+    for (const u of ctx.shellUnits) {
+      if (u.origin !== 'script') continue;
+      if (/\b(?:sha256sum|sha512sum|shasum|b2sum|gpg\s+--verify|gpgv|minisign|cosign|signify|md5sum)\b/.test(u.text)) continue;
+      const downloads = u.commands.filter((c) => isDownloader(c) && urlsIn(c).length > 0 && !c.pipeline);
+      if (downloads.length === 0) continue;
+      const first = downloads[0]!;
+      out.push({ ...loc(u, first), message: `${downloads.length} download${downloads.length > 1 ? 's' : ''} with no verification step anywhere in the script`, evidence: downloads.slice(0, 3).map((d) => d.text).join('\n') });
+    }
+    return out;
+  },
+};
+
+export const missingStrictMode: Rule = {
+  id: 'OA-SH-018',
+  title: 'Installer script does not enable strict error handling',
+  severity: 'low',
+  confidence: 'medium',
+  kind: 'heuristic',
+  capabilities: [],
+  description: 'Without set -e / set -u, a failed download or an empty variable lets the script continue, often into a destructive step.',
+  remediation: 'Start installer scripts with set -euo pipefail and check variables before using them in paths.',
+  evaluate(ctx) {
+    const out: FindingDraft[] = [];
+    for (const u of ctx.shellUnits) {
+      if (u.origin !== 'script' || u.hasStrictMode) continue;
+      if (u.commands.length < 8) continue;
+      if (!/(?:^|\/)[\w.-]*(?:install|setup|bootstrap|uninstall|provision|update)[\w.-]*$/i.test(u.path)) continue;
+      if (/#!\s*\/bin\/(?:ba)?sh\s+-[a-z]*e/.test(u.text.split('\n')[0] ?? '')) continue;
+      out.push({ path: u.path, startLine: 1, endLine: 1, message: 'no set -e / set -u / pipefail in an installer-like script', evidence: (u.text.split('\n')[0] ?? '').slice(0, 120) });
+    }
+    return out;
+  },
+};
+
+export const SHELL_RULES: Rule[] = [
+  remoteScriptExecution,
+  downloadThenExecute,
+  unpinnedRemoteSource,
+  privilegeEscalation,
+  systemPathWrite,
+  sudoersModification,
+  servicePersistence,
+  shellStartupModification,
+  packageInstallation,
+  destructiveOperation,
+  obfuscatedExecution,
+  exfiltrationOrReverseShell,
+  securityDowngrade,
+  credentialAccess,
+  kernelOrBoot,
+  insecureDownload,
+  unverifiedArtifactDownload,
+  missingStrictMode,
+];
