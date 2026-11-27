@@ -5,3 +5,9 @@ coverage/
 .DS_Store
 .env
 .omaaudit-cache/
+
+# test fixtures deliberately use directory names the walker excludes by default
+!test/fixtures/**/dist/
+!test/fixtures/**/node_modules/
+!test/fixtures/**/dist/**
+!test/fixtures/**/node_modules/**
