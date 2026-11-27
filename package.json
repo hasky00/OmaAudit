@@ -1,0 +1,55 @@
+{
+  "name": "omaaudit",
+  "version": "0.1.0",
+  "description": "Discover, compare and statically audit Omarchy tools before you install them.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "bin": {
+    "omaaudit": "./bin/omaaudit.js"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "rules",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/cli.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc -p tsconfig.json --noEmit",
+    "prepack": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hasky00/OmaAudit.git"
+  },
+  "keywords": [
+    "omarchy",
+    "security",
+    "audit",
+    "static-analysis",
+    "shell",
+    "arch-linux"
+  ],
+  "dependencies": {
+    "commander": "^15.1.0",
+    "picocolors": "^1.1.1",
+    "tar": "^7.5.24",
+    "tree-sitter-bash": "^0.25.1",
+    "web-tree-sitter": "^0.27.2",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.4",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.7"
+  }
+}
