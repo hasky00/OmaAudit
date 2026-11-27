@@ -1,8 +1,10 @@
 # OmaAudit
 
-**Know what an Omarchy tool does before you install it.**
+**See what an Omarchy tool will do to your machine before you install it.**
 
-OmaAudit is a small CLI that fetches a pinned snapshot of a repository, parses its install scripts, systemd units, Hyprland config, PKGBUILDs, Omarchy plugin manifests, QML `Process` calls, CI workflows and README instructions, and tells you in plain language what the tool will do to your machine: what it downloads and executes, where it needs root, what it persists, what it touches. Nothing from the audited repository is ever executed.
+OmaAudit reports evidence, not verdicts. It does not tell you whether a tool is good or bad. It shows you what the tool's own files say it will do (what it downloads and runs, where it asks for root, what it leaves running after you log in, what it writes and deletes) and points to the exact line for each claim. The decision stays with you.
+
+It is a small CLI. It fetches a pinned snapshot of a repository and reads its install scripts, systemd units, Hyprland config, PKGBUILDs, Omarchy plugin manifests, QML `Process` calls, CI workflows and README instructions. Nothing from the audited repository is ever executed.
 
 ```
 $ omaaudit check goodroot/hyprwhspr
@@ -21,7 +23,11 @@ CRITICAL OA-SH-001 Remote content is executed by a shell or interpreter without 
 …
 ```
 
-"High-risk indicators" means *this is what the evidence shows*, not *this tool is malicious*. Many legitimate installers pipe curl to bash. OmaAudit's job is to make sure you know, and to show you the exact line.
+## How to read a report
+
+- **Severity describes the action, not the author.** "High-risk indicators" means *this is what the evidence shows*, not *this tool is malicious*. Many legitimate installers pipe curl to bash, and a focus blocker has a real reason to install a root helper. OmaAudit's job is to make sure you know before you run it.
+- **A clean report is not a safety certificate.** It means these rules found nothing in the files they could read. Every report lists what OmaAudit could **not** inspect (binaries, Python and JavaScript logic, Lua, parse errors, truncated trees).
+- **Every finding is checkable.** Each one carries the repository URL, commit, path, line range, rule, severity, confidence, the evidence line and a remediation, so you can open the file and see for yourself.
 
 ## Install
 
@@ -52,21 +58,34 @@ Every command takes `--json` (schema v1, see `docs/report-schema.md`) and uses m
 
 ## What it looks for
 
-27 built-in rules covering remote code execution (`curl | bash` and its disguises), download-then-execute, unpinned remote sources, privilege escalation, sudoers changes, system path writes, persistence (systemd, cron, autostart, Hyprland `exec-once`, shell rc files), package installs (including AUR and `pacman -U` from URLs), destructive operations, obfuscation, exfiltration and reverse shells, security downgrades, credential access, kernel and boot changes, insecure downloads, PKGBUILD pinning and checksums, Omarchy plugin manifest validity, QML process and PAM usage, GitHub Actions supply-chain risks, committed secrets (redacted) and bundled binaries. Optional ShellCheck and OSV-Scanner results are merged in with their versions.
+27 built-in rules covering remote code execution (`curl | bash` and its disguises), download-then-execute, unpinned remote sources, privilege escalation (including `sudo` or `pkexec` held in a variable), sudoers and polkit changes, system path writes, persistence (systemd, cron, autostart, Hyprland `exec-once`, shell rc files), package installs (including AUR and `pacman -U` from URLs), destructive operations, obfuscation, exfiltration and reverse shells, security downgrades, credential access, kernel and boot changes, insecure downloads, PKGBUILD pinning and checksums, Omarchy plugin manifest validity, QML process and PAM usage, GitHub Actions supply-chain risks, committed secrets (redacted) and bundled binaries. Optional ShellCheck and OSV-Scanner results are merged in with their versions.
 
-Each finding carries the repository URL, commit, path, line range, rule, severity, confidence, evidence, remediation and scanner version, and is tagged as `heuristic`, `confirmed`, `verified` or `unknown-coverage`. The report also lists what OmaAudit could **not** inspect (binaries, Lua, parse errors, truncated trees).
+Findings in test or CI code are marked with a `scope` and shown at lower severity, because that code does not run on your machine. A file keeps full severity whenever an installer, a README instruction or the plugin manifest reaches it, whatever its folder is called.
+
+Each finding is tagged as `heuristic`, `confirmed`, `verified` or `unknown-coverage`.
 
 ## How it relates to the Omarchy plugin marketplace
 
 The marketplace runs its own automated baseline on submitted plugins at a validated commit. OmaAudit reads the marketplace catalog, tells you whether a repository is listed and verified, and warns when the commit you would install differs from the validated snapshot (`omarchy plugin add` clones HEAD). OmaAudit also covers tools that are not plugins at all. Details and pinned evidence: `docs/research.md`.
 
+## How accurate is it
+
+Measured honestly, and so far only in a limited way.
+
+- **Corpus:** 20 marketplace repositories, chosen mechanically at pinned commits (`docs/corpus/`).
+- **Labels:** every finding was labeled by an AI reviewer (Claude) in a session separate from the one that wrote the rules (`docs/corpus/labels/labels.json`).
+- **First run:** all 308 checked finding locations matched the source line. The informational notes were accurate. Most medium-and-above warnings were not: 157 of 334 reviewed findings were labeled incorrect, and the spot check found five things the tool had missed.
+- **After fixing the rules:** all 157 incorrect findings are gone, 139 of the 140 correct ones remain, and the five misses are now reported (`docs/corpus/rerun-round1.md`).
+
+What this does and does not show: the rules were fixed using the same 20 repositories they were measured on, so these numbers show the known problems are fixed. They are not a measurement of accuracy on repositories the tool has not seen, and no recall figure exists yet. A fresh, separately labeled corpus is the next step.
+
 ## Status
 
-Version 0.1.0, first vertical slice. Verified on 2026-11-27 against `goodroot/hyprwhspr`, `tobi/disktree`, `brianblakely/omarchy-plugins` (as `b.okomart`), `omacom/omarchy` and a regression suite of self-written fixtures (all expected findings present, no forbidden rules firing). The fixtures were written alongside the rules, so that result is a regression check, not a measurement of real-world recall or precision; no such measurement has been made yet. Known blockers and gaps:
+Version 0.1.0. Known gaps:
 
-- ShellCheck and OSV-Scanner integrations are implemented but were not exercised against real binaries on the development host (macOS); the CI job `external-scanners` is meant to cover that.
-- Omarchy 4 Lua Hyprland configuration is not analysed beyond secret scanning.
-- No data-flow analysis: `rm -rf "$dir"` is judged by local signals only.
+- Python and JavaScript files are scanned for secrets only. If one of them launches a script, OmaAudit does not follow that link.
+- Omarchy 4 Lua Hyprland configuration is not analysed beyond secret scanning and writes to its autostart files.
+- No data-flow analysis: shell variables are resolved from literal assignments only.
 - Not yet published to npm; licence (Apache-2.0) proposed, pending approval.
 
 ## Documentation
@@ -74,6 +93,7 @@ Version 0.1.0, first vertical slice. Verified on 2026-11-27 against `goodroot/hy
 - `docs/cli.md` — commands, options, exit codes, rules
 - `docs/report-schema.md` — JSON contract
 - `docs/research.md` — Phase 0 research with pinned evidence
+- `docs/corpus/` — the labeled corpus and before/after comparison
 - `docs/architecture.md`, `docs/threat-model.md`, `docs/adr/`
 - `CONTRIBUTING.md`, `SECURITY.md`
 
