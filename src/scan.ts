@@ -1,5 +1,5 @@
 import { loadTree } from './retrieval/tree.js';
-import { buildContext, runRules, coverageOf } from './rules/engine.js';
+import { buildContext, runRules, coverageOf, scopeFinding } from './rules/engine.js';
 import { runShellCheck, runOsvScanner } from './scanners/external.js';
 import { extractDependencies } from './parsers/deps.js';
 import { summarize, DISCLAIMER, REPORT_SCHEMA_VERSION, type Report, type Target, type Finding, type RepositoryMetadata, type MarketplaceStatus } from './report/schema.js';
@@ -35,7 +35,7 @@ export async function scanDirectory(
   let findings: Finding[] = runRules(ctx);
   const sc = await runShellCheck(ctx, { enabled: opts.shellcheck ?? true });
   const osv = await runOsvScanner(ctx, { enabled: (opts.osv ?? true) && !(opts.offline ?? false) });
-  findings = [...findings, ...sc.findings, ...osv.findings];
+  findings = [...findings, ...sc.findings.map(scopeFinding), ...osv.findings];
 
   if (extras.marketplace?.listed) {
     const m = extras.marketplace;

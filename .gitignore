@@ -11,3 +11,5 @@ coverage/
 !test/fixtures/**/node_modules/
 !test/fixtures/**/dist/**
 !test/fixtures/**/node_modules/**
+!test/fixtures/**/build/
+!test/fixtures/**/build/**

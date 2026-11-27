@@ -22,7 +22,8 @@ const CREDENTIAL_PATHS = [
 ];
 const CREDENTIAL_COMMANDS = /^(?:secret-tool|pass|gopass|op|bw|gh auth token|security)$/;
 const SHELL_RC = /(?:~|\$HOME|\$\{HOME\}|\/home\/[\w-]+)\/\.(?:bashrc|zshrc|profile|bash_profile|zprofile|zshenv|bash_login|xprofile|xinitrc|config\/fish\/config\.fish)\b|\/etc\/(?:profile(?:\.d\/[^\s]*)?|bash\.bashrc|zsh\/zshrc|environment)\b/;
-const AUTOSTART_PATHS = /(?:~|\$HOME|\$\{HOME\}|\/home\/[\w-]+)\/\.config\/(?:autostart|hypr|systemd\/user|omarchy\/plugins)\b|\/etc\/xdg\/autostart\b|\/etc\/systemd\/system\b|\/usr\/lib\/systemd\/system\b|\/etc\/cron\.|\/var\/spool\/cron/;
+const AUTOSTART_PATHS = /(?:~|\$HOME|\$\{HOME\}|\/home\/[\w-]+)\/\.config\/(?:autostart\b|systemd\/user\b|hypr\/(?:autostart|hyprland)\.conf)|\/etc\/xdg\/autostart\b|\/etc\/systemd\/(?:system|user)\b|\/usr\/lib\/systemd\/(?:system|user)\b|\/etc\/cron\.|\/var\/spool\/cron|\.(?:service|timer)$/;
+const POLKIT_PATHS = /\/etc\/polkit-1\/(?:rules\.d|localauthority)|\/usr\/share\/polkit-1\/(?:actions|rules\.d)/;
 
 /**
  * Collapse drafts that share a key (normally file + program) into one finding that
@@ -47,11 +48,38 @@ export function aggregate(drafts: FindingDraft[], keyOf: (d: FindingDraft) => st
     const lines = [...new Set(g.map((d) => d.startLine ?? 0))].filter(Boolean);
     out.push({
       ...first,
-      message: `${first.message} (${g.length} occurrences in this file: lines ${lines.slice(0, 8).join(', ')}${lines.length > 8 ? ', …' : ''})`,
+      message: `${first.message} (${g.length} occurrences in this file${lines.length === 1 ? ` at line ${lines[0]}` : `: lines ${lines.slice(0, 8).join(', ')}${lines.length > 8 ? ', …' : ''}`})`,
       evidence: g.slice(0, 3).map((d) => d.evidence).join('\n'),
     });
   }
   return out;
+}
+
+/** Literal `NAME=value` assignments in a unit (last wins; `+=` appends). Values keep their own `$VAR` references. */
+export function literalAssignments(text: string): Map<string, string> {
+  const out = new Map<string, string>();
+  const re = /^\s*(?:export\s+|local\s+|declare\s+-?\w*\s+|readonly\s+)?([A-Za-z_][A-Za-z0-9_]*)(\+?)=(?:"((?:[^"\\]|\\.)*)"|'([^']*)'|([^\s;&|]+))\s*(?:#.*)?$/gm;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text))) {
+    const name = m[1]!;
+    const value = (m[3] ?? m[4] ?? m[5] ?? '').replace(/\\(["$`\\])/g, '$1');
+    out.set(name, m[2] === '+' ? (out.get(name) ?? '') + value : value);
+  }
+  return out;
+}
+
+/** Expand `$NAME` / `${NAME}` references in a word using the unit's literal assignments, two levels deep. */
+export function expandWord(word: string, vars: Map<string, string>): string {
+  let w = unquote(word);
+  for (let i = 0; i < 2; i++) {
+    const before = w;
+    w = w.replace(/\$\{([A-Za-z_][A-Za-z0-9_]*)(?::-[^}]*)?\}|\$([A-Za-z_][A-Za-z0-9_]*)/g, (m, a: string | undefined, b: string | undefined) => {
+      const v = vars.get(a ?? b ?? '');
+      return v === undefined ? m : v;
+    });
+    if (w === before) break;
+  }
+  return w;
 }
 
 function loc(u: ShellUnit, c: ShellCommand): Pick<FindingDraft, 'path' | 'startLine' | 'endLine'> {
@@ -155,17 +183,38 @@ export const downloadThenExecute: Rule = {
     const out: FindingDraft[] = [];
     for (const u of ctx.shellUnits) {
       const downloaded = new Map<string, ShellCommand>();
+      /** Variables that hold a downloaded path, including aliases like SOURCE_FILE="$STAGING". */
+      const downloadedVars = new Map<string, ShellCommand>();
+      const vars = literalAssignments(u.text);
       const verified = /\b(?:sha256sum|sha512sum|shasum|b2sum|gpg\s+--verify|gpgv|minisign|cosign|signify)\b/.test(u.text);
+      const varName = (w: string): string | null => /^"?\$\{?([A-Za-z_][A-Za-z0-9_]*)\}?"?$/.exec(w)?.[1] ?? null;
+      const noteVar = (w: string, c: ShellCommand): void => {
+        const v = varName(w);
+        if (!v) return;
+        downloadedVars.set(v, c);
+        for (let round = 0; round < 3; round++) {
+          for (const [k, val] of vars) {
+            const alias = varName(val);
+            if (alias && downloadedVars.has(alias) && !downloadedVars.has(k)) downloadedVars.set(k, c);
+          }
+        }
+      };
       for (const c of u.commands) {
         if (isDownloader(c)) {
           for (let i = 0; i < c.args.length; i++) {
             const a = c.args[i]!;
             if (a === '-o' || a === '--output' || a === '-O' || a === '--output-document') {
               const t = c.args[i + 1];
-              if (t) downloaded.set(unquote(t).split('/').pop() ?? t, c);
+              if (t) {
+                downloaded.set(unquote(t).split('/').pop() ?? t, c);
+                noteVar(t, c);
+              }
             }
             const m = /^(?:-o|--output=|-O|--output-document=)(.+)$/.exec(a);
-            if (m && m[1]) downloaded.set(unquote(m[1]).split('/').pop() ?? m[1], c);
+            if (m && m[1]) {
+              downloaded.set(unquote(m[1]).split('/').pop() ?? m[1], c);
+              noteVar(m[1], c);
+            }
           }
           if (c.name === 'wget' && !c.args.some((a) => /^-O|^--output-document|^-q?O-$/.test(a))) {
             const url = urlsIn(c)[0];
@@ -173,11 +222,26 @@ export const downloadThenExecute: Rule = {
           }
           continue;
         }
-        if (downloaded.size === 0) continue;
+        if (downloaded.size === 0 && downloadedVars.size === 0) continue;
         const runsFile = (name: string): boolean => {
           const base = name.split('/').pop() ?? name;
           return downloaded.has(base);
         };
+        // Execution through a variable that (transitively) holds the downloaded path.
+        const viaVar = (w: string): ShellCommand | undefined => {
+          const v = varName(w);
+          return v ? downloadedVars.get(v) : undefined;
+        };
+        const execVar = viaVar(c.text.trim().split(/\s+/)[0] ?? '') ?? (isInterpreter(c) ? c.args.filter((a) => !a.startsWith('-')).map(viaVar).find(Boolean) : undefined);
+        if (execVar) {
+          const prompts = /\b(?:gum\s+confirm|read\s+-[a-z]*p|confirm\w*\s*\(|whiptail|zenity|dialog)\b/.test(u.text);
+          out.push({ ...loc(u, c), message: `a downloaded file held in a variable is executed${verified ? ' (checksum tooling present elsewhere; confirm it guards this file)' : ' with no checksum or signature verification in the script'}${prompts ? ' (the script appears to prompt before running it)' : ''}${docNote(u)}`, evidence: `${execVar.text.slice(0, 200)}\n${c.text}`, severity: verified || prompts ? 'medium' : 'high', confidence: confidenceFor(u, 'medium') });
+          continue;
+        }
+        if (c.name === 'chmod' && c.args.some((a) => /\+x|7[0-7]{2}|[0-7]*[1357][0-7]*/.test(a)) && c.args.some((a) => viaVar(a))) {
+          out.push({ ...loc(u, c), message: `a downloaded file held in a variable is made executable${docNote(u)}`, evidence: c.text, severity: 'low', confidence: confidenceFor(u, 'medium') });
+          continue;
+        }
         if (isInterpreter(c) && c.args.some((a) => runsFile(unquote(a)))) {
           const src = downloaded.get(c.args.map(unquote).map((a) => a.split('/').pop() ?? a).find((a) => downloaded.has(a))!)!;
           out.push({ ...loc(u, c), message: `downloaded file is executed by ${c.name}${verified ? ' (a checksum or signature tool appears elsewhere in the script; confirm it guards this file)' : ' with no checksum or signature verification in the script'}${docNote(u)}`, evidence: `${src.text}\n${c.text}`, severity: verified ? 'medium' : 'high', confidence: confidenceFor(u, verified ? 'low' : 'medium') });
@@ -208,6 +272,7 @@ export const unpinnedRemoteSource: Rule = {
         const a = argText(c);
         if (c.name === 'git' && c.args[0] === 'clone') {
           if (c.args.some((x) => /[<>]/.test(x))) continue; // placeholder like <your-fork>
+          if (!/https?:\/\/|git@|ssh:\/\/|git:\/\/|github\.com|gitlab\.com|codeberg\.org|aur\.archlinux\.org|[\w.-]+\.[a-z]{2,}[:/]/i.test(a)) continue; // local path or variable: not a remote fetch
           if (ctx.targetName && new RegExp(`github\\.com[/:]${ctx.targetName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:\\.git)?(?:\\s|$)`, 'i').test(a)) continue; // cloning the audited repository itself
           const pinnedNearby = u.commands.some((o) => o.name === 'git' && /\b(?:checkout|switch|reset)\b/.test(o.args.join(' ')) && /\b[0-9a-f]{40}\b/.test(o.args.join(' ')));
           const hasTag = /--branch\s+v?\d|-b\s+v?\d/.test(a);
@@ -244,7 +309,7 @@ export const privilegeEscalation: Rule = {
         const dangerous = /^(?:rm|dd|mkfs(?:\.\w+)?|chmod|chown|chattr|tee|cp|mv|ln|install|sed|bash|sh|zsh|python3?|perl|eval|curl|wget|su|passwd|usermod|useradd)$/.test(c.name);
         out.push({
           ...loc(u, c),
-          message: `${c.wrappers.filter((w) => ['sudo', 'doas', 'pkexec', 'run0', 'su'].includes(w)).join(' ')} runs ${c.name}${docNote(u)}`,
+          message: `${c.wrappers.filter((w) => ['sudo', 'doas', 'pkexec', 'run0', 'su'].includes(w) || w.startsWith('$')).join(' ') || 'privilege wrapper'} runs ${c.name}${docNote(u)}`,
           evidence: c.text,
           severity: dangerous ? 'medium' : 'low',
           confidence: confidenceFor(u, 'high'),
@@ -268,8 +333,10 @@ export const systemPathWrite: Rule = {
     const out: FindingDraft[] = [];
     const writers = new Set(['cp', 'mv', 'install', 'tee', 'ln', 'mkdir', 'touch', 'rsync', 'sed', 'chmod', 'chown', 'chattr', 'truncate', 'dd', 'rm', 'unlink']);
     for (const u of ctx.shellUnits) {
+      const vars = literalAssignments(u.text);
       for (const c of u.commands) {
-        const hitRedirect = c.redirects.find((r) => /^>/.test(r.op) && targetsSystemPath(r.target) && !/\/etc\/sudoers/.test(r.target));
+        if (u.origin === 'documentation' && /<[A-Za-z][\w-]*>/.test(c.text)) continue; // `<machine>` placeholders parse as redirects
+        const hitRedirect = c.redirects.find((r) => /^>/.test(r.op) && targetsSystemPath(expandWord(r.target, vars)) && !/\/etc\/sudoers/.test(r.target));
         if (hitRedirect) {
           out.push({ ...loc(u, c), message: `output is redirected to ${unquote(hitRedirect.target)}${docNote(u)}`, evidence: c.text });
           continue;
@@ -277,11 +344,12 @@ export const systemPathWrite: Rule = {
         if (!writers.has(c.name)) continue;
         if (c.name === 'sed' && !c.args.some((a) => /^-[a-zA-Z]*i/.test(a) || a === '--in-place')) continue;
         if (c.name === 'rm' || c.name === 'unlink') continue; // destructive rule covers these
-        const target = c.args.find((a) => targetsSystemPath(a));
-        if (target && /\/etc\/sudoers/.test(unquote(target))) continue;
+        const targetRaw = c.args.find((a) => targetsSystemPath(expandWord(a, vars)));
+        const target = targetRaw ? expandWord(targetRaw, vars) : undefined;
+        if (target && (/\/etc\/sudoers/.test(target) || POLKIT_PATHS.test(target))) continue; // OA-SH-006 covers policy paths
         if (target) {
-          const boot = /^\/boot\b/.test(unquote(target)) || /\/etc\/(?:sudoers|pam\.d|ssh\/sshd_config|ld\.so)/.test(unquote(target));
-          out.push({ ...loc(u, c), message: `${c.name} modifies ${unquote(target)}${docNote(u)}`, evidence: c.text, severity: boot ? 'high' : 'medium' });
+          const boot = /^\/boot\b/.test(target) || /\/etc\/(?:sudoers|pam\.d|ssh\/sshd_config|ld\.so)/.test(target);
+          out.push({ ...loc(u, c), message: `${c.name} modifies ${target}${c.privileged ? ' as root' : ''}${docNote(u)}`, evidence: c.text, severity: boot ? 'high' : 'medium' });
         }
       }
     }
@@ -291,19 +359,31 @@ export const systemPathWrite: Rule = {
 
 export const sudoersModification: Rule = {
   id: 'OA-SH-006',
-  title: 'sudoers policy is created or modified',
+  title: 'sudoers or polkit policy is created or modified',
   severity: 'high',
   confidence: 'high',
   kind: 'heuristic',
   capabilities: ['privilege-escalation', 'system-file-write'],
-  description: 'A sudoers rule, especially NOPASSWD, permanently changes who can become root and how. Broad rules (ALL, shells, interpreters, package managers) are equivalent to passwordless root.',
-  remediation: 'Avoid sudoers changes. If unavoidable, grant a single root-owned helper with a fixed argument surface, validate with visudo -c, and document removal.',
+  description: 'A sudoers rule, especially NOPASSWD, permanently changes who can become root and how. Broad rules (ALL, shells, interpreters, package managers) are equivalent to passwordless root. A polkit action or rule that returns YES lets the user run a root helper without authenticating.',
+  remediation: 'Avoid sudoers and polkit changes. If unavoidable, grant a single root-owned helper with a fixed argument surface, validate with visudo -c or pkcheck, and document removal.',
   evaluate(ctx) {
     const out: FindingDraft[] = [];
     for (const u of ctx.shellUnits) {
+      const vars = literalAssignments(u.text);
       for (const c of u.commands) {
         const text = c.pipeline ? c.pipeline.map((m) => m.text).join(' | ') : c.text;
-        const touches = /\/etc\/sudoers(?:\.d\/\S*)?/.test(c.text) || c.name === 'visudo' || c.redirects.some((r) => /\/etc\/sudoers/.test(r.target));
+        const expanded = [...c.args, ...c.redirects.map((r) => r.target)].map((w) => expandWord(w, vars)).join(' ');
+        const polkit = POLKIT_PATHS.test(expanded) || POLKIT_PATHS.test(c.text);
+        if (polkit && /^(?:cp|mv|install|tee|ln|cat|echo|printf|rm)$/.test(c.name) || (polkit && c.redirects.some((r) => /^>/.test(r.op)))) {
+          const rules = /rules\.d/.test(expanded + c.text);
+          out.push({ ...loc(u, c), message: `${rules ? 'polkit rule' : 'polkit action policy'} is installed under ${(expanded + ' ' + c.text).match(POLKIT_PATHS)?.[0] ?? 'polkit-1'}${c.privileged ? ' as root' : ''}${docNote(u)}`, evidence: c.text, severity: rules ? 'high' : 'medium' });
+          continue;
+        }
+        if (c.heredoc && /polkit\.addRule/.test(c.heredoc) && /polkit\.Result\.YES/.test(c.heredoc)) {
+          out.push({ ...loc(u, c), message: `polkit rule returns YES: the matched action runs as root without a password prompt${docNote(u)}`, evidence: `${c.text}\n${c.heredoc.slice(0, 400)}`, severity: 'high' });
+          continue;
+        }
+        const touches = /\/etc\/sudoers(?:\.d\/\S*)?/.test(c.text + ' ' + expanded) || c.name === 'visudo' || c.redirects.some((r) => /\/etc\/sudoers/.test(expandWord(r.target, vars)));
         if (!touches) continue;
         const corpus = text + '\n' + (c.heredoc ?? '');
         const nopasswd = /NOPASSWD/.test(corpus);
@@ -341,8 +421,19 @@ export const servicePersistence: Rule = {
           out.push({ ...loc(u, c), message: `${c.name} creates a transient or lingering unit${docNote(u)}`, evidence: c.text });
         } else if (c.name === 'crontab' || /@reboot|\/etc\/cron/.test(c.text)) {
           out.push({ ...loc(u, c), message: `cron persistence${docNote(u)}`, evidence: c.text });
-        } else if (['cp', 'mv', 'install', 'tee', 'ln', 'cat', 'echo', 'printf'].includes(c.name) && (c.args.some((x) => AUTOSTART_PATHS.test(unquote(x))) || c.redirects.some((r) => AUTOSTART_PATHS.test(unquote(r.target))))) {
-          out.push({ ...loc(u, c), message: `writes into an autostart or unit directory${docNote(u)}`, evidence: c.text });
+        } else {
+          // Only writes count: a redirect into the path, or the path as the destination (last operand) of a copy-like command.
+          const vars = literalAssignments(u.text);
+          const redirectHit = c.redirects.find((r) => /^>/.test(r.op) && AUTOSTART_PATHS.test(expandWord(r.target, vars)));
+          const operands = c.args.filter((x) => !x.startsWith('-'));
+          const dest = operands.length >= 2 ? expandWord(operands[operands.length - 1]!, vars) : '';
+          const destHit = ['cp', 'mv', 'install', 'ln', 'rsync'].includes(c.name) && AUTOSTART_PATHS.test(dest) && !/\.(?:bak|orig|old)\b/.test(dest);
+          const teeHit = c.name === 'tee' && operands.some((x) => AUTOSTART_PATHS.test(expandWord(x, vars)));
+          if (redirectHit || destHit || teeHit) {
+            const where = redirectHit ? expandWord(redirectHit.target, vars) : destHit ? dest : expandWord(operands.find((x) => AUTOSTART_PATHS.test(expandWord(x, vars)))!, vars);
+            const unitFile = /\.(?:service|timer)$/.test(where);
+            out.push({ ...loc(u, c), message: `${unitFile ? 'installs a systemd unit file' : 'writes into an autostart or unit directory'}: ${where}${docNote(u)}`, evidence: c.text, severity: /systemd\/user|\.config\/autostart|hypr/.test(where) && !c.privileged ? 'medium' : 'medium' });
+          }
         }
       }
     }
@@ -445,10 +536,15 @@ export const destructiveOperation: Rule = {
               const quoted = c.args.some((x) => x !== unquote(x) && unquote(x) === t);
               const guarded = /\$\{[A-Za-z_][A-Za-z0-9_]*:\?/.test(t);
               const fromMktemp = varName !== '' && new RegExp(`(?:^|\\n)\\s*(?:local\\s+|declare\\s+\\S*\\s+|readonly\\s+)?${varName}=["']?\\$\\(\\s*mktemp`).test(u.text);
-              const sev = guarded || fromMktemp ? 'low' : quoted ? (u.hasStrictMode ? 'low' : 'medium') : u.hasStrictMode ? 'medium' : 'high';
-              if (sev !== 'low') out.push({ ...loc(u, c), message: `rm -rf on a path built only from a variable (${t})${quoted ? '' : ', unquoted'}; an empty variable deletes the parent${fromMktemp ? '' : u.hasStrictMode ? ' (set -u is on, which aborts on unset but not on empty)' : ' and the script has no set -u'}${docNote(u)}`, evidence: c.text, severity: sev, confidence: 'medium' });
-            } else if (/\*/.test(stripped) && stripped.split('/').length <= 3) {
-              out.push({ ...loc(u, c), message: `rm -rf with a broad wildcard (${t})${docNote(u)}`, evidence: c.text, severity: 'medium' });
+              // `rm -rf "$var"` with an empty var removes nothing. The dangerous shapes are a slash around the
+              // variable ("$var/", "/$var", "$var/*"), where empty expands to "/", or an unquoted variable (globbing, splitting).
+              const slashShape = /\/\s*$|^\/\$|\/\*$/.test(t) || /^\/\$/.test(stripped);
+              if (guarded || fromMktemp) continue;
+              if (!slashShape && quoted) continue;
+              const sev = slashShape ? (u.hasStrictMode ? 'medium' : 'high') : u.hasStrictMode ? 'low' : 'medium';
+              out.push({ ...loc(u, c), message: `rm -rf on ${slashShape ? `a slash-adjacent variable path (${t}); if the variable is empty this becomes the parent or root directory` : `an unquoted variable (${t}); word splitting or globbing can widen the target`}${u.hasStrictMode ? ' (set -u is on, which aborts on unset but not on empty)' : ' and the script has no set -u'}${docNote(u)}`, evidence: c.text, severity: sev, confidence: 'medium' });
+            } else if ((stripped.split('/').pop() ?? '') === '*' && stripped.split('/').length <= 3) {
+              out.push({ ...loc(u, c), message: `rm -rf with a bare wildcard directly under a shallow directory (${t})${docNote(u)}`, evidence: c.text, severity: 'medium' });
             }
           }
         } else if (c.name === 'dd' && c.args.some((a) => /^of=\/dev\/(?:sd|nvme|vd|mmcblk|hd|disk)/.test(unquote(a)))) {
@@ -504,7 +600,8 @@ export const obfuscatedExecution: Rule = {
         }
       }
       const longB64 = /\b[A-Za-z0-9+/]{200,}={0,2}\b/.exec(u.text);
-      if (longB64 && /base64\s+(?:-d|--decode)/.test(u.text)) {
+      const isAsset = longB64 ? /^(?:iVBORw0KGgo|\/9j\/|R0lGOD|UklGR|PHN2Zy|UEsDB|JVBERi0|H4sI|Qk0|AAABAA|d09GRg|T2dnUw|SUQz|GkXfo)/.test(longB64[0]) : false;
+      if (longB64 && !isAsset && /base64\s+(?:-d|--decode)/.test(u.text)) {
         const line = u.text.slice(0, longB64.index).split('\n').length + u.lineOffset;
         out.push({ path: u.path, startLine: line, endLine: line, message: `long base64 blob with a decoder present in the same file${docNote(u)}`, evidence: `${longB64[0].slice(0, 60)}… (${longB64[0].length} chars)`, severity: 'medium', confidence: 'low' });
       }
@@ -683,7 +780,7 @@ export const unverifiedArtifactDownload: Rule = {
     for (const u of ctx.shellUnits) {
       if (u.origin !== 'script') continue;
       if (/\b(?:sha256sum|sha512sum|shasum|b2sum|gpg\s+--verify|gpgv|minisign|cosign|signify|md5sum)\b/.test(u.text)) continue;
-      const downloads = u.commands.filter((c) => isDownloader(c) && urlsIn(c).length > 0 && !c.pipeline);
+      const downloads = u.commands.filter((c) => isDownloader(c) && urlsIn(c).length > 0 && !c.pipeline && !/(?:-o|--output)\s+\/dev\/null|-s?S?\s*-o\s*\/dev\/null|>\s*\/dev\/null/.test(c.text) && !c.redirects.some((r) => /\/dev\/null/.test(r.target)));
       if (downloads.length === 0) continue;
       const first = downloads[0]!;
       out.push({ ...loc(u, first), message: `${downloads.length} download${downloads.length > 1 ? 's' : ''} with no verification step anywhere in the script`, evidence: downloads.slice(0, 3).map((d) => d.text).join('\n') });
@@ -705,6 +802,7 @@ export const missingStrictMode: Rule = {
     const out: FindingDraft[] = [];
     for (const u of ctx.shellUnits) {
       if (u.origin !== 'script' || u.hasStrictMode) continue;
+      if (ctx.sourcedScripts.has(u.path)) continue; // a sourced library inherits the caller's set -euo
       if (u.commands.length < 8) continue;
       if (!/(?:^|\/)[\w.-]*(?:install|setup|bootstrap|uninstall|provision|update)[\w.-]*$/i.test(u.path)) continue;
       if (/#!\s*\/bin\/(?:ba)?sh\s+-[a-z]*e/.test(u.text.split('\n')[0] ?? '')) continue;

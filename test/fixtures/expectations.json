@@ -165,5 +165,75 @@
       "OA-SH-001",
       "OA-SEC-001"
     ]
+  },
+  "labels-round1": {
+    "expected": [
+      "OA-SH-007@persist/install.sh:5",
+      "OA-SH-007@persist/install.sh:7",
+      "OA-BIN-001@persist/bin/foo:1",
+      "OA-SH-006@polkit/setup.sh:7",
+      "OA-SH-006@polkit/setup.sh:4",
+      "OA-SH-005@polkit/setup.sh:4",
+      "OA-SH-004@polkit/setup.sh:4",
+      "OA-SH-002@varexec/install.sh:8",
+      "OA-SH-010@rmsafe/lib.sh:8",
+      "OA-SH-010@rmsafe/lib.sh:9",
+      "OA-OMA-001@qmlcomment/manifest.json:1"
+    ],
+    "forbiddenAt": [
+      "OA-SH-007@persist/install.sh:8",
+      "OA-SH-007@persist/install.sh:9",
+      "OA-SH-007@persist/install.sh:10",
+      "OA-SH-010@rmsafe/lib.sh:4",
+      "OA-SH-010@rmsafe/lib.sh:5",
+      "OA-SH-004@rmsafe/lib.sh:11",
+      "OA-SH-003@rmsafe/lib.sh:12",
+      "OA-SH-017@rmsafe/lib.sh:13",
+      "OA-SH-018@rmsafe/lib.sh:1",
+      "OA-OMA-002@qmlcomment/W.qml:2",
+      "OA-OMA-002@qmlcomment/W.qml:3"
+    ],
+    "minSeverityAt": {
+      "OA-BIN-001@persist/bin/foo:1": "high",
+      "OA-SH-006@polkit/setup.sh:7": "high",
+      "OA-SH-010@rmsafe/lib.sh:8": "medium"
+    },
+    "maxSeverityAt": {},
+    "scopeAt": {},
+    "unknownMustNotMention": [
+      "build/check.py",
+      "build/run.cjs"
+    ],
+    "forbidden": [
+      "OA-SEC-001"
+    ],
+    "expectedMessages": [
+      "$elevate runs bash",
+      "polkit rule is installed under /etc/polkit-1/rules.d as root",
+      "is started by persist/deploy/foo.service:4"
+    ]
+  },
+  "scoped": {
+    "expected": [
+      "OA-SH-001@tests/test-x.sh:2",
+      "OA-SH-001@.github/workflows/ci.yml:7",
+      "OA-SH-001@install.sh:2",
+      "OA-SH-010@tests/test-x.sh:3"
+    ],
+    "minSeverityAt": {
+      "OA-SH-001@install.sh:2": "critical"
+    },
+    "maxSeverityAt": {
+      "OA-SH-001@tests/test-x.sh:2": "low",
+      "OA-SH-010@tests/test-x.sh:3": "low",
+      "OA-SH-001@.github/workflows/ci.yml:7": "high"
+    },
+    "scopeAt": {
+      "OA-SH-001@tests/test-x.sh:2": "test",
+      "OA-SH-001@.github/workflows/ci.yml:7": "ci"
+    },
+    "forbidden": [
+      "OA-SEC-001"
+    ]
   }
 }

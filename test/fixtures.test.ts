@@ -13,6 +13,9 @@ interface Expectation {
   minSeverityAt?: Record<string, Severity>;
   unknownCoverageMentions?: string[];
   notesMention?: string[];
+  maxSeverityAt?: Record<string, Severity>;
+  scopeAt?: Record<string, string>;
+  unknownMustNotMention?: string[];
 }
 
 const fixturesDir = path.resolve(__dirname, 'fixtures');
@@ -47,6 +50,15 @@ describe('labeled fixtures', async () => {
         expect(f && SEVERITY_ORDER[f.severity] >= SEVERITY_ORDER[sev], `${k} should be at least ${sev}`).toBe(true);
       }
       for (const m of exp.unknownCoverageMentions ?? []) expect(report.coverage.unknown.join('\n')).toContain(m);
+      for (const m of exp.unknownMustNotMention ?? []) expect(report.coverage.unknown.join('\n')).not.toContain(m);
+      for (const [k, sev] of Object.entries(exp.maxSeverityAt ?? {})) {
+        const f = report.findings.find((x) => `${x.ruleId}@${x.location?.path}:${x.location?.startLine}` === k);
+        expect(f && SEVERITY_ORDER[f.severity] <= SEVERITY_ORDER[sev], `${k} should be at most ${sev} (got ${f?.severity})`).toBe(true);
+      }
+      for (const [k, scope] of Object.entries(exp.scopeAt ?? {})) {
+        const f = report.findings.find((x) => `${x.ruleId}@${x.location?.path}:${x.location?.startLine}` === k);
+        expect(f?.scope, `${k} scope`).toBe(scope);
+      }
       for (const m of exp.notesMention ?? []) expect((report.coverage.notes ?? []).join('\n')).toContain(m);
     });
   }

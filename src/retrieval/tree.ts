@@ -150,6 +150,11 @@ export async function loadTree(root: string, limits: ScanLimits = DEFAULT_LIMITS
       if (st.size > limits.maxTextFileBytes) {
         sf.skipped = true;
         sf.skipReason = 'too-large';
+        const fmt = await probeExecutableHeader(full);
+        if (fmt) {
+          sf.skipReason = 'binary';
+          (sf as SourceFile & { binaryFormat?: string }).binaryFormat = fmt;
+        }
       } else if (BINARY_EXT.has(ext) && !force.has(rel) && !executable) {
         sf.skipped = true;
         sf.skipReason = 'binary';
@@ -174,6 +179,22 @@ export async function loadTree(root: string, limits: ScanLimits = DEFAULT_LIMITS
   };
   await walk(absRoot, 0);
   return { root: absRoot, files, omitted, truncated, totalBytes };
+}
+
+/** Read only the first bytes of a file to classify ELF/PE/Mach-O without loading it. */
+export async function probeExecutableHeader(full: string): Promise<'elf' | 'pe' | 'mach-o' | null> {
+  const { open } = await import('node:fs/promises');
+  let fh;
+  try {
+    fh = await open(full, 'r');
+    const buf = Buffer.alloc(8);
+    const { bytesRead } = await fh.read(buf, 0, 8, 0);
+    return executableFormat(buf.subarray(0, bytesRead));
+  } catch {
+    return null;
+  } finally {
+    await fh?.close();
+  }
 }
 
 /** Hard cap for a file read on demand because an installer invokes it. */

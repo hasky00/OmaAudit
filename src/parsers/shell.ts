@@ -103,13 +103,35 @@ export function unquote(word: string): string {
   return w;
 }
 
-function unwrap(words: string[]): { name: string; args: string[]; wrappers: string[]; privileged: boolean } {
+/** Names of variables whose assigned value mentions a privilege tool, e.g. `elevate=(sudo)` or `SUDO=pkexec`. */
+export function privilegeVariables(text: string): Set<string> {
+  const out = new Set<string>();
+  const re = /^\s*(?:export\s+|local\s+|declare\s+-?\w*\s+|readonly\s+)?([A-Za-z_][A-Za-z0-9_]*)\+?=\(?\s*["']?(?:\/usr\/bin\/)?(?:sudo|doas|pkexec|run0|su)\b/gm;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text))) out.add(m[1]!);
+  return out;
+}
+
+const VAR_WORD = /^"?\$\{?([A-Za-z_][A-Za-z0-9_]*)(?:\[@\]|\[\*\])?\}?"?$/;
+
+function unwrap(words: string[], privVars: Set<string> = new Set()): { name: string; args: string[]; wrappers: string[]; privileged: boolean } {
   const wrappers: string[] = [];
   let privileged = false;
   let rest = words.slice();
   for (let guard = 0; guard < 6 && rest.length > 0; guard++) {
     const head = unquote(rest[0]!);
     const base = head.split('/').pop() ?? head;
+    // "${elevate[@]}" cmd … or "$SUDO" cmd …: a wrapper held in a variable. Privileged when the variable is
+    // assigned a privilege tool anywhere in the unit, or when its name says so.
+    const vm = VAR_WORD.exec(rest[0]!);
+    if (vm && rest.length > 1) {
+      const v = vm[1]!;
+      wrappers.push(`$${v}`);
+      if (privVars.has(v) || /sudo|doas|pkexec|run0|elevat|escalat|priv|as_?root|root_?cmd/i.test(v)) privileged = true;
+      rest = rest.slice(1);
+      continue;
+    }
+    if (base === 'command' && rest.length > 1 && /^-[vV]$/.test(rest[1]!)) break; // `command -v sudo` looks a tool up; nothing runs
     if (PRIVILEGE_WRAPPERS.has(base)) {
       privileged = true;
       wrappers.push(base);
@@ -178,6 +200,7 @@ export async function parseShell(text: string, opts: ParseOptions): Promise<Shel
     return { path: opts.path, origin: opts.origin, context: opts.context, commands, text, lineOffset: offset, parseErrors: 1, hasStrictMode: false };
   }
   const root = tree.rootNode;
+  const privVars = privilegeVariables(text);
   const cmdNodes: Node[] = [];
   const errNodes: Node[] = [];
   collect(root, new Set(['command']), cmdNodes);
@@ -204,7 +227,7 @@ export async function parseShell(text: string, opts: ParseOptions): Promise<Shel
         else procs.push(textOf(f));
       }
     }
-    const { name, args, wrappers, privileged } = unwrap(words);
+    const { name, args, wrappers, privileged } = unwrap(words, privVars);
     const redirects: { op: string; target: string }[] = [];
     let heredoc: string | null = null;
     let cur: Node | null = node.parent;

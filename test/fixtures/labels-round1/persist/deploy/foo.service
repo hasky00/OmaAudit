@@ -1,0 +1,6 @@
+[Unit]
+Description=foo
+[Service]
+ExecStart=%h/.config/omarchy/plugins/x.foo/bin/foo
+[Install]
+WantedBy=default.target

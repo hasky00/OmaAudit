@@ -1,9 +1,10 @@
 import { createHash } from 'node:crypto';
-import type { Finding, Coverage, Capability } from '../report/schema.js';
+import { SEVERITY_ORDER, type Finding, type Coverage, type Capability, type Severity } from '../report/schema.js';
 import type { SourceTree } from '../retrieval/tree.js';
 import path from 'node:path';
 import { classify, isSetupNamed } from '../parsers/fileTypes.js';
 import { parseShell, unquote, type ShellCommand, type ShellUnit } from '../parsers/shell.js';
+import { literalAssignments } from './shellRules.js';
 import { readOnDemand } from '../retrieval/tree.js';
 import { extractEmbeddedShell } from '../parsers/embedded.js';
 import { redactText } from '../util/redact.js';
@@ -36,7 +37,8 @@ function manifestEntryPoints(files: ClassifiedFile[]): string[] {
   return out;
 }
 
-const SCRIPT_INTERPRETERS = new Set(['bash', 'sh', 'zsh', 'dash', 'ksh', 'source', '.', 'python', 'python3', 'perl', 'node', 'ruby']);
+const SCRIPT_INTERPRETERS = new Set(['bash', 'sh', 'zsh', 'dash', 'ksh', 'source', '.']);
+const SHELL_PARSEABLE = new Set(['shell', 'pkgbuild', 'pkgbuild-install', 'other-text']);
 const MAX_FOLLOW_ROUNDS = 6;
 
 /** Strip the usual "directory of this script" prefixes so a relative path remains. */
@@ -100,7 +102,7 @@ export async function buildContext(tree: SourceTree, opts: { targetName?: string
   const invokedScripts: { path: string; invokedBy: string }[] = [];
 
   const parseFile = async (cf: ClassifiedFile, context?: string): Promise<void> => {
-    if (cf.type === 'shell' || cf.type === 'pkgbuild' || cf.type === 'pkgbuild-install' || context) {
+    if (cf.type === 'shell' || cf.type === 'pkgbuild' || cf.type === 'pkgbuild-install' || (context && SHELL_PARSEABLE.has(cf.type))) {
       try {
         shellUnits.push(await parseShell(cf.text, { path: cf.file.path, origin: 'script', context: context ?? cf.type }));
       } catch (e) {
@@ -118,6 +120,36 @@ export async function buildContext(tree: SourceTree, opts: { targetName?: string
   };
 
   for (const cf of files) await parseFile(cf);
+
+  // `"${elevate[@]}" bash -c "$installs" …`: inline code held in a variable. Parse the variable's literal value
+  // as a nested unit so the commands inside are visible, carrying the outer command's privilege.
+  const expandInlineCode = async (): Promise<void> => {
+    const seen = new Set<string>();
+    for (const u of [...shellUnits]) {
+      const vars = literalAssignments(u.text);
+      for (const c of u.commands) {
+        if (!/^(?:bash|sh|zsh|dash|ksh)$/.test(c.name)) continue;
+        const ci = c.args.indexOf('-c');
+        if (ci < 0) continue;
+        const code = c.args[ci + 1];
+        const v = code ? /^"?\$\{?([A-Za-z_][A-Za-z0-9_]*)\}?"?$/.exec(code)?.[1] : undefined;
+        if (!v || !vars.has(v)) continue;
+        const key = `${u.path}:${c.startLine}:${v}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        const assignLine = (u.text.split('\n').findIndex((l) => new RegExp(`^\\s*(?:export\\s+|local\\s+)?${v}\\+?=`).test(l)) + 1) || c.startLine;
+        try {
+          const nested = await parseShell(vars.get(v)!, { path: u.path, origin: 'embedded', context: `${c.name} -c "$${v}" at line ${c.startLine}`, lineOffset: assignLine - 1 + u.lineOffset });
+          if (c.privileged) for (const nc of nested.commands) { nc.privileged = true; nc.wrappers = [...c.wrappers, ...nc.wrappers]; }
+          nested.hasStrictMode = u.hasStrictMode;
+          shellUnits.push(nested);
+        } catch (e) {
+          log.debug(`inline code parse failed in ${u.path}: ${e instanceof Error ? e.message : String(e)}`);
+        }
+      }
+    }
+  };
+  await expandInlineCode();
 
   // Follow scripts that scripts invoke, even inside excluded directories (build/, dist/, vendor/, target/, …),
   // so an installer cannot hide its payload behind a directory the walker skips by default.
@@ -157,7 +189,28 @@ export async function buildContext(tree: SourceTree, opts: { targetName?: string
     }
     if (!progressed) break;
   }
-  return { files, shellUnits, manifestEntryPoints: entryPoints, root: tree.root, targetName: opts.targetName, invokedScripts };
+  await expandInlineCode();
+
+  const sourcedScripts = new Set<string>();
+  for (const u of shellUnits) for (const c of u.commands) if (c.name === 'source' || c.name === '.') for (const rel of invokedScriptPaths(c)) for (const cand of candidatesFor(u.path, rel)) sourcedScripts.add(cand);
+  return { files, shellUnits, manifestEntryPoints: entryPoints, root: tree.root, targetName: opts.targetName, invokedScripts, sourcedScripts };
+}
+
+const TEST_PATH = /(?:^|\/)(?:tests?|__tests__|spec|specs|test-fixtures|fixtures|testdata|e2e)\//i;
+const CI_PATH = /^\.github\/|^\.gitlab-ci\.yml$|^\.circleci\/|^\.woodpecker\//;
+const FULL_SEVERITY_RULES = new Set(['OA-SEC-001', 'OA-CI-001', 'OA-BIN-001']);
+const ONE_DOWN: Record<Severity, Severity> = { critical: 'high', high: 'medium', medium: 'low', low: 'info', info: 'info' };
+
+/** Findings in test or CI code are accurate but do not run on a user's machine: tests are capped at low, CI drops one tier. */
+export function scopeFinding(f: Finding): Finding {
+  const p = f.location?.path ?? '';
+  if (!p || FULL_SEVERITY_RULES.has(f.ruleId)) return f;
+  if (TEST_PATH.test(p)) {
+    const sev: Severity = SEVERITY_ORDER[f.severity] > SEVERITY_ORDER['low'] ? 'low' : f.severity;
+    return { ...f, scope: 'test', severity: sev, message: `${f.message} (in test code: accurate, but not run on a user machine)` };
+  }
+  if (CI_PATH.test(p)) return { ...f, scope: 'ci', severity: ONE_DOWN[f.severity], message: `${f.message} (in CI configuration: runs in the project's pipeline, not on a user machine)` };
+  return f;
 }
 
 export function runRules(ctx: RuleContext, rules: Rule[] = ALL_RULES): Finding[] {
@@ -178,7 +231,7 @@ export function runRules(ctx: RuleContext, rules: Rule[] = ALL_RULES): Finding[]
       const id = createHash('sha256').update(`${rule.id}|${location?.path ?? ''}|${location?.startLine ?? 0}|${message}|${evidence}`).digest('hex').slice(0, 16);
       if (seen.has(id)) continue;
       seen.add(id);
-      findings.push({
+      findings.push(scopeFinding({
         id,
         ruleId: rule.id,
         title: rule.title,
@@ -193,7 +246,7 @@ export function runRules(ctx: RuleContext, rules: Rule[] = ALL_RULES): Finding[]
         scanner: { name: 'omaaudit-rules', version: `${VERSION}+rules.${RULESET_VERSION}`, source: 'builtin' },
         ...(d.externalId ? { externalId: d.externalId } : {}),
         ...(d.references ?? rule.references ? { references: d.references ?? rule.references ?? [] } : {}),
-      });
+      }));
     }
   }
   const order = { critical: 0, high: 1, medium: 2, low: 3, info: 4 } as const;

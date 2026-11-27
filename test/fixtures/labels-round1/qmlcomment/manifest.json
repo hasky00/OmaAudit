@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "acme.qc",
+  "name": "QC",
+  "version": "1",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "W.qml"
+  }
+}

@@ -21,6 +21,8 @@ export interface RuleContext {
   targetName?: string | undefined;
   /** Scripts that were read on demand because another script invokes them (e.g. inside build/ or vendor/). */
   invokedScripts: { path: string; invokedBy: string }[];
+  /** Scripts that another script sources (`source x` / `. x`); they inherit the caller's shell options. */
+  sourcedScripts: Set<string>;
 }
 
 export interface FindingDraft {
