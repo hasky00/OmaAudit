@@ -1,0 +1,2700 @@
+{
+ "schema": "omaaudit-corpus-labels/1",
+ "labeledAt": "2026-11-27",
+ "labeler": "AI reviewer (Claude), a session separate from the one that wrote the rules. Not yet spot-checked by the maintainer.",
+ "method": "Each repository was fetched at the pinned commit and read, never executed. Every finding location was checked against the source line, then judged by rule. Labels: correct = the claim is accurate and concerns code or instructions that run on a user machine; correct-nonruntime = accurate, but only in tests, CI or developer tooling; incorrect = the claim is factually wrong for that line; not-reviewed = not independently verifiable here.",
+ "limits": "One reviewer, one pass. Labels for the largest repository were assigned by pattern after reading every flagged line, not by 224 separate hand judgments. \"missed\" is a spot check from grepping for common patterns, not an exhaustive search, so no recall figure can be derived from it.",
+ "totals": {
+  "correct-nonruntime": 37,
+  "incorrect": 157,
+  "correct": 140,
+  "not-reviewed": 20
+ },
+ "byRule": {
+  "OA-MKT-001": {
+   "not-reviewed": 20
+  },
+  "OA-OMA-001": {
+   "correct": 26
+  },
+  "OA-OMA-002": {
+   "correct": 97,
+   "incorrect": 1
+  },
+  "OA-SH-002": {
+   "correct-nonruntime": 2
+  },
+  "OA-SH-003": {
+   "correct": 2,
+   "incorrect": 5
+  },
+  "OA-SH-004": {
+   "correct": 11,
+   "incorrect": 3,
+   "correct-nonruntime": 3
+  },
+  "OA-SH-005": {
+   "incorrect": 2
+  },
+  "OA-SH-007": {
+   "correct": 1,
+   "incorrect": 115,
+   "correct-nonruntime": 22
+  },
+  "OA-SH-008": {
+   "correct-nonruntime": 2
+  },
+  "OA-SH-009": {
+   "correct-nonruntime": 6,
+   "correct": 2
+  },
+  "OA-SH-010": {
+   "incorrect": 25
+  },
+  "OA-SH-011": {
+   "incorrect": 1
+  },
+  "OA-SH-013": {
+   "correct-nonruntime": 1
+  },
+  "OA-SH-015": {
+   "correct-nonruntime": 1
+  },
+  "OA-SH-017": {
+   "incorrect": 1
+  },
+  "OA-SH-018": {
+   "incorrect": 4
+  },
+  "OA-SYSD-001": {
+   "correct": 1
+  }
+ },
+ "missed": [
+  {
+   "plugin": "io.github.nulluserid.dishy",
+   "location": "backend/bin/starlinkd",
+   "what": "A 14 MB prebuilt ELF binary is committed to the repository and is run at every login by the systemd user unit that install.sh enables. The report verdict is \"minor-notes\" with highest severity low; the binary appears only in coverage.unknown as \"too large\". A shipped opaque executable wired to persistence should be a prominent finding."
+  },
+  {
+   "plugin": "io.github.nulluserid.dishy",
+   "location": "install.sh:26",
+   "what": "cp deploy/starlinkd.service into ~/.config/systemd/user is the actual unit install and is not flagged (only the enable on line 29 is)."
+  },
+  {
+   "plugin": "local.focus",
+   "location": "setup.sh:10-27",
+   "what": "Installs a root-owned helper to /usr/local/bin, a polkit policy under /usr/share/polkit-1/actions and, with --passwordless, a polkit rule in /etc/polkit-1/rules.d that lets the user run the root helper without a password. Elevation goes through \"${elevate[@]}\" (sudo or pkexec) running bash -c. No finding at all was produced for this file."
+  },
+  {
+   "plugin": "local.focus",
+   "location": "coverage",
+   "what": "tests/browser.test.cjs, dev/agent_smoke.py and browser/extension/background.js are reported as shell files with parse errors; they are JavaScript and Python."
+  },
+  {
+   "plugin": "07dcolem.appimages",
+   "location": "bin/omarchy-appimage-install:629,695,706",
+   "what": "The shipped installer downloads an AppImage with curl, marks it executable and runs it with --appimage-extract. Only the copy of this logic inside a markdown spec was flagged; the real script was not. (The real script does prompt before first execution, which would justify a lower severity, not silence.)"
+  }
+ ],
+ "plugins": {
+  "07dcolem.appimages": {
+   "repository": "https://github.com/07dcolem/omarchy-appimages",
+   "commit": "5c7f68f3a11cbcc22efc938b2b176e1a8a7d4e84",
+   "findings": {
+    "95dcddafcdefe29d": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "appimage-integration-spec.md:297",
+     "label": "correct-nonruntime",
+     "note": "pattern is real, but this is a script listing inside a design spec, not an instruction to users; the shipped script bin/omarchy-appimage-install has the same pattern and was not flagged (see missed)"
+    },
+    "0f1d7e1915d23d79": {
+     "ruleId": "OA-SH-002",
+     "severity": "medium",
+     "location": "appimage-integration-spec.md:284",
+     "label": "correct-nonruntime",
+     "note": "pattern is real, but this is a script listing inside a design spec, not an instruction to users; the shipped script bin/omarchy-appimage-install has the same pattern and was not flagged (see missed)"
+    },
+    "3fd13e304d77dd88": {
+     "ruleId": "OA-SH-011",
+     "severity": "medium",
+     "location": "tests/helpers/fixtures.bash:25",
+     "label": "incorrect",
+     "note": "the base64 blob is a PNG test icon (iVBORw0KGgo header), not code"
+    },
+    "aa32613789046ece": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Panel.qml:525",
+     "label": "correct",
+     "note": ""
+    },
+    "mkt-4cb2ef3bc8e2": {
+     "ruleId": "OA-MKT-001",
+     "severity": "info",
+     "location": null,
+     "label": "not-reviewed",
+     "note": "marketplace catalog status was not independently checked"
+    },
+    "ff31f71de4f0845c": {
+     "ruleId": "OA-SH-009",
+     "severity": "info",
+     "location": ".github/workflows/ci.yml:16",
+     "label": "correct-nonruntime",
+     "note": "CI/test only"
+    },
+    "2351991a40705f4e": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "id/kinds match manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "129b25ba53e24222": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "915c6974c995b872": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:652",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "0x4a756e65.omarchy-substack": {
+   "repository": "https://github.com/0x4A756E65/omarchy-substack-feed",
+   "commit": "392de02531f548bd30e90d0559924b36c6adbd61",
+   "findings": {
+    "408f9ea217267f5e": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Panel.qml:295",
+     "label": "correct",
+     "note": ""
+    },
+    "c2f4c85237f79e5c": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Service.qml:33",
+     "label": "correct",
+     "note": ""
+    },
+    "mkt-4cb2ef3bc8e2": {
+     "ruleId": "OA-MKT-001",
+     "severity": "info",
+     "location": null,
+     "label": "not-reviewed",
+     "note": "marketplace catalog status was not independently checked"
+    },
+    "10805757c2178d5e": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "id/kinds match manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "aa8efa8825cdfc30": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "id/kinds match manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "eb3a2767412ebe50": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "6134250a69662b26": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Service.qml:3",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "codytolene.b33k33p3r": {
+   "repository": "https://github.com/CodyTolene/B33K33P3R-Plugin",
+   "commit": "9a296dd9076eb3753f4ecb66c0bb884c432a577e",
+   "findings": {
+    "08e525cc7216ee50": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Hive.qml:164",
+     "label": "correct",
+     "note": ""
+    },
+    "mkt-4cb2ef3bc8e2": {
+     "ruleId": "OA-MKT-001",
+     "severity": "info",
+     "location": null,
+     "label": "not-reviewed",
+     "note": "marketplace catalog status was not independently checked"
+    },
+    "275d0163914eab59": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Hive.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "af8f5ece21df8706": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Hive.qml:145",
+     "label": "correct",
+     "note": ""
+    },
+    "5d9acebebbccb4a5": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "id/kinds match manifest.json; validity against Omarchy's own validator not independently checked"
+    }
+   }
+  },
+  "com.leafbox.neonbubble": {
+   "repository": "https://github.com/Snackwrap/omarchy-neonbubble",
+   "commit": "8e8d8515cf4f1f55fb66b9605771abcd744414fc",
+   "findings": {
+    "a71c650c10ed991d": {
+     "ruleId": "OA-SH-013",
+     "severity": "medium",
+     "location": "tools/check-score-io.sh:52",
+     "label": "correct-nonruntime",
+     "note": "chmod 777 on a temp dir in a developer test tool that checks world-writable dirs are refused"
+    },
+    "45efe3eb1f0f723e": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Panel.qml:240",
+     "label": "correct",
+     "note": ""
+    },
+    "88fe6e188c45974c": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Sfx.qml:76",
+     "label": "correct",
+     "note": ""
+    },
+    "mkt-4cb2ef3bc8e2": {
+     "ruleId": "OA-MKT-001",
+     "severity": "info",
+     "location": null,
+     "label": "not-reviewed",
+     "note": "marketplace catalog status was not independently checked"
+    },
+    "3f668d84833fdb30": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "id/kinds match manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "129b25ba53e24222": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "63637b5b887ea8b4": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:270",
+     "label": "correct",
+     "note": ""
+    },
+    "6169f1ef7a4aa3ac": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Sfx.qml:2",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "gdeyoung.powercore": {
+   "repository": "https://github.com/gdeyoung/omarchy-powercore",
+   "commit": "e60bb5c829cb0b548bceb512afb38b9b441be699",
+   "findings": {
+    "9f940ce9666b1b52": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Panel.qml:71",
+     "label": "correct",
+     "note": ""
+    },
+    "b35e3e66276482a3": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Service.qml:223",
+     "label": "correct",
+     "note": ""
+    },
+    "mkt-4cb2ef3bc8e2": {
+     "ruleId": "OA-MKT-001",
+     "severity": "info",
+     "location": null,
+     "label": "not-reviewed",
+     "note": "marketplace catalog status was not independently checked"
+    },
+    "b919edbd03241f9c": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "id/kinds match manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "aa8efa8825cdfc30": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "id/kinds match manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "129b25ba53e24222": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "6134250a69662b26": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Service.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "864d3d9a7864a1b3": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Service.qml:731",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "ggregoro.clipboard-cards": {
+   "repository": "https://github.com/ggregoro/Omarchy-Clipboard-Cards",
+   "commit": "31545354a080dde12a28e9f83f6525a64c745525",
+   "findings": {
+    "927a2d796f0f3c45": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Clipboard.qml:297",
+     "label": "correct",
+     "note": ""
+    },
+    "mkt-4cb2ef3bc8e2": {
+     "ruleId": "OA-MKT-001",
+     "severity": "info",
+     "location": null,
+     "label": "not-reviewed",
+     "note": "marketplace catalog status was not independently checked"
+    },
+    "1c1b598b8714c1be": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Clipboard.qml:10",
+     "label": "correct",
+     "note": ""
+    },
+    "e150b50d9ef2f697": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Clipboard.qml:283",
+     "label": "correct",
+     "note": ""
+    },
+    "ddb073e7909f6dff": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "id/kinds match manifest.json; validity against Omarchy's own validator not independently checked"
+    }
+   }
+  },
+  "io.github.brm-src.omawhy": {
+   "repository": "https://github.com/brm-src/omawhy",
+   "commit": "c765cf92531fb6d1f436bd143b33d918bd44a5e8",
+   "findings": {
+    "6172fcd2e0b78048": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "OmaWhy.qml:178",
+     "label": "correct",
+     "note": ""
+    },
+    "mkt-4cb2ef3bc8e2": {
+     "ruleId": "OA-MKT-001",
+     "severity": "info",
+     "location": null,
+     "label": "not-reviewed",
+     "note": "marketplace catalog status was not independently checked"
+    },
+    "b320cd5f5fc73b35": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "id/kinds match manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "aa8efa8825cdfc30": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "id/kinds match manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "0f7537c21cefdf46": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "OmaWhy.qml:2",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "io.github.camerontucker.anker-c200": {
+   "repository": "https://github.com/camerontucker/omarchy-anker-c200",
+   "commit": "7ff4f534295b53d5e487e0851a6fce64970a20ce",
+   "findings": {
+    "3ecf3a6e0fb9b446": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "BoundedProcess.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "09ecc9955a9f1dfc": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Panel.qml:420",
+     "label": "correct",
+     "note": ""
+    },
+    "mkt-4cb2ef3bc8e2": {
+     "ruleId": "OA-MKT-001",
+     "severity": "info",
+     "location": null,
+     "label": "not-reviewed",
+     "note": "marketplace catalog status was not independently checked"
+    },
+    "1d420c0404efed26": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "BoundedProcess.qml:2",
+     "label": "correct",
+     "note": ""
+    },
+    "bbdcbc14f6d024f4": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "id/kinds match manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "89ecc983a5327d7a": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:8",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "io.github.hvo.omarchy-unraid": {
+   "repository": "https://github.com/tuthan/omarchy-unraid",
+   "commit": "4e3acf7babf4d64e2ff2d85292ac6f4a2dc9d966",
+   "findings": {
+    "6cb9a299aca3df40": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "BarWidget.qml:101",
+     "label": "correct",
+     "note": ""
+    },
+    "17eaebc71768150f": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Panel.qml:292",
+     "label": "correct",
+     "note": ""
+    },
+    "mkt-4cb2ef3bc8e2": {
+     "ruleId": "OA-MKT-001",
+     "severity": "info",
+     "location": null,
+     "label": "not-reviewed",
+     "note": "marketplace catalog status was not independently checked"
+    },
+    "cba9ebb66417da68": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "BarWidget.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "94782dc82d537d3d": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "id/kinds match manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "129b25ba53e24222": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "5acec047505e4b3f": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:962",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "io.github.imr-git.divinum-officium": {
+   "repository": "https://github.com/imr-git/omarchy-divinum-officium",
+   "commit": "aad534dfe5b9133e5ddd20a073e2621bddd76386",
+   "findings": {
+    "be5a9a508448bc21": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Panel.qml:350",
+     "label": "correct",
+     "note": ""
+    },
+    "mkt-4cb2ef3bc8e2": {
+     "ruleId": "OA-MKT-001",
+     "severity": "info",
+     "location": null,
+     "label": "not-reviewed",
+     "note": "marketplace catalog status was not independently checked"
+    },
+    "160d098332d960e1": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "id/kinds match manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "129b25ba53e24222": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:3",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "io.github.nulluserid.dishy": {
+   "repository": "https://github.com/nulluserid/omarchy-dishy",
+   "commit": "5ec05cc02d4ca3cc5839bddd4605209022bfe7d3",
+   "findings": {
+    "6bd626d664454ea1": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "BarWidget.qml:145",
+     "label": "correct",
+     "note": ""
+    },
+    "fd874aeca0ed26b8": {
+     "ruleId": "OA-SH-007",
+     "severity": "low",
+     "location": "install.sh:29",
+     "label": "correct",
+     "note": "enables a systemd user unit that runs at login"
+    },
+    "e0648765b5429e89": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Panel.qml:825",
+     "label": "correct",
+     "note": ""
+    },
+    "mkt-4cb2ef3bc8e2": {
+     "ruleId": "OA-MKT-001",
+     "severity": "info",
+     "location": null,
+     "label": "not-reviewed",
+     "note": "marketplace catalog status was not independently checked"
+    },
+    "f91f154359de6787": {
+     "ruleId": "OA-SH-009",
+     "severity": "info",
+     "location": ".github/workflows/release-gate.yml:36",
+     "label": "correct-nonruntime",
+     "note": "CI/test only"
+    },
+    "57696022b1b0617e": {
+     "ruleId": "OA-SH-009",
+     "severity": "info",
+     "location": ".github/workflows/release-gate.yml:37",
+     "label": "correct-nonruntime",
+     "note": "CI/test only"
+    },
+    "dc28996a6f937f96": {
+     "ruleId": "OA-SH-009",
+     "severity": "info",
+     "location": ".github/workflows/release-gate.yml:38",
+     "label": "correct-nonruntime",
+     "note": "CI/test only"
+    },
+    "cba9ebb66417da68": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "BarWidget.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "45665d9ece80a1e0": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "BarWidget.qml:143",
+     "label": "correct",
+     "note": ""
+    },
+    "eaf045eb9b8d85af": {
+     "ruleId": "OA-SYSD-001",
+     "severity": "info",
+     "location": "deploy/starlinkd.service:1",
+     "label": "correct",
+     "note": ""
+    },
+    "105b7b3294dde8ea": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "id/kinds match manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "129b25ba53e24222": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "5f3ed49b3ef3dee8": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:830",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "io.github.pch.omafeed": {
+   "repository": "https://github.com/pch/omafeed-bar",
+   "commit": "5cd8b9496bc6b1e37a3f000e9c5e87a251d28cbb",
+   "findings": {
+    "13003d7d0fe6c3ed": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Widget.qml:180",
+     "label": "correct",
+     "note": ""
+    },
+    "mkt-4cb2ef3bc8e2": {
+     "ruleId": "OA-MKT-001",
+     "severity": "info",
+     "location": null,
+     "label": "not-reviewed",
+     "note": "marketplace catalog status was not independently checked"
+    },
+    "0767b82ba037d3c0": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "id/kinds match manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "fda012c785958037": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Widget.qml:4",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "io.github.tymurbogach.replicant": {
+   "repository": "https://github.com/tymurbogach/replicant",
+   "commit": "9e6af06e9da66aafeb21be24fc90f05ab87cb803",
+   "findings": {
+    "488f4711018cf51f": {
+     "ruleId": "OA-SH-010",
+     "severity": "medium",
+     "location": "bin/lib/crypto.sh:39",
+     "label": "incorrect",
+     "note": "rm -rf is present, but the stated risk is wrong: rm -rf \"\" with an empty variable removes nothing (only \"$var/\" style paths delete the parent); several sites are also explicitly guarded and the entry script sets -euo pipefail"
+    },
+    "e817c9b5781b3318": {
+     "ruleId": "OA-SH-004",
+     "severity": "medium",
+     "location": "bin/lib/crypto.sh:55",
+     "label": "correct",
+     "note": ""
+    },
+    "f218058888a77944": {
+     "ruleId": "OA-SH-003",
+     "severity": "medium",
+     "location": "bin/lib/repo.sh:277",
+     "label": "correct",
+     "note": "clones the user-supplied config repository; that is the tool's purpose"
+    },
+    "6e328b59c629db96": {
+     "ruleId": "OA-SH-010",
+     "severity": "medium",
+     "location": "bin/lib/scopes.sh:333",
+     "label": "incorrect",
+     "note": "rm -rf is present, but the stated risk is wrong: rm -rf \"\" with an empty variable removes nothing (only \"$var/\" style paths delete the parent); several sites are also explicitly guarded and the entry script sets -euo pipefail"
+    },
+    "c8d0e88ad89c87ab": {
+     "ruleId": "OA-SH-010",
+     "severity": "medium",
+     "location": "bin/lib/scopes.sh:337",
+     "label": "incorrect",
+     "note": "rm -rf is present, but the stated risk is wrong: rm -rf \"\" with an empty variable removes nothing (only \"$var/\" style paths delete the parent); several sites are also explicitly guarded and the entry script sets -euo pipefail"
+    },
+    "b1ea0511869b2806": {
+     "ruleId": "OA-SH-004",
+     "severity": "medium",
+     "location": "bin/lib/settings.sh:137",
+     "label": "correct",
+     "note": ""
+    },
+    "c61b26f353721f4e": {
+     "ruleId": "OA-SH-004",
+     "severity": "medium",
+     "location": "bin/lib/settings.sh:140",
+     "label": "correct",
+     "note": ""
+    },
+    "432bb9490c7eda1c": {
+     "ruleId": "OA-SH-010",
+     "severity": "medium",
+     "location": "bin/lib/track.sh:141",
+     "label": "incorrect",
+     "note": "rm -rf is present, but the stated risk is wrong: rm -rf \"\" with an empty variable removes nothing (only \"$var/\" style paths delete the parent); several sites are also explicitly guarded and the entry script sets -euo pipefail"
+    },
+    "63d447dcdecdf17d": {
+     "ruleId": "OA-SH-010",
+     "severity": "medium",
+     "location": "bin/lib/transaction.sh:115",
+     "label": "incorrect",
+     "note": "rm -rf is present, but the stated risk is wrong: rm -rf \"\" with an empty variable removes nothing (only \"$var/\" style paths delete the parent); several sites are also explicitly guarded and the entry script sets -euo pipefail"
+    },
+    "9564719e5339cd05": {
+     "ruleId": "OA-SH-010",
+     "severity": "medium",
+     "location": "bin/lib/transaction.sh:118",
+     "label": "incorrect",
+     "note": "rm -rf is present, but the stated risk is wrong: rm -rf \"\" with an empty variable removes nothing (only \"$var/\" style paths delete the parent); several sites are also explicitly guarded and the entry script sets -euo pipefail"
+    },
+    "b3d803c180bdb9b4": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "bin/replicant:967",
+     "label": "incorrect",
+     "note": "line only prints a message to stderr that mentions the path"
+    },
+    "8cdb44d879787990": {
+     "ruleId": "OA-SH-005",
+     "severity": "medium",
+     "location": "docs/SPEC.md:15",
+     "label": "incorrect",
+     "note": "angle-bracket placeholder in documentation (<machine>, <you>) parsed as a shell redirect"
+    },
+    "bc72902bb42fed0d": {
+     "ruleId": "OA-SH-005",
+     "severity": "medium",
+     "location": "README.md:223",
+     "label": "incorrect",
+     "note": "angle-bracket placeholder in documentation (<machine>, <you>) parsed as a shell redirect"
+    },
+    "ff98057a6bd808b8": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/panel-capture.sh:15",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "2c3b0990d1821b29": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/parity-dump.sh:26",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "91329ef77b73693e": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/parity-dump.sh:27",
+     "label": "correct-nonruntime",
+     "note": "writes a session-loaded config/plugin path, but inside a test against a fake $HOME"
+    },
+    "02275cfaf8020046": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/parity-dump.sh:28",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "744429e460d6e78a": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/parity-dump.sh:29",
+     "label": "correct-nonruntime",
+     "note": "writes a session-loaded config/plugin path, but inside a test against a fake $HOME"
+    },
+    "b739b88ec085dca9": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/parity-dump.sh:30",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "7638c502d7adfe37": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/parity-dump.sh:31",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "b325bea14f01ca58": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/parity-dump.sh:75",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "0d6db262c84d8856": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/parity-dump.sh:77",
+     "label": "correct-nonruntime",
+     "note": "writes a session-loaded config/plugin path, but inside a test against a fake $HOME"
+    },
+    "f6b98a41c042ec1b": {
+     "ruleId": "OA-SH-010",
+     "severity": "medium",
+     "location": "tests/test-bootstrap.sh:72",
+     "label": "incorrect",
+     "note": "rm -rf is present, but the stated risk is wrong: rm -rf \"\" with an empty variable removes nothing (only \"$var/\" style paths delete the parent); several sites are also explicitly guarded and the entry script sets -euo pipefail"
+    },
+    "0d3e09ffee9b338c": {
+     "ruleId": "OA-SH-010",
+     "severity": "medium",
+     "location": "tests/test-bootstrap.sh:89",
+     "label": "incorrect",
+     "note": "rm -rf is present, but the stated risk is wrong: rm -rf \"\" with an empty variable removes nothing (only \"$var/\" style paths delete the parent); several sites are also explicitly guarded and the entry script sets -euo pipefail"
+    },
+    "620e69c6da8afe4a": {
+     "ruleId": "OA-SH-010",
+     "severity": "medium",
+     "location": "tests/test-bootstrap.sh:101",
+     "label": "incorrect",
+     "note": "rm -rf is present, but the stated risk is wrong: rm -rf \"\" with an empty variable removes nothing (only \"$var/\" style paths delete the parent); several sites are also explicitly guarded and the entry script sets -euo pipefail"
+    },
+    "f853526177e4b4c8": {
+     "ruleId": "OA-SH-010",
+     "severity": "medium",
+     "location": "tests/test-bootstrap.sh:145",
+     "label": "incorrect",
+     "note": "rm -rf is present, but the stated risk is wrong: rm -rf \"\" with an empty variable removes nothing (only \"$var/\" style paths delete the parent); several sites are also explicitly guarded and the entry script sets -euo pipefail"
+    },
+    "8f28d194f8701e73": {
+     "ruleId": "OA-SH-010",
+     "severity": "medium",
+     "location": "tests/test-bootstrap.sh:155",
+     "label": "incorrect",
+     "note": "rm -rf is present, but the stated risk is wrong: rm -rf \"\" with an empty variable removes nothing (only \"$var/\" style paths delete the parent); several sites are also explicitly guarded and the entry script sets -euo pipefail"
+    },
+    "9c686cf0a83b9cec": {
+     "ruleId": "OA-SH-010",
+     "severity": "medium",
+     "location": "tests/test-bootstrap.sh:174",
+     "label": "incorrect",
+     "note": "rm -rf is present, but the stated risk is wrong: rm -rf \"\" with an empty variable removes nothing (only \"$var/\" style paths delete the parent); several sites are also explicitly guarded and the entry script sets -euo pipefail"
+    },
+    "fe0c39879f5a1a2b": {
+     "ruleId": "OA-SH-010",
+     "severity": "medium",
+     "location": "tests/test-bootstrap.sh:186",
+     "label": "incorrect",
+     "note": "rm -rf is present, but the stated risk is wrong: rm -rf \"\" with an empty variable removes nothing (only \"$var/\" style paths delete the parent); several sites are also explicitly guarded and the entry script sets -euo pipefail"
+    },
+    "40be7c1629cd584c": {
+     "ruleId": "OA-SH-010",
+     "severity": "medium",
+     "location": "tests/test-bootstrap.sh:191",
+     "label": "incorrect",
+     "note": "rm -rf is present, but the stated risk is wrong: rm -rf \"\" with an empty variable removes nothing (only \"$var/\" style paths delete the parent); several sites are also explicitly guarded and the entry script sets -euo pipefail"
+    },
+    "4d6fe63fdeca7333": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-bulk.sh:12",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "0910394d307476d6": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-bulk.sh:13",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "508b6d4a6393b344": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-bulk.sh:30",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "a77fe3bc101ad3ef": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-cli.sh:27",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "636ab983fca8073c": {
+     "ruleId": "OA-SH-008",
+     "severity": "medium",
+     "location": "tests/test-cli.sh:28",
+     "label": "correct-nonruntime",
+     "note": "writes .bashrc in a fake $HOME inside a test"
+    },
+    "fb87989b13db390c": {
+     "ruleId": "OA-SH-010",
+     "severity": "medium",
+     "location": "tests/test-cli.sh:122",
+     "label": "incorrect",
+     "note": "rm -rf is present, but the stated risk is wrong: rm -rf \"\" with an empty variable removes nothing (only \"$var/\" style paths delete the parent); several sites are also explicitly guarded and the entry script sets -euo pipefail"
+    },
+    "1f55e017f747ca0b": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-cli.sh:146",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "7b05f75f4574be8a": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-cli.sh:208",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "b4855c12e8ca3d93": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-cli.sh:217",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "ad6ce324bfc4d418": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-cli.sh:359",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "29ad79c6f6843f11": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-cli.sh:368",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "115e5ebeef2a8d68": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-cli.sh:393",
+     "label": "correct-nonruntime",
+     "note": "writes a session-loaded config/plugin path, but inside a test against a fake $HOME"
+    },
+    "1a5c58650e78f2ad": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-cli.sh:394",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "03e6ecea1ec391d1": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-cli.sh:501",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "21d0e3529cb5adb9": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-cli.sh:504",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "b894c8451eaf1765": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-cli.sh:543",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "22937332d63b3594": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-cli.sh:544",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "7d36e2c487ed542b": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-cli.sh:545",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "59d484eb97c0752b": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-cli.sh:546",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "43d10d9c69a40bac": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-cli.sh:547",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "2f461e2bbddb48f7": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-cli.sh:556",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "64a149d3ae2b48cf": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-cli.sh:567",
+     "label": "incorrect",
+     "note": "line only reads the path; nothing is written there"
+    },
+    "c8f5068319998ba0": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-cli.sh:577",
+     "label": "incorrect",
+     "note": "line only reads the path; nothing is written there"
+    },
+    "70eb9d0c5c9ae928": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-cli.sh:594",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "17cbc672986556e2": {
+     "ruleId": "OA-SH-003",
+     "severity": "medium",
+     "location": "tests/test-cli.sh:879",
+     "label": "incorrect",
+     "note": "clones a local temporary repository inside a test, not a remote"
+    },
+    "80fb5a1fd84a32a3": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:32",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "7e39c135fc656456": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:33",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "e88ded5041506c8d": {
+     "ruleId": "OA-SH-008",
+     "severity": "medium",
+     "location": "tests/test-core.sh:34",
+     "label": "correct-nonruntime",
+     "note": "writes .bashrc in a fake $HOME inside a test"
+    },
+    "131c97245088509f": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:38",
+     "label": "correct-nonruntime",
+     "note": "writes a session-loaded config/plugin path, but inside a test against a fake $HOME"
+    },
+    "ee56d7f450843615": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:42",
+     "label": "correct-nonruntime",
+     "note": "writes a session-loaded config/plugin path, but inside a test against a fake $HOME"
+    },
+    "f86052dd610aa472": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:81",
+     "label": "correct-nonruntime",
+     "note": "writes a session-loaded config/plugin path, but inside a test against a fake $HOME"
+    },
+    "a8efaa0b1726816c": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:91",
+     "label": "correct-nonruntime",
+     "note": "writes a session-loaded config/plugin path, but inside a test against a fake $HOME"
+    },
+    "98a98c65a0e1d20d": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:107",
+     "label": "correct-nonruntime",
+     "note": "writes a session-loaded config/plugin path, but inside a test against a fake $HOME"
+    },
+    "58561782ff1513e9": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:124",
+     "label": "correct-nonruntime",
+     "note": "writes a session-loaded config/plugin path, but inside a test against a fake $HOME"
+    },
+    "c265316dc4c01174": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:176",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "55521f77f2084e69": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:195",
+     "label": "incorrect",
+     "note": "line only reads the path; nothing is written there"
+    },
+    "e3f18aa00ad1a8c9": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:196",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "cb4ae0ab8ca75f28": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:201",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "5bd4e96df220de28": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:209",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "f5f4a66e6491407f": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:212",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "40303759e000232d": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:216",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "77b0cc88959ecb0a": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:220",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "225c8a29796ff0c7": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:374",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "4043ca28478e972d": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:478",
+     "label": "correct-nonruntime",
+     "note": "writes a session-loaded config/plugin path, but inside a test against a fake $HOME"
+    },
+    "cc7a7be041ccf573": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:486",
+     "label": "correct-nonruntime",
+     "note": "writes a session-loaded config/plugin path, but inside a test against a fake $HOME"
+    },
+    "5094e4d2e2ba272c": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:496",
+     "label": "correct-nonruntime",
+     "note": "writes a session-loaded config/plugin path, but inside a test against a fake $HOME"
+    },
+    "c399d0ac4d39f54d": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:500",
+     "label": "correct-nonruntime",
+     "note": "writes a session-loaded config/plugin path, but inside a test against a fake $HOME"
+    },
+    "43f04b4753dfeff4": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:506",
+     "label": "correct-nonruntime",
+     "note": "writes a session-loaded config/plugin path, but inside a test against a fake $HOME"
+    },
+    "502a38368194828b": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:620",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "69ecd508a78233a4": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:647",
+     "label": "incorrect",
+     "note": "line only reads the path; nothing is written there"
+    },
+    "fe16f12a503cac80": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:652",
+     "label": "incorrect",
+     "note": "line only reads the path; nothing is written there"
+    },
+    "772e7b440122afae": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:803",
+     "label": "incorrect",
+     "note": "line only reads the path; nothing is written there"
+    },
+    "b62f30d403e6f3f5": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:804",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "b228a3e5394a6a1e": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:811",
+     "label": "incorrect",
+     "note": "line only reads the path; nothing is written there"
+    },
+    "69f5e7652357865b": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:814",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "e102bba4e56c629a": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:826",
+     "label": "incorrect",
+     "note": "line only reads the path; nothing is written there"
+    },
+    "b550bac3c14ea94d": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:827",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "ba31e939e9131021": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:838",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "4619d6c7148c07ac": {
+     "ruleId": "OA-SH-010",
+     "severity": "medium",
+     "location": "tests/test-core.sh:1117",
+     "label": "incorrect",
+     "note": "rm -rf is present, but the stated risk is wrong: rm -rf \"\" with an empty variable removes nothing (only \"$var/\" style paths delete the parent); several sites are also explicitly guarded and the entry script sets -euo pipefail"
+    },
+    "ea9872606c2be8d5": {
+     "ruleId": "OA-SH-010",
+     "severity": "medium",
+     "location": "tests/test-core.sh:1251",
+     "label": "incorrect",
+     "note": "rm -rf is present, but the stated risk is wrong: rm -rf \"\" with an empty variable removes nothing (only \"$var/\" style paths delete the parent); several sites are also explicitly guarded and the entry script sets -euo pipefail"
+    },
+    "16f3bdf6a033dc23": {
+     "ruleId": "OA-SH-010",
+     "severity": "medium",
+     "location": "tests/test-core.sh:1251",
+     "label": "incorrect",
+     "note": "rm -rf is present, but the stated risk is wrong: rm -rf \"\" with an empty variable removes nothing (only \"$var/\" style paths delete the parent); several sites are also explicitly guarded and the entry script sets -euo pipefail"
+    },
+    "8e33960e50d87d2c": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:1341",
+     "label": "correct-nonruntime",
+     "note": "writes a session-loaded config/plugin path, but inside a test against a fake $HOME"
+    },
+    "9abf31ea3c45f78e": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:1348",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "664dcd9d318cf9b0": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:1350",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "faeef16ec8711ca7": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:1351",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "e4ed0223b33a2ac1": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:1352",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "4892ff4ae23e32fb": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:1372",
+     "label": "correct-nonruntime",
+     "note": "writes a session-loaded config/plugin path, but inside a test against a fake $HOME"
+    },
+    "b7b331bc4283c8f4": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:1382",
+     "label": "incorrect",
+     "note": "line only reads the path; nothing is written there"
+    },
+    "b198295bff59ed5e": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:1383",
+     "label": "incorrect",
+     "note": "line only reads the path; nothing is written there"
+    },
+    "dec3ee63c449f62d": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:1384",
+     "label": "correct-nonruntime",
+     "note": "writes a session-loaded config/plugin path, but inside a test against a fake $HOME"
+    },
+    "0122e55aa30a4606": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:1391",
+     "label": "correct-nonruntime",
+     "note": "writes a session-loaded config/plugin path, but inside a test against a fake $HOME"
+    },
+    "4f9fa90369e0932e": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:1392",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "3e743b6f6cbaaa02": {
+     "ruleId": "OA-SH-010",
+     "severity": "medium",
+     "location": "tests/test-core.sh:1456",
+     "label": "incorrect",
+     "note": "wildcard is anchored to a specific filename prefix, not broad; test code"
+    },
+    "67ef86c6545e6ca9": {
+     "ruleId": "OA-SH-010",
+     "severity": "medium",
+     "location": "tests/test-core.sh:1456",
+     "label": "incorrect",
+     "note": "wildcard is anchored to a specific filename prefix, not broad; test code"
+    },
+    "e83a31c395269393": {
+     "ruleId": "OA-SH-010",
+     "severity": "medium",
+     "location": "tests/test-core.sh:1522",
+     "label": "incorrect",
+     "note": "rm -rf is present, but the stated risk is wrong: rm -rf \"\" with an empty variable removes nothing (only \"$var/\" style paths delete the parent); several sites are also explicitly guarded and the entry script sets -euo pipefail"
+    },
+    "9659ff926feb1dad": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:1585",
+     "label": "incorrect",
+     "note": "line only reads the path; nothing is written there"
+    },
+    "c93192ea5a4b8d31": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:1586",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "a68c3820116b99fa": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:1591",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "53bc55b97014ef54": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:1595",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "5adff24ba8ade613": {
+     "ruleId": "OA-SH-003",
+     "severity": "medium",
+     "location": "tests/test-core.sh:1607",
+     "label": "incorrect",
+     "note": "clones a local temporary repository inside a test, not a remote"
+    },
+    "130a3e8e97e27d91": {
+     "ruleId": "OA-SH-003",
+     "severity": "medium",
+     "location": "tests/test-core.sh:1609",
+     "label": "incorrect",
+     "note": "clones a local temporary repository inside a test, not a remote"
+    },
+    "08094ec03f07fa83": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-core.sh:1640",
+     "label": "correct-nonruntime",
+     "note": "writes a session-loaded config/plugin path, but inside a test against a fake $HOME"
+    },
+    "e928bba39ddc49cc": {
+     "ruleId": "OA-SH-010",
+     "severity": "medium",
+     "location": "tests/test-core.sh:1642",
+     "label": "incorrect",
+     "note": "rm -rf is present, but the stated risk is wrong: rm -rf \"\" with an empty variable removes nothing (only \"$var/\" style paths delete the parent); several sites are also explicitly guarded and the entry script sets -euo pipefail"
+    },
+    "ad29a45c2d956bac": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-crypto.sh:33",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "e531c51d07122829": {
+     "ruleId": "OA-SH-003",
+     "severity": "medium",
+     "location": "tests/test-crypto.sh:211",
+     "label": "incorrect",
+     "note": "clones a local temporary repository inside a test, not a remote"
+    },
+    "ca49768bcce5aae6": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-interruptions.sh:17",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "d1952a3e25917072": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-interruptions.sh:65",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "7d608fa0fcef720c": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-interruptions.sh:78",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "36a3c7bd55070a7d": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-interruptions.sh:85",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "d308c269fdc5d6c8": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-interruptions.sh:94",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "b68f35794c3d5135": {
+     "ruleId": "OA-SH-003",
+     "severity": "medium",
+     "location": "tests/test-journey.sh:218",
+     "label": "incorrect",
+     "note": "clones a local temporary repository inside a test, not a remote"
+    },
+    "d799209e1475057a": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-leaks.sh:19",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "18451acc34d55456": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-progress.sh:28",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "d87bb4c4344bd711": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-progress.sh:36",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "f3af6f6661d4c906": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-progress.sh:51",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "85c985cd5820cfcb": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-progress.sh:57",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "ec1de99bd2d77019": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-progress.sh:74",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "389204232d7aff0f": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-progress.sh:83",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "2192e000fa68fe04": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-progress.sh:105",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "cb23a597acf1595f": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-restore-secrets.sh:33",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "1d3fb78abb503adc": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-save.sh:26",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "c0244b6369935210": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-save.sh:43",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "daae64546be46cf6": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-save.sh:55",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "469540337486e6e6": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-save.sh:62",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "5c552900be409e0f": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-save.sh:99",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "717dfab04949a729": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-save.sh:109",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "00eede82e07e7e57": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-save.sh:114",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "3ff70b22d1e32810": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-save.sh:134",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "1c9d15e8fc66501a": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-save.sh:142",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "268bd7445b51c858": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-save.sh:150",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "3ab993885fc30465": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-save.sh:174",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "3620305a77a33976": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-save.sh:187",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "7b186919f5dbf0ff": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-save.sh:205",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "a742c3eea0bf3423": {
+     "ruleId": "OA-SH-010",
+     "severity": "medium",
+     "location": "tests/test-save.sh:248",
+     "label": "incorrect",
+     "note": "rm -rf is present, but the stated risk is wrong: rm -rf \"\" with an empty variable removes nothing (only \"$var/\" style paths delete the parent); several sites are also explicitly guarded and the entry script sets -euo pipefail"
+    },
+    "0db1e2e6e2503c18": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-save.sh:254",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "2c17121ef3982e3a": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-save.sh:257",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "7acda1bd59e9606c": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-schema.sh:20",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "2740e9a7114212a6": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-settings-save.sh:14",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "3cc5caeb777a2a82": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-settings-save.sh:29",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "3c81b4c1f7c3bb58": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-settings-save.sh:49",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "3238e42dfcf42ea2": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-settings.sh:403",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "62ecfc5d4993681e": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-settings.sh:415",
+     "label": "correct-nonruntime",
+     "note": "writes a session-loaded config/plugin path, but inside a test against a fake $HOME"
+    },
+    "284470534c8f492d": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-settings.sh:416",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "962c0169958ce518": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-state.sh:20",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "bfbe9cb6a777b826": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-state.sh:24",
+     "label": "correct-nonruntime",
+     "note": "writes a session-loaded config/plugin path, but inside a test against a fake $HOME"
+    },
+    "fc6029c769430b9d": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-state.sh:104",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "5e2e301218d19d8f": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-state.sh:106",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "9ebed1de0c1992ae": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-state.sh:113",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "77dc9d72d60bbef0": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-state.sh:117",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "3bd47a00014fc655": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-state.sh:129",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "a6d43aca80b93704": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-state.sh:149",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "16c1ba58acb4b700": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-state.sh:152",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "a6d44ccaf831191d": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-state.sh:155",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "37488624728d9a37": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-state.sh:165",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "36b5d9ba01430cbe": {
+     "ruleId": "OA-SH-010",
+     "severity": "medium",
+     "location": "tests/test-state.sh:223",
+     "label": "incorrect",
+     "note": "rm -rf is present, but the stated risk is wrong: rm -rf \"\" with an empty variable removes nothing (only \"$var/\" style paths delete the parent); several sites are also explicitly guarded and the entry script sets -euo pipefail"
+    },
+    "8bbde8b9e5867640": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-state.sh:286",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "09ef67382a40bfe0": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-transaction.sh:25",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "4f84aed2391732de": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-transaction.sh:26",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "11119c97244f3ac5": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-transaction.sh:45",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "c9e802be490fbaf0": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-transaction.sh:101",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "eb8ab2fe1e74f98b": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-transaction.sh:105",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "574f82c4809d8e02": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-transaction.sh:119",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "9eb0922534869f60": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "tests/test-transaction.sh:175",
+     "label": "incorrect",
+     "note": "test fixture write to an ordinary config file (input/monitors/lock etc.) in a fake $HOME; no service, timer or autostart entry is installed"
+    },
+    "c04744af06e01703": {
+     "ruleId": "OA-SH-010",
+     "severity": "medium",
+     "location": "tests/test-transaction.sh:208",
+     "label": "incorrect",
+     "note": "rm -rf is present, but the stated risk is wrong: rm -rf \"\" with an empty variable removes nothing (only \"$var/\" style paths delete the parent); several sites are also explicitly guarded and the entry script sets -euo pipefail"
+    },
+    "11cf2742938d08c9": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "BarWidget.qml:165",
+     "label": "correct",
+     "note": ""
+    },
+    "b5409d72ca9a1808": {
+     "ruleId": "OA-SH-004",
+     "severity": "low",
+     "location": "bin/lib/crypto.sh:520",
+     "label": "incorrect",
+     "note": "`command -v sudo/pkexec` only checks the tool exists; nothing is run with privileges"
+    },
+    "551fe889e7e2a02b": {
+     "ruleId": "OA-SH-004",
+     "severity": "low",
+     "location": "bin/lib/crypto.sh:521",
+     "label": "correct",
+     "note": ""
+    },
+    "d3ec26714635b762": {
+     "ruleId": "OA-SH-004",
+     "severity": "low",
+     "location": "bin/lib/crypto.sh:523",
+     "label": "correct",
+     "note": ""
+    },
+    "185469ede30115a1": {
+     "ruleId": "OA-SH-004",
+     "severity": "low",
+     "location": "bin/lib/crypto.sh:524",
+     "label": "correct",
+     "note": ""
+    },
+    "011f53be851db246": {
+     "ruleId": "OA-SH-004",
+     "severity": "low",
+     "location": "bin/lib/settings.sh:136",
+     "label": "incorrect",
+     "note": "`command -v sudo/pkexec` only checks the tool exists; nothing is run with privileges"
+    },
+    "b1473b9feb587ad0": {
+     "ruleId": "OA-SH-004",
+     "severity": "low",
+     "location": "bin/lib/settings.sh:139",
+     "label": "correct",
+     "note": ""
+    },
+    "7e653fcd121104c3": {
+     "ruleId": "OA-SH-018",
+     "severity": "low",
+     "location": "bin/lib/update.sh:1",
+     "label": "incorrect",
+     "note": "sourced library; the entry script bin/replicant sets -euo pipefail"
+    },
+    "eaa17f1727d1d540": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "ReplicantController.qml:172",
+     "label": "correct",
+     "note": ""
+    },
+    "14b6a9ece942d447": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Service.qml:48",
+     "label": "correct",
+     "note": ""
+    },
+    "133cd09c3e349447": {
+     "ruleId": "OA-SH-017",
+     "severity": "low",
+     "location": "tests/gate.sh:96",
+     "label": "incorrect",
+     "note": "curl to example.com with output discarded, in a test asserting network is blocked; nothing is downloaded for use"
+    },
+    "09322b2e05d897d9": {
+     "ruleId": "OA-SH-004",
+     "severity": "low",
+     "location": "tests/gate.sh:98",
+     "label": "correct-nonruntime",
+     "note": "CI or test harness only"
+    },
+    "adffe5893bb37fd4": {
+     "ruleId": "OA-SH-018",
+     "severity": "low",
+     "location": "tests/test-bootstrap.sh:1",
+     "label": "incorrect",
+     "note": "file sets `set -uo pipefail` on line 6"
+    },
+    "9459206e7f4f1ddd": {
+     "ruleId": "OA-SH-004",
+     "severity": "low",
+     "location": "tests/test-cli.sh:46",
+     "label": "incorrect",
+     "note": "`command -v sudo/pkexec` only checks the tool exists; nothing is run with privileges"
+    },
+    "mkt-4cb2ef3bc8e2": {
+     "ruleId": "OA-MKT-001",
+     "severity": "info",
+     "location": null,
+     "label": "not-reviewed",
+     "note": "marketplace catalog status was not independently checked"
+    },
+    "cba9ebb66417da68": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "BarWidget.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "7aea7e1a7c2f78cb": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "components/AddFilesCard.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "353b119a41b90f31": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "components/BrowseRow.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "a74a94531b6d2adb": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "components/Card.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "a0768e97bac92eb9": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "components/CardHeader.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "b4c4ca3317a27cd9": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "components/CardLabel.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "1a095cf41d7c4336": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "components/CardNote.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "07ea21a79dcb23c8": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "components/CategoryCard.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "431b11d2569d7665": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "components/CommitRow.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "f6dd681c64e48a75": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "components/ConfigsTab.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "9d7726fa2691c3ba": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "components/FactRow.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "13ea9fe257b44eab": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "components/FileDetails.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "eac3e5cf932b42a2": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "components/FileRow.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "bb98fdb32fffa230": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "components/FilterBar.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "5aa747a52355be7e": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "components/ListRow.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "cb1080ed4b262232": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "components/MachinesCard.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "74f81b6a911be506": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "components/OverviewTab.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "93907e26c2cada13": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "components/PanelHeader.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "196b4fa01ff3785b": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "components/PluginsView.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "081357161299cacd": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "components/RestoreTab.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "c1adef0698c4509f": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "components/ResultBar.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "35ea70b3a7f3a81d": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "components/RowAction.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "521a51290511217a": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "components/SettingCard.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "85552cad52984475": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "components/SettingRow.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "e1906911ab9ef205": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "components/SettingsTab.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "3c0b2e693a569524": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "components/ShortcutsView.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "686719c818e4cc34": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "components/StatusCard.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "a823a6df149dd1a6": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "components/SuggestRow.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "11fe40b9623078da": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "components/TextViewer.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "d6c9e26b7af32139": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "id/kinds match manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "aa8efa8825cdfc30": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "id/kinds match manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "eb3a2767412ebe50": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "d638d3cc8a85392c": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "ReplicantController.qml:2",
+     "label": "correct",
+     "note": ""
+    },
+    "6134250a69662b26": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Service.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "2bce0ecc6d5c6514": {
+     "ruleId": "OA-SH-009",
+     "severity": "info",
+     "location": "tests/Dockerfile:19",
+     "label": "correct-nonruntime",
+     "note": "CI/test only"
+    }
+   }
+  },
+  "io.github.ukkit.universal-font-sizer": {
+   "repository": "https://github.com/ukkit/omarchy-universal-font-sizer",
+   "commit": "72e3abdc4e8a00e28fef789548d28094653617ca",
+   "findings": {
+    "f607d80535e29141": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "BarWidget.qml:132",
+     "label": "correct",
+     "note": ""
+    },
+    "mkt-4cb2ef3bc8e2": {
+     "ruleId": "OA-MKT-001",
+     "severity": "info",
+     "location": null,
+     "label": "not-reviewed",
+     "note": "marketplace catalog status was not independently checked"
+    },
+    "cba9ebb66417da68": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "BarWidget.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "4496069f16c68269": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "id/kinds match manifest.json; validity against Omarchy's own validator not independently checked"
+    }
+   }
+  },
+  "leonavas.dock": {
+   "repository": "https://github.com/leonavas/omarchy-dock",
+   "commit": "f66d715abb914fd5a90c251a9be73aed3d1cb44c",
+   "findings": {
+    "mkt-4cb2ef3bc8e2": {
+     "ruleId": "OA-MKT-001",
+     "severity": "info",
+     "location": null,
+     "label": "not-reviewed",
+     "note": "marketplace catalog status was not independently checked"
+    },
+    "5da0ede24f3bb13c": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Dock.qml:113",
+     "label": "incorrect",
+     "note": "match is inside a comment"
+    },
+    "c4db6157ab5ccfe0": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "id/kinds match manifest.json; validity against Omarchy's own validator not independently checked"
+    }
+   }
+  },
+  "local.focus": {
+   "repository": "https://github.com/BennetMC2/omarchy-focus",
+   "commit": "70f79ba28fb0b5f82b3a9b8800e21a6629ce6c2e",
+   "findings": {
+    "ec099103b0b6ac14": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "README.md:17",
+     "label": "incorrect",
+     "note": "ln target is ~/.local/bin, which is not an autostart or unit directory"
+    },
+    "3d6f8de2085f1478": {
+     "ruleId": "OA-SH-004",
+     "severity": "low",
+     "location": ".github/workflows/test.yml:21",
+     "label": "correct-nonruntime",
+     "note": "CI or test harness only"
+    },
+    "f648515cf01b7d90": {
+     "ruleId": "OA-SH-004",
+     "severity": "low",
+     "location": ".github/workflows/test.yml:25",
+     "label": "correct-nonruntime",
+     "note": "CI or test harness only"
+    },
+    "e762007db086f577": {
+     "ruleId": "OA-SH-015",
+     "severity": "low",
+     "location": ".github/workflows/test.yml:25",
+     "label": "correct-nonruntime",
+     "note": "sysctl on a CI runner"
+    },
+    "15c7743af5651085": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Focus.qml:60",
+     "label": "correct",
+     "note": ""
+    },
+    "92ae521650fea046": {
+     "ruleId": "OA-SH-004",
+     "severity": "low",
+     "location": "README.md:96",
+     "label": "correct",
+     "note": ""
+    },
+    "4acf8856a5a60b47": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Service.qml:145",
+     "label": "correct",
+     "note": ""
+    },
+    "mkt-4cb2ef3bc8e2": {
+     "ruleId": "OA-MKT-001",
+     "severity": "info",
+     "location": null,
+     "label": "not-reviewed",
+     "note": "marketplace catalog status was not independently checked"
+    },
+    "fb78907bf7485d04": {
+     "ruleId": "OA-SH-009",
+     "severity": "info",
+     "location": ".github/workflows/test.yml:21",
+     "label": "correct-nonruntime",
+     "note": "CI/test only"
+    },
+    "8ce1cb7d7195a8d2": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Focus.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "b00aad5cc5d758c0": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "id/kinds match manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "aa8efa8825cdfc30": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "id/kinds match manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "6134250a69662b26": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Service.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "978c0d05f1f91106": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Service.qml:153",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "omarchycube.controls": {
+   "repository": "https://github.com/sterlingmchase/omarchy-cube",
+   "commit": "669ef03ebf91a06281faff97bca74b43211ae00f",
+   "findings": {
+    "44bdde9255c1327d": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "shell/Cube.qml:76",
+     "label": "correct",
+     "note": ""
+    },
+    "e266291ed5bcc644": {
+     "ruleId": "OA-SH-018",
+     "severity": "low",
+     "location": "tests/install-gui.py:1",
+     "label": "incorrect",
+     "note": "Python file; shell strict-mode rule does not apply"
+    },
+    "mkt-4cb2ef3bc8e2": {
+     "ruleId": "OA-MKT-001",
+     "severity": "info",
+     "location": null,
+     "label": "not-reviewed",
+     "note": "marketplace catalog status was not independently checked"
+    },
+    "1fc6366b626c5e55": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "id/kinds match manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "dea1fce652f5aac4": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "shell/Cube.qml:4",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "omarkyy.tablet": {
+   "repository": "https://github.com/alertxsto/omarchy-touch-mode",
+   "commit": "69639aa15b14407debeb51afcbd839033cafbb1e",
+   "findings": {
+    "a874fc856e1191cc": {
+     "ruleId": "OA-SH-004",
+     "severity": "low",
+     "location": "docs/install.md:18",
+     "label": "correct",
+     "note": ""
+    },
+    "df514a0bde19509d": {
+     "ruleId": "OA-SH-004",
+     "severity": "low",
+     "location": "docs/troubleshooting.md:157",
+     "label": "correct",
+     "note": ""
+    },
+    "012ad2a1c06acec7": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Keyboard.qml:184",
+     "label": "correct",
+     "note": ""
+    },
+    "507430880c31c50a": {
+     "ruleId": "OA-SH-004",
+     "severity": "low",
+     "location": "README.md:36",
+     "label": "correct",
+     "note": ""
+    },
+    "c18bcdb4e4b1b327": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Service.qml:60",
+     "label": "correct",
+     "note": ""
+    },
+    "7427d6a9814273dc": {
+     "ruleId": "OA-SH-018",
+     "severity": "low",
+     "location": "setup.py:1",
+     "label": "incorrect",
+     "note": "Python file; shell strict-mode rule does not apply"
+    },
+    "mkt-4cb2ef3bc8e2": {
+     "ruleId": "OA-MKT-001",
+     "severity": "info",
+     "location": null,
+     "label": "not-reviewed",
+     "note": "marketplace catalog status was not independently checked"
+    },
+    "c82d27c77d034e5b": {
+     "ruleId": "OA-SH-009",
+     "severity": "info",
+     "location": "docs/install.md:18",
+     "label": "correct",
+     "note": ""
+    },
+    "5905892ad003be49": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Keyboard.qml:2",
+     "label": "correct",
+     "note": ""
+    },
+    "a38231fc7bb37d05": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "id/kinds match manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "aa8efa8825cdfc30": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "id/kinds match manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "6139a3a240c5a6ef": {
+     "ruleId": "OA-SH-009",
+     "severity": "info",
+     "location": "README.md:36",
+     "label": "correct",
+     "note": ""
+    },
+    "6134250a69662b26": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Service.qml:3",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "skajvitler.steam-trends": {
+   "repository": "https://github.com/skajvitler/omarchy-steam-trends",
+   "commit": "dfcf708ffd155b1fa26c1b1e5ac6c0118341075e",
+   "findings": {
+    "b7c3dbef431affe7": {
+     "ruleId": "OA-SH-003",
+     "severity": "medium",
+     "location": "README.md:30",
+     "label": "correct",
+     "note": ""
+    },
+    "aaee8ed0c37564bf": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Panel.qml:409",
+     "label": "correct",
+     "note": ""
+    },
+    "mkt-4cb2ef3bc8e2": {
+     "ruleId": "OA-MKT-001",
+     "severity": "info",
+     "location": null,
+     "label": "not-reviewed",
+     "note": "marketplace catalog status was not independently checked"
+    },
+    "f7799160a31dde48": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "id/kinds match manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "129b25ba53e24222": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:3",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "skeemo.berita": {
+   "repository": "https://github.com/sickelmo/omarchy-berita",
+   "commit": "e6c30f552708d0d06640b4a0fbf423b72fc17471",
+   "findings": {
+    "0a1f23d61dece13c": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "BarWidget.qml:31",
+     "label": "correct",
+     "note": ""
+    },
+    "mkt-4cb2ef3bc8e2": {
+     "ruleId": "OA-MKT-001",
+     "severity": "info",
+     "location": null,
+     "label": "not-reviewed",
+     "note": "marketplace catalog status was not independently checked"
+    },
+    "07426c545966be3e": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "BarWidget.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "ba63abcf4d060c22": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "BarWidget.qml:29",
+     "label": "correct",
+     "note": ""
+    },
+    "c32a863154aa6c2d": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "id/kinds match manifest.json; validity against Omarchy's own validator not independently checked"
+    }
+   }
+  }
+ }
+}
