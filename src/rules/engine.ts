@@ -6,7 +6,7 @@ import { classify, isSetupNamed } from '../parsers/fileTypes.js';
 import { parseShell, unquote, type ShellCommand, type ShellUnit } from '../parsers/shell.js';
 import { literalAssignments } from './shellRules.js';
 import { readOnDemand } from '../retrieval/tree.js';
-import { extractEmbeddedShell } from '../parsers/embedded.js';
+import { extractEmbeddedShell, isDesignDoc } from '../parsers/embedded.js';
 import { redactText } from '../util/redact.js';
 import type { ClassifiedFile, Rule, RuleContext } from './types.js';
 import { SHELL_RULES } from './shellRules.js';
@@ -119,6 +119,7 @@ export async function buildContext(tree: SourceTree, opts: { targetName?: string
       }
       return;
     }
+    if (cf.type === 'markdown' && isDesignDoc(cf.file.path)) return; // a plan or design note, not instructions; listed under coverage.unknown
     for (const snip of extractEmbeddedShell(cf)) {
       try {
         shellUnits.push(await parseShell(snip.text, { path: snip.path, origin: snip.origin, context: snip.context, lineOffset: snip.line - 1 }));
@@ -362,6 +363,8 @@ export function coverageOf(tree: SourceTree, ctx: RuleContext): Omit<Coverage, '
     const shown = unreadScripts.slice(0, 12).map((f) => `${f.file.path} (${f.file.skipReason === 'excluded-dir' ? 'excluded directory' : 'too large'})`);
     unknown.push(`${unreadScripts.length} shell or executable file(s) were listed but NOT read: ${shown.join('; ')}${unreadScripts.length > 12 ? '; …' : ''}. Nothing in this report covers them; inspect them manually or raise --max-mb.`);
   }
+  const designDocs = ctx.files.filter((f) => f.type === 'markdown' && isDesignDoc(f.file.path));
+  if (designDocs.length) unknown.push(`${designDocs.length} markdown file(s) under docs/ look like planning or design material, not user instructions; their code blocks were not analysed: ${designDocs.slice(0, 6).map((f) => f.file.path).join(', ')}${designDocs.length > 6 ? ', …' : ''}`);
   if (tree.truncated) unknown.push('the file tree was truncated by resource limits; results are incomplete');
   const notes: string[] = [];
   const repaired = ctx.shellUnits.filter((u) => u.parseRepairs > 0);
