@@ -1,0 +1,621 @@
+{
+  "description": "Raw OmaAudit outputs over 20 marketplace repositories at their marketplace-validated commits. Nothing here has been reviewed or labeled as correct or incorrect.",
+  "generatedAt": "2026-11-27T09:29:17.306Z",
+  "tool": {
+    "name": "omaaudit",
+    "version": "0.1.0",
+    "sourceCommit": "d6284aba71b5e10c5cc2647b838ece45d3cbee85"
+  },
+  "catalogCommit": "4cb2ef3bc8e2cf566180bc9cdf2b56168a36f218",
+  "selectionMethod": "From the marketplace catalog index at catalogCommit: entries with a GitHub repo and a 40-hex listingValidatedCommit, excluding built-ins, split by verificationStatus (verified vs unverified), each group sorted by plugin id, then 10 picked per group at evenly spaced indices (floor(i*n/10)). No manual choice.",
+  "repositories": [
+    {
+      "id": "07dcolem.appimages",
+      "repo": "https://github.com/07dcolem/omarchy-appimages",
+      "commit": "5c7f68f3a11cbcc22efc938b2b176e1a8a7d4e84",
+      "verificationStatus": "unverified",
+      "matchesValidatedSnapshot": true,
+      "status": "ok",
+      "verdict": "high-risk-indicators",
+      "counts": {
+        "critical": 0,
+        "high": 1,
+        "medium": 2,
+        "low": 1,
+        "info": 5
+      },
+      "capabilities": [
+        "network-download",
+        "obfuscation",
+        "omarchy-plugin",
+        "package-management",
+        "remote-code-execution"
+      ],
+      "filesInspected": 51,
+      "filesListed": 53,
+      "truncated": false,
+      "scanners": [
+        "omaaudit-rules:ran",
+        "shellcheck:unavailable",
+        "osv-scanner:unavailable"
+      ],
+      "durationMs": 2861,
+      "report": "reports/07dcolem.appimages.json"
+    },
+    {
+      "id": "com.leafbox.neonbubble",
+      "repo": "https://github.com/Snackwrap/omarchy-neonbubble",
+      "commit": "8e8d8515cf4f1f55fb66b9605771abcd744414fc",
+      "verificationStatus": "unverified",
+      "matchesValidatedSnapshot": true,
+      "status": "ok",
+      "verdict": "review-recommended",
+      "counts": {
+        "critical": 0,
+        "high": 0,
+        "medium": 1,
+        "low": 2,
+        "info": 5
+      },
+      "capabilities": [
+        "omarchy-plugin",
+        "security-downgrade"
+      ],
+      "filesInspected": 23,
+      "filesListed": 42,
+      "truncated": false,
+      "scanners": [
+        "omaaudit-rules:ran",
+        "shellcheck:unavailable",
+        "osv-scanner:unavailable"
+      ],
+      "durationMs": 2703,
+      "report": "reports/com.leafbox.neonbubble.json"
+    },
+    {
+      "id": "gdeyoung.powercore",
+      "repo": "https://github.com/gdeyoung/omarchy-powercore",
+      "commit": "e60bb5c829cb0b548bceb512afb38b9b441be699",
+      "verificationStatus": "unverified",
+      "matchesValidatedSnapshot": true,
+      "status": "ok",
+      "verdict": "minor-notes",
+      "counts": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 2,
+        "info": 6
+      },
+      "capabilities": [
+        "omarchy-plugin",
+        "persistence"
+      ],
+      "filesInspected": 13,
+      "filesListed": 16,
+      "truncated": false,
+      "scanners": [
+        "omaaudit-rules:ran",
+        "shellcheck:unavailable",
+        "osv-scanner:unavailable"
+      ],
+      "durationMs": 2981,
+      "report": "reports/gdeyoung.powercore.json"
+    },
+    {
+      "id": "io.github.brm-src.omawhy",
+      "repo": "https://github.com/brm-src/omawhy",
+      "commit": "c765cf92531fb6d1f436bd143b33d918bd44a5e8",
+      "verificationStatus": "unverified",
+      "matchesValidatedSnapshot": true,
+      "status": "ok",
+      "verdict": "minor-notes",
+      "counts": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 1,
+        "info": 4
+      },
+      "capabilities": [
+        "omarchy-plugin",
+        "persistence"
+      ],
+      "filesInspected": 8,
+      "filesListed": 10,
+      "truncated": false,
+      "scanners": [
+        "omaaudit-rules:ran",
+        "shellcheck:unavailable",
+        "osv-scanner:unavailable"
+      ],
+      "durationMs": 2701,
+      "report": "reports/io.github.brm-src.omawhy.json"
+    },
+    {
+      "id": "io.github.hvo.omarchy-unraid",
+      "repo": "https://github.com/tuthan/omarchy-unraid",
+      "commit": "4e3acf7babf4d64e2ff2d85292ac6f4a2dc9d966",
+      "verificationStatus": "unverified",
+      "matchesValidatedSnapshot": true,
+      "status": "ok",
+      "verdict": "minor-notes",
+      "counts": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 2,
+        "info": 5
+      },
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "filesInspected": 6,
+      "filesListed": 9,
+      "truncated": false,
+      "scanners": [
+        "omaaudit-rules:ran",
+        "shellcheck:unavailable",
+        "osv-scanner:unavailable"
+      ],
+      "durationMs": 2687,
+      "report": "reports/io.github.hvo.omarchy-unraid.json"
+    },
+    {
+      "id": "io.github.nulluserid.dishy",
+      "repo": "https://github.com/nulluserid/omarchy-dishy",
+      "commit": "5ec05cc02d4ca3cc5839bddd4605209022bfe7d3",
+      "verificationStatus": "unverified",
+      "matchesValidatedSnapshot": true,
+      "status": "ok",
+      "verdict": "minor-notes",
+      "counts": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 3,
+        "info": 10
+      },
+      "capabilities": [
+        "omarchy-plugin",
+        "package-management",
+        "persistence"
+      ],
+      "filesInspected": 43,
+      "filesListed": 46,
+      "truncated": false,
+      "scanners": [
+        "omaaudit-rules:ran",
+        "shellcheck:unavailable",
+        "osv-scanner:unavailable"
+      ],
+      "durationMs": 4459,
+      "report": "reports/io.github.nulluserid.dishy.json"
+    },
+    {
+      "id": "io.github.tymurbogach.replicant",
+      "repo": "https://github.com/tymurbogach/replicant",
+      "commit": "9e6af06e9da66aafeb21be24fc90f05ab87cb803",
+      "verificationStatus": "unverified",
+      "matchesValidatedSnapshot": true,
+      "status": "ok",
+      "verdict": "review-recommended",
+      "counts": {
+        "critical": 0,
+        "high": 0,
+        "medium": 174,
+        "low": 14,
+        "info": 36
+      },
+      "capabilities": [
+        "build-from-source",
+        "destructive-operation",
+        "network-download",
+        "omarchy-plugin",
+        "package-management",
+        "persistence",
+        "privilege-escalation",
+        "shell-config-change",
+        "system-file-write"
+      ],
+      "filesInspected": 150,
+      "filesListed": 162,
+      "truncated": false,
+      "scanners": [
+        "omaaudit-rules:ran",
+        "shellcheck:unavailable",
+        "osv-scanner:unavailable"
+      ],
+      "durationMs": 3207,
+      "report": "reports/io.github.tymurbogach.replicant.json"
+    },
+    {
+      "id": "local.focus",
+      "repo": "https://github.com/BennetMC2/omarchy-focus",
+      "commit": "70f79ba28fb0b5f82b3a9b8800e21a6629ce6c2e",
+      "verificationStatus": "unverified",
+      "matchesValidatedSnapshot": true,
+      "status": "ok",
+      "verdict": "review-recommended",
+      "counts": {
+        "critical": 0,
+        "high": 0,
+        "medium": 1,
+        "low": 6,
+        "info": 7
+      },
+      "capabilities": [
+        "kernel-or-driver",
+        "omarchy-plugin",
+        "package-management",
+        "persistence",
+        "privilege-escalation",
+        "system-file-write"
+      ],
+      "filesInspected": 47,
+      "filesListed": 50,
+      "truncated": false,
+      "scanners": [
+        "omaaudit-rules:ran",
+        "shellcheck:unavailable",
+        "osv-scanner:unavailable"
+      ],
+      "durationMs": 2881,
+      "report": "reports/local.focus.json"
+    },
+    {
+      "id": "omarchycube.controls",
+      "repo": "https://github.com/sterlingmchase/omarchy-cube",
+      "commit": "669ef03ebf91a06281faff97bca74b43211ae00f",
+      "verificationStatus": "unverified",
+      "matchesValidatedSnapshot": true,
+      "status": "ok",
+      "verdict": "minor-notes",
+      "counts": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 2,
+        "info": 3
+      },
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "filesInspected": 33,
+      "filesListed": 33,
+      "truncated": false,
+      "scanners": [
+        "omaaudit-rules:ran",
+        "shellcheck:unavailable",
+        "osv-scanner:unavailable"
+      ],
+      "durationMs": 2799,
+      "report": "reports/omarchycube.controls.json"
+    },
+    {
+      "id": "skeemo.berita",
+      "repo": "https://github.com/sickelmo/omarchy-berita",
+      "commit": "e6c30f552708d0d06640b4a0fbf423b72fc17471",
+      "verificationStatus": "unverified",
+      "matchesValidatedSnapshot": true,
+      "status": "ok",
+      "verdict": "minor-notes",
+      "counts": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 1,
+        "info": 4
+      },
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "filesInspected": 9,
+      "filesListed": 9,
+      "truncated": false,
+      "scanners": [
+        "omaaudit-rules:ran",
+        "shellcheck:unavailable",
+        "osv-scanner:unavailable"
+      ],
+      "durationMs": 2723,
+      "report": "reports/skeemo.berita.json"
+    },
+    {
+      "id": "0x4a756e65.omarchy-substack",
+      "repo": "https://github.com/0x4A756E65/omarchy-substack-feed",
+      "commit": "392de02531f548bd30e90d0559924b36c6adbd61",
+      "verificationStatus": "verified",
+      "matchesValidatedSnapshot": true,
+      "status": "ok",
+      "verdict": "minor-notes",
+      "counts": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 2,
+        "info": 4
+      },
+      "capabilities": [
+        "omarchy-plugin",
+        "persistence"
+      ],
+      "filesInspected": 14,
+      "filesListed": 15,
+      "truncated": false,
+      "scanners": [
+        "omaaudit-rules:ran",
+        "shellcheck:unavailable",
+        "osv-scanner:unavailable"
+      ],
+      "durationMs": 3156,
+      "report": "reports/0x4a756e65.omarchy-substack.json"
+    },
+    {
+      "id": "codytolene.b33k33p3r",
+      "repo": "https://github.com/CodyTolene/B33K33P3R-Plugin",
+      "commit": "9a296dd9076eb3753f4ecb66c0bb884c432a577e",
+      "verificationStatus": "verified",
+      "matchesValidatedSnapshot": true,
+      "status": "ok",
+      "verdict": "minor-notes",
+      "counts": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 1,
+        "info": 3
+      },
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "filesInspected": 7,
+      "filesListed": 8,
+      "truncated": false,
+      "scanners": [
+        "omaaudit-rules:ran",
+        "shellcheck:unavailable",
+        "osv-scanner:unavailable"
+      ],
+      "durationMs": 2511,
+      "report": "reports/codytolene.b33k33p3r.json"
+    },
+    {
+      "id": "ggregoro.clipboard-cards",
+      "repo": "https://github.com/ggregoro/Omarchy-Clipboard-Cards",
+      "commit": "31545354a080dde12a28e9f83f6525a64c745525",
+      "verificationStatus": "verified",
+      "matchesValidatedSnapshot": true,
+      "status": "ok",
+      "verdict": "minor-notes",
+      "counts": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 1,
+        "info": 3
+      },
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "filesInspected": 6,
+      "filesListed": 9,
+      "truncated": false,
+      "scanners": [
+        "omaaudit-rules:ran",
+        "shellcheck:unavailable",
+        "osv-scanner:unavailable"
+      ],
+      "durationMs": 2533,
+      "report": "reports/ggregoro.clipboard-cards.json"
+    },
+    {
+      "id": "io.github.camerontucker.anker-c200",
+      "repo": "https://github.com/camerontucker/omarchy-anker-c200",
+      "commit": "7ff4f534295b53d5e487e0851a6fce64970a20ce",
+      "verificationStatus": "verified",
+      "matchesValidatedSnapshot": true,
+      "status": "ok",
+      "verdict": "minor-notes",
+      "counts": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 2,
+        "info": 3
+      },
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "filesInspected": 24,
+      "filesListed": 38,
+      "truncated": false,
+      "scanners": [
+        "omaaudit-rules:ran",
+        "shellcheck:unavailable",
+        "osv-scanner:unavailable"
+      ],
+      "durationMs": 2826,
+      "report": "reports/io.github.camerontucker.anker-c200.json"
+    },
+    {
+      "id": "io.github.imr-git.divinum-officium",
+      "repo": "https://github.com/imr-git/omarchy-divinum-officium",
+      "commit": "aad534dfe5b9133e5ddd20a073e2621bddd76386",
+      "verificationStatus": "verified",
+      "matchesValidatedSnapshot": true,
+      "status": "ok",
+      "verdict": "minor-notes",
+      "counts": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 1,
+        "info": 2
+      },
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "filesInspected": 11,
+      "filesListed": 15,
+      "truncated": false,
+      "scanners": [
+        "omaaudit-rules:ran",
+        "shellcheck:unavailable",
+        "osv-scanner:unavailable"
+      ],
+      "durationMs": 2842,
+      "report": "reports/io.github.imr-git.divinum-officium.json"
+    },
+    {
+      "id": "io.github.pch.omafeed",
+      "repo": "https://github.com/pch/omafeed-bar",
+      "commit": "5cd8b9496bc6b1e37a3f000e9c5e87a251d28cbb",
+      "verificationStatus": "verified",
+      "matchesValidatedSnapshot": true,
+      "status": "ok",
+      "verdict": "minor-notes",
+      "counts": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 1,
+        "info": 2
+      },
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "filesInspected": 6,
+      "filesListed": 7,
+      "truncated": false,
+      "scanners": [
+        "omaaudit-rules:ran",
+        "shellcheck:unavailable",
+        "osv-scanner:unavailable"
+      ],
+      "durationMs": 3000,
+      "report": "reports/io.github.pch.omafeed.json"
+    },
+    {
+      "id": "io.github.ukkit.universal-font-sizer",
+      "repo": "https://github.com/ukkit/omarchy-universal-font-sizer",
+      "commit": "72e3abdc4e8a00e28fef789548d28094653617ca",
+      "verificationStatus": "verified",
+      "matchesValidatedSnapshot": true,
+      "status": "ok",
+      "verdict": "minor-notes",
+      "counts": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 1,
+        "info": 2
+      },
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "filesInspected": 6,
+      "filesListed": 7,
+      "truncated": false,
+      "scanners": [
+        "omaaudit-rules:ran",
+        "shellcheck:unavailable",
+        "osv-scanner:unavailable"
+      ],
+      "durationMs": 2902,
+      "report": "reports/io.github.ukkit.universal-font-sizer.json"
+    },
+    {
+      "id": "leonavas.dock",
+      "repo": "https://github.com/leonavas/omarchy-dock",
+      "commit": "f66d715abb914fd5a90c251a9be73aed3d1cb44c",
+      "verificationStatus": "verified",
+      "matchesValidatedSnapshot": true,
+      "status": "ok",
+      "verdict": "minor-notes",
+      "counts": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0,
+        "info": 2
+      },
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "filesInspected": 5,
+      "filesListed": 6,
+      "truncated": false,
+      "scanners": [
+        "omaaudit-rules:ran",
+        "shellcheck:unavailable",
+        "osv-scanner:unavailable"
+      ],
+      "durationMs": 3043,
+      "report": "reports/leonavas.dock.json"
+    },
+    {
+      "id": "omarkyy.tablet",
+      "repo": "https://github.com/alertxsto/omarchy-touch-mode",
+      "commit": "69639aa15b14407debeb51afcbd839033cafbb1e",
+      "verificationStatus": "verified",
+      "matchesValidatedSnapshot": true,
+      "status": "ok",
+      "verdict": "minor-notes",
+      "counts": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 6,
+        "info": 6
+      },
+      "capabilities": [
+        "omarchy-plugin",
+        "package-management",
+        "persistence",
+        "privilege-escalation"
+      ],
+      "filesInspected": 19,
+      "filesListed": 20,
+      "truncated": false,
+      "scanners": [
+        "omaaudit-rules:ran",
+        "shellcheck:unavailable",
+        "osv-scanner:unavailable"
+      ],
+      "durationMs": 2598,
+      "report": "reports/omarkyy.tablet.json"
+    },
+    {
+      "id": "skajvitler.steam-trends",
+      "repo": "https://github.com/skajvitler/omarchy-steam-trends",
+      "commit": "dfcf708ffd155b1fa26c1b1e5ac6c0118341075e",
+      "verificationStatus": "verified",
+      "matchesValidatedSnapshot": true,
+      "status": "ok",
+      "verdict": "review-recommended",
+      "counts": {
+        "critical": 0,
+        "high": 0,
+        "medium": 1,
+        "low": 1,
+        "info": 2
+      },
+      "capabilities": [
+        "build-from-source",
+        "network-download",
+        "omarchy-plugin"
+      ],
+      "filesInspected": 6,
+      "filesListed": 7,
+      "truncated": false,
+      "scanners": [
+        "omaaudit-rules:ran",
+        "shellcheck:unavailable",
+        "osv-scanner:unavailable"
+      ],
+      "durationMs": 2750,
+      "report": "reports/skajvitler.steam-trends.json"
+    }
+  ]
+}

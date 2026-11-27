@@ -1,0 +1,234 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "omaaudit",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-11-27T09:28:31.634Z",
+  "durationMs": 2842,
+  "target": {
+    "kind": "github",
+    "name": "imr-git/omarchy-divinum-officium",
+    "url": "https://github.com/imr-git/omarchy-divinum-officium",
+    "commit": "aad534dfe5b9133e5ddd20a073e2621bddd76386",
+    "ref": "aad534dfe5b9133e5ddd20a073e2621bddd76386",
+    "defaultBranch": "main"
+  },
+  "repository": {
+    "description": "An unofficial Divinum Officium client for the Omarchy bar.",
+    "stars": 0,
+    "forks": 0,
+    "openIssues": 1,
+    "license": "MIT",
+    "archived": false,
+    "fork": false,
+    "pushedAt": "2026-09-02T02:10:08Z",
+    "createdAt": "2026-08-31T00:39:02Z",
+    "topics": [
+      "divine-office",
+      "divinum-officium",
+      "liturgy",
+      "omarchy",
+      "omarchy-plugin",
+      "quickshell"
+    ],
+    "latestRelease": {
+      "tag": "v0.1.5",
+      "publishedAt": "2026-09-02T02:10:08Z"
+    },
+    "recentCommits90d": 12
+  },
+  "marketplace": {
+    "listed": true,
+    "pluginIds": [
+      "io.github.imr-git.divinum-officium"
+    ],
+    "verificationStatus": "verified",
+    "listingValidatedCommit": "aad534dfe5b9133e5ddd20a073e2621bddd76386",
+    "upstreamObservedCommit": "aad534dfe5b9133e5ddd20a073e2621bddd76386",
+    "catalogCommit": "4cb2ef3bc8e2cf566180bc9cdf2b56168a36f218",
+    "catalogGeneratedAt": "2026-11-27T07:55:55.111Z",
+    "category": "Widgets",
+    "tags": [
+      "bar",
+      "quickshell"
+    ],
+    "driftFromValidated": false
+  },
+  "coverage": {
+    "filesListed": 15,
+    "filesInspected": 11,
+    "filesSkipped": [
+      {
+        "path": "preview.png",
+        "reason": "too-large"
+      },
+      {
+        "path": "screenshots/bar.png",
+        "reason": "binary"
+      },
+      {
+        "path": "screenshots/panel.png",
+        "reason": "binary"
+      },
+      {
+        "path": "screenshots/settings.png",
+        "reason": "binary"
+      }
+    ],
+    "bytesInspected": 169746,
+    "truncated": false,
+    "fileTypes": {
+      "other-text": 2,
+      "qml": 3,
+      "omarchy-manifest": 1,
+      "javascript": 1,
+      "python": 3,
+      "skipped": 1,
+      "markdown": 1,
+      "binary": 3
+    },
+    "unknown": [
+      "4 Python/JavaScript file(s) are only scanned for secrets; use language-specific scanners for logic review",
+      "3 QML file(s): only process/file/network surfaces and embedded commands are analysed, not QML logic"
+    ],
+    "scanners": [
+      {
+        "name": "omaaudit-rules",
+        "version": "0.1.0",
+        "source": "builtin",
+        "status": "ran"
+      },
+      {
+        "name": "shellcheck",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "shellcheck not found on PATH (pacman -S shellcheck)"
+      },
+      {
+        "name": "osv-scanner",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "osv-scanner not found on PATH"
+      }
+    ]
+  },
+  "dependencies": [],
+  "findings": [
+    {
+      "id": "be5a9a508448bc21",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "Panel.qml",
+        "startLine": 350,
+        "endLine": 350
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "mkt-4cb2ef3bc8e2",
+      "ruleId": "OA-MKT-001",
+      "title": "Omarchy plugin marketplace listing",
+      "kind": "verified",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "listed as io.github.imr-git.divinum-officium (verified); marketplace validated commit aad534dfe5b9; this commit matches the validated snapshot. Marketplace checks are a limited baseline, not a security audit.",
+      "evidence": "catalog 4cb2ef3bc8e2 generated 2026-11-27T07:55:55.111Z",
+      "remediation": "Compare the commit you install with the validated one; `omarchy plugin add` clones upstream HEAD, which is not verification-bound.",
+      "scanner": {
+        "name": "omarchy-plugin-marketplace",
+        "version": "4cb2ef3bc8e2",
+        "source": "external"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy-plugin-marketplace/blob/main/SECURITY.md"
+      ]
+    },
+    {
+      "id": "160d098332d960e1",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "valid Omarchy plugin manifest 'io.github.imr-git.divinum-officium' (kinds: bar-widget). Plugins run as unsandboxed code inside omarchy-shell with the user's full file and process access.",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "id=io.github.imr-git.divinum-officium kinds=bar-widget",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "129b25ba53e24222",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "Panel.qml",
+        "startLine": 3,
+        "endLine": 3
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    }
+  ],
+  "summary": {
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 1,
+      "info": 2
+    },
+    "capabilities": [
+      "omarchy-plugin"
+    ],
+    "verdict": "minor-notes",
+    "highestSeverity": "low"
+  },
+  "disclaimer": "OmaAudit performs static inspection only. Findings are evidence of risk patterns, not proof of malice, and the absence of findings is not proof of safety. Review the source before you install."
+}

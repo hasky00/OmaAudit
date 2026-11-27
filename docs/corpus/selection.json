@@ -1,0 +1,197 @@
+{
+ "catalogCommit": "4cb2ef3bc8e2cf566180bc9cdf2b56168a36f218",
+ "generatedAt": "2026-11-27T07:55:55.111Z",
+ "fetchedAt": "2026-11-27T08:10:41.679Z",
+ "total": 7155,
+ "eligible": {
+  "verified": 4364,
+  "unverified": 2751
+ },
+ "statuses": [
+  "unverified",
+  "verified",
+  null
+ ],
+ "selection": [
+  {
+   "id": "0x4a756e65.omarchy-substack",
+   "repo": "https://github.com/0x4A756E65/omarchy-substack-feed",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "392de02531f548bd30e90d0559924b36c6adbd61",
+   "upstreamObservedCommit": "392de02531f548bd30e90d0559924b36c6adbd61",
+   "stars": 0,
+   "category": "Widgets"
+  },
+  {
+   "id": "codytolene.b33k33p3r",
+   "repo": "https://github.com/CodyTolene/B33K33P3R-Plugin",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "9a296dd9076eb3753f4ecb66c0bb884c432a577e",
+   "upstreamObservedCommit": "9a296dd9076eb3753f4ecb66c0bb884c432a577e",
+   "stars": 0,
+   "category": "Widgets"
+  },
+  {
+   "id": "ggregoro.clipboard-cards",
+   "repo": "https://github.com/ggregoro/Omarchy-Clipboard-Cards",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "31545354a080dde12a28e9f83f6525a64c745525",
+   "upstreamObservedCommit": "31545354a080dde12a28e9f83f6525a64c745525",
+   "stars": 6,
+   "category": "Productivity"
+  },
+  {
+   "id": "io.github.camerontucker.anker-c200",
+   "repo": "https://github.com/camerontucker/omarchy-anker-c200",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "7ff4f534295b53d5e487e0851a6fce64970a20ce",
+   "upstreamObservedCommit": "7ff4f534295b53d5e487e0851a6fce64970a20ce",
+   "stars": 1,
+   "category": "Hardware"
+  },
+  {
+   "id": "io.github.imr-git.divinum-officium",
+   "repo": "https://github.com/imr-git/omarchy-divinum-officium",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "aad534dfe5b9133e5ddd20a073e2621bddd76386",
+   "upstreamObservedCommit": "aad534dfe5b9133e5ddd20a073e2621bddd76386",
+   "stars": 0,
+   "category": "Widgets"
+  },
+  {
+   "id": "io.github.pch.omafeed",
+   "repo": "https://github.com/pch/omafeed-bar",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "5cd8b9496bc6b1e37a3f000e9c5e87a251d28cbb",
+   "upstreamObservedCommit": "5cd8b9496bc6b1e37a3f000e9c5e87a251d28cbb",
+   "stars": 3,
+   "category": "Widgets"
+  },
+  {
+   "id": "io.github.ukkit.universal-font-sizer",
+   "repo": "https://github.com/ukkit/omarchy-universal-font-sizer",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "72e3abdc4e8a00e28fef789548d28094653617ca",
+   "upstreamObservedCommit": "72e3abdc4e8a00e28fef789548d28094653617ca",
+   "stars": 0,
+   "category": "Appearance"
+  },
+  {
+   "id": "leonavas.dock",
+   "repo": "https://github.com/leonavas/omarchy-dock",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "f66d715abb914fd5a90c251a9be73aed3d1cb44c",
+   "upstreamObservedCommit": "f66d715abb914fd5a90c251a9be73aed3d1cb44c",
+   "stars": 0,
+   "category": "Desktop"
+  },
+  {
+   "id": "omarkyy.tablet",
+   "repo": "https://github.com/alertxsto/omarchy-touch-mode",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "69639aa15b14407debeb51afcbd839033cafbb1e",
+   "upstreamObservedCommit": "69639aa15b14407debeb51afcbd839033cafbb1e",
+   "stars": 1,
+   "category": "Hardware"
+  },
+  {
+   "id": "skajvitler.steam-trends",
+   "repo": "https://github.com/skajvitler/omarchy-steam-trends",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "dfcf708ffd155b1fa26c1b1e5ac6c0118341075e",
+   "upstreamObservedCommit": "dfcf708ffd155b1fa26c1b1e5ac6c0118341075e",
+   "stars": 0,
+   "category": "Widgets"
+  },
+  {
+   "id": "07dcolem.appimages",
+   "repo": "https://github.com/07dcolem/omarchy-appimages",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "5c7f68f3a11cbcc22efc938b2b176e1a8a7d4e84",
+   "upstreamObservedCommit": "58a76bc482fbea66a7282ebf52fb2d3a467fd006",
+   "stars": 3,
+   "category": "System"
+  },
+  {
+   "id": "com.leafbox.neonbubble",
+   "repo": "https://github.com/Snackwrap/omarchy-neonbubble",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "8e8d8515cf4f1f55fb66b9605771abcd744414fc",
+   "upstreamObservedCommit": "00c4cb923b5b6a65c00f0d98381626c1044bdf5d",
+   "stars": 0,
+   "category": "Widgets"
+  },
+  {
+   "id": "gdeyoung.powercore",
+   "repo": "https://github.com/gdeyoung/omarchy-powercore",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "e60bb5c829cb0b548bceb512afb38b9b441be699",
+   "upstreamObservedCommit": "5f97032d17aa1dd5ca320576518e28717a804f40",
+   "stars": 0,
+   "category": "System"
+  },
+  {
+   "id": "io.github.brm-src.omawhy",
+   "repo": "https://github.com/brm-src/omawhy",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "c765cf92531fb6d1f436bd143b33d918bd44a5e8",
+   "upstreamObservedCommit": "0ecc91afc27ff14e5af461130474385382ea3445",
+   "stars": 0,
+   "category": "Widgets"
+  },
+  {
+   "id": "io.github.hvo.omarchy-unraid",
+   "repo": "https://github.com/tuthan/omarchy-unraid",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "4e3acf7babf4d64e2ff2d85292ac6f4a2dc9d966",
+   "upstreamObservedCommit": "36f80f5d9b533169ceb17a5717f01f005b231fcb",
+   "stars": 2,
+   "category": "System"
+  },
+  {
+   "id": "io.github.nulluserid.dishy",
+   "repo": "https://github.com/nulluserid/omarchy-dishy",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "5ec05cc02d4ca3cc5839bddd4605209022bfe7d3",
+   "upstreamObservedCommit": "0aed17d89079bd7ea0068a9289487c7835b99474",
+   "stars": 2,
+   "category": "Hardware"
+  },
+  {
+   "id": "io.github.tymurbogach.replicant",
+   "repo": "https://github.com/tymurbogach/replicant",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "9e6af06e9da66aafeb21be24fc90f05ab87cb803",
+   "upstreamObservedCommit": "019cab6f08c89c01cb875a12c8d3571ca38ead00",
+   "stars": 4,
+   "category": "System"
+  },
+  {
+   "id": "local.focus",
+   "repo": "https://github.com/BennetMC2/omarchy-focus",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "70f79ba28fb0b5f82b3a9b8800e21a6629ce6c2e",
+   "upstreamObservedCommit": "ed9a882aab775c169841397f2dace05e27e5b91a",
+   "stars": 3,
+   "category": "Productivity"
+  },
+  {
+   "id": "omarchycube.controls",
+   "repo": "https://github.com/sterlingmchase/omarchy-cube",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "669ef03ebf91a06281faff97bca74b43211ae00f",
+   "upstreamObservedCommit": "292d56b71792d1a878fde5620b10525279c2873e",
+   "stars": 0,
+   "category": "Appearance"
+  },
+  {
+   "id": "skeemo.berita",
+   "repo": "https://github.com/sickelmo/omarchy-berita",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "e6c30f552708d0d06640b4a0fbf423b72fc17471",
+   "upstreamObservedCommit": "da6dcf3c207d4791beb231bc3810a99dd4437ae6",
+   "stars": 0,
+   "category": "Widgets"
+  }
+ ]
+}

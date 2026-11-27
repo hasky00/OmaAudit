@@ -1,0 +1,488 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "omaaudit",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-11-27T09:29:05.370Z",
+  "durationMs": 4459,
+  "target": {
+    "kind": "github",
+    "name": "nulluserid/omarchy-dishy",
+    "url": "https://github.com/nulluserid/omarchy-dishy",
+    "commit": "5ec05cc02d4ca3cc5839bddd4605209022bfe7d3",
+    "ref": "5ec05cc02d4ca3cc5839bddd4605209022bfe7d3",
+    "defaultBranch": "main"
+  },
+  "repository": {
+    "description": "Dishy — Starlink status widget for the Omarchy shell: live latency, graphs, outages, obstruction view, data usage, dish controls.",
+    "stars": 2,
+    "forks": 1,
+    "openIssues": 9,
+    "license": "MIT",
+    "archived": false,
+    "fork": false,
+    "pushedAt": "2026-11-24T06:13:08Z",
+    "createdAt": "2026-10-19T19:25:35Z",
+    "topics": [],
+    "latestRelease": {
+      "tag": "v1.7.0",
+      "publishedAt": "2026-11-24T06:13:10Z"
+    },
+    "recentCommits90d": 100
+  },
+  "marketplace": {
+    "listed": true,
+    "pluginIds": [
+      "io.github.nulluserid.dishy"
+    ],
+    "verificationStatus": "unverified",
+    "listingValidatedCommit": "5ec05cc02d4ca3cc5839bddd4605209022bfe7d3",
+    "upstreamObservedCommit": "0aed17d89079bd7ea0068a9289487c7835b99474",
+    "catalogCommit": "4cb2ef3bc8e2cf566180bc9cdf2b56168a36f218",
+    "catalogGeneratedAt": "2026-11-27T07:55:55.111Z",
+    "category": "Hardware",
+    "tags": [
+      "bar",
+      "quickshell"
+    ],
+    "driftFromValidated": false
+  },
+  "coverage": {
+    "filesListed": 46,
+    "filesInspected": 43,
+    "filesSkipped": [
+      {
+        "path": "backend/bin/starlinkd",
+        "reason": "too-large"
+      },
+      {
+        "path": "backend/proto/dish.pb",
+        "reason": "binary"
+      },
+      {
+        "path": "preview.png",
+        "reason": "binary"
+      }
+    ],
+    "bytesInspected": 616326,
+    "truncated": false,
+    "fileTypes": {
+      "github-workflow": 1,
+      "other-text": 25,
+      "skipped": 1,
+      "shell": 6,
+      "markdown": 3,
+      "go-mod": 1,
+      "binary": 2,
+      "qml": 4,
+      "systemd-unit": 1,
+      "omarchy-manifest": 1,
+      "javascript": 1
+    },
+    "unknown": [
+      "1 Python/JavaScript file(s) are only scanned for secrets; use language-specific scanners for logic review",
+      "4 QML file(s): only process/file/network surfaces and embedded commands are analysed, not QML logic",
+      "1 shell or executable file(s) were listed but NOT read: backend/bin/starlinkd (too large). Nothing in this report covers them; inspect them manually or raise --max-mb."
+    ],
+    "scanners": [
+      {
+        "name": "omaaudit-rules",
+        "version": "0.1.0",
+        "source": "builtin",
+        "status": "ran"
+      },
+      {
+        "name": "shellcheck",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "shellcheck not found on PATH (pacman -S shellcheck)"
+      },
+      {
+        "name": "osv-scanner",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "osv-scanner not found on PATH"
+      }
+    ]
+  },
+  "dependencies": [
+    {
+      "ecosystem": "go",
+      "name": "google.golang.org/grpc",
+      "version": "v1.84.0",
+      "manifest": "backend/go.mod",
+      "pinned": true
+    },
+    {
+      "ecosystem": "go",
+      "name": "google.golang.org/protobuf",
+      "version": "v1.36.12",
+      "manifest": "backend/go.mod",
+      "pinned": true
+    },
+    {
+      "ecosystem": "go",
+      "name": "golang.org/x/net",
+      "version": "v0.62.0",
+      "manifest": "backend/go.mod",
+      "pinned": true
+    },
+    {
+      "ecosystem": "go",
+      "name": "golang.org/x/sys",
+      "version": "v0.49.0",
+      "manifest": "backend/go.mod",
+      "pinned": true
+    },
+    {
+      "ecosystem": "go",
+      "name": "golang.org/x/text",
+      "version": "v0.43.0",
+      "manifest": "backend/go.mod",
+      "pinned": true
+    },
+    {
+      "ecosystem": "go",
+      "name": "google.golang.org/genproto/googleapis/rpc",
+      "version": "v0.0.0-20260706201446-f0a921348800",
+      "manifest": "backend/go.mod",
+      "pinned": true
+    }
+  ],
+  "findings": [
+    {
+      "id": "6bd626d664454ea1",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "BarWidget.qml",
+        "startLine": 145,
+        "endLine": 145
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "fd874aeca0ed26b8",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "systemctl --user enables a unit",
+      "location": {
+        "path": "install.sh",
+        "startLine": 29,
+        "endLine": 29
+      },
+      "evidence": "systemctl --user enable starlinkd.service",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "e0648765b5429e89",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "Panel.qml",
+        "startLine": 825,
+        "endLine": 825
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "mkt-4cb2ef3bc8e2",
+      "ruleId": "OA-MKT-001",
+      "title": "Omarchy plugin marketplace listing",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "listed as io.github.nulluserid.dishy (unverified); marketplace validated commit 5ec05cc02d4c; this commit matches the validated snapshot. Marketplace checks are a limited baseline, not a security audit.",
+      "evidence": "catalog 4cb2ef3bc8e2 generated 2026-11-27T07:55:55.111Z",
+      "remediation": "Compare the commit you install with the validated one; `omarchy plugin add` clones upstream HEAD, which is not verification-bound.",
+      "scanner": {
+        "name": "omarchy-plugin-marketplace",
+        "version": "4cb2ef3bc8e2",
+        "source": "external"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy-plugin-marketplace/blob/main/SECURITY.md"
+      ]
+    },
+    {
+      "id": "f91f154359de6787",
+      "ruleId": "OA-SH-009",
+      "title": "Packages are installed",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "package-management"
+      ],
+      "message": "go installs google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.12 (embedded in GitHub Actions run step)",
+      "location": {
+        "path": ".github/workflows/release-gate.yml",
+        "startLine": 36,
+        "endLine": 36
+      },
+      "evidence": "go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.12",
+      "remediation": "Prefer official repositories or the Omarchy package repo. For AUR packages, read the PKGBUILD. Avoid pacman -U from URLs.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "57696022b1b0617e",
+      "ruleId": "OA-SH-009",
+      "title": "Packages are installed",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "package-management"
+      ],
+      "message": "go installs google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.6.2 (embedded in GitHub Actions run step)",
+      "location": {
+        "path": ".github/workflows/release-gate.yml",
+        "startLine": 37,
+        "endLine": 37
+      },
+      "evidence": "go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.6.2",
+      "remediation": "Prefer official repositories or the Omarchy package repo. For AUR packages, read the PKGBUILD. Avoid pacman -U from URLs.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "dc28996a6f937f96",
+      "ruleId": "OA-SH-009",
+      "title": "Packages are installed",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "package-management"
+      ],
+      "message": "go installs golang.org/x/vuln/cmd/govulncheck@v1.9.0 (embedded in GitHub Actions run step)",
+      "location": {
+        "path": ".github/workflows/release-gate.yml",
+        "startLine": 38,
+        "endLine": 38
+      },
+      "evidence": "go install golang.org/x/vuln/cmd/govulncheck@v1.9.0",
+      "remediation": "Prefer official repositories or the Omarchy package repo. For AUR packages, read the PKGBUILD. Avoid pacman -U from URLs.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "cba9ebb66417da68",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "BarWidget.qml",
+        "startLine": 3,
+        "endLine": 3
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "45665d9ece80a1e0",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses FileView",
+      "location": {
+        "path": "BarWidget.qml",
+        "startLine": 143,
+        "endLine": 143
+      },
+      "evidence": "FileView { id: configFile; path: root.stateDir + \"/config.json\"; blockLoading: true }",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "eaf045eb9b8d85af",
+      "ruleId": "OA-SYSD-001",
+      "title": "systemd unit executes from a user-writable or temporary location",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "ships user unit starlinkd.service",
+      "location": {
+        "path": "deploy/starlinkd.service",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "ExecStart=%h/.config/omarchy/plugins/io.github.nulluserid.dishy/backend/bin/starlinkd",
+      "remediation": "Install executables under /usr/lib or /usr/bin via a package and reference them by absolute path. Use user units for per-user tools.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "105b7b3294dde8ea",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "valid Omarchy plugin manifest 'io.github.nulluserid.dishy' (kinds: bar-widget). Plugins run as unsandboxed code inside omarchy-shell with the user's full file and process access.",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "id=io.github.nulluserid.dishy kinds=bar-widget",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "129b25ba53e24222",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "Panel.qml",
+        "startLine": 3,
+        "endLine": 3
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "5f3ed49b3ef3dee8",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses FileView",
+      "location": {
+        "path": "Panel.qml",
+        "startLine": 830,
+        "endLine": 830
+      },
+      "evidence": "FileView { id: histFile; path: root.stateDir + \"/hist.json\"; blockLoading: true }",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    }
+  ],
+  "summary": {
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 3,
+      "info": 10
+    },
+    "capabilities": [
+      "omarchy-plugin",
+      "package-management",
+      "persistence"
+    ],
+    "verdict": "minor-notes",
+    "highestSeverity": "low"
+  },
+  "disclaimer": "OmaAudit performs static inspection only. Findings are evidence of risk patterns, not proof of malice, and the absence of findings is not proof of safety. Review the source before you install."
+}

@@ -1,0 +1,319 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "omaaudit",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-11-27T09:28:28.690Z",
+  "durationMs": 2826,
+  "target": {
+    "kind": "github",
+    "name": "camerontucker/omarchy-anker-c200",
+    "url": "https://github.com/camerontucker/omarchy-anker-c200",
+    "commit": "7ff4f534295b53d5e487e0851a6fce64970a20ce",
+    "ref": "7ff4f534295b53d5e487e0851a6fce64970a20ce",
+    "defaultBranch": "main"
+  },
+  "repository": {
+    "description": "Omarchy bar controls, live preview, and OBS framing for the Anker PowerConf C200 webcam",
+    "stars": 1,
+    "forks": 0,
+    "openIssues": 0,
+    "license": "MIT",
+    "archived": false,
+    "fork": false,
+    "pushedAt": "2026-09-23T15:59:15Z",
+    "createdAt": "2026-09-03T20:15:13Z",
+    "topics": [],
+    "latestRelease": null,
+    "recentCommits90d": 6
+  },
+  "marketplace": {
+    "listed": true,
+    "pluginIds": [
+      "io.github.camerontucker.anker-c200"
+    ],
+    "verificationStatus": "verified",
+    "listingValidatedCommit": "7ff4f534295b53d5e487e0851a6fce64970a20ce",
+    "upstreamObservedCommit": "7ff4f534295b53d5e487e0851a6fce64970a20ce",
+    "catalogCommit": "4cb2ef3bc8e2cf566180bc9cdf2b56168a36f218",
+    "catalogGeneratedAt": "2026-11-27T07:55:55.111Z",
+    "category": "Hardware",
+    "tags": [
+      "bar",
+      "quickshell",
+      "system"
+    ],
+    "driftFromValidated": false
+  },
+  "coverage": {
+    "filesListed": 38,
+    "filesInspected": 24,
+    "filesSkipped": [
+      {
+        "path": "vendor",
+        "reason": "excluded directory"
+      },
+      {
+        "path": "docs/assets/synthetic-meeting-feed.png",
+        "reason": "too-large"
+      },
+      {
+        "path": "docs/screenshots/framing-detail.png",
+        "reason": "binary"
+      },
+      {
+        "path": "docs/screenshots/panel-overview.png",
+        "reason": "binary"
+      },
+      {
+        "path": "preview.png",
+        "reason": "binary"
+      },
+      {
+        "path": "vendor/anker-powerconf-c200-linux-tools/LICENSE",
+        "reason": "excluded-dir"
+      },
+      {
+        "path": "vendor/anker-powerconf-c200-linux-tools/src/c200_controls.c",
+        "reason": "excluded-dir"
+      },
+      {
+        "path": "vendor/anker-powerconf-c200-linux-tools/src/c200_controls.h",
+        "reason": "excluded-dir"
+      },
+      {
+        "path": "vendor/anker-powerconf-c200-linux-tools/src/c200_fov_cli.c",
+        "reason": "excluded-dir"
+      },
+      {
+        "path": "vendor/anker-powerconf-c200-linux-tools/src/c200_fov.c",
+        "reason": "excluded-dir"
+      },
+      {
+        "path": "vendor/anker-powerconf-c200-linux-tools/src/c200_fov.h",
+        "reason": "excluded-dir"
+      },
+      {
+        "path": "vendor/anker-powerconf-c200-linux-tools/src/c200_vendor.c",
+        "reason": "excluded-dir"
+      },
+      {
+        "path": "vendor/anker-powerconf-c200-linux-tools/src/c200_vendor.h",
+        "reason": "excluded-dir"
+      },
+      {
+        "path": "vendor/anker-powerconf-c200-linux-tools/UPSTREAM.md",
+        "reason": "excluded-dir"
+      }
+    ],
+    "bytesInspected": 180438,
+    "truncated": false,
+    "fileTypes": {
+      "github-workflow": 1,
+      "other-text": 2,
+      "python": 8,
+      "qml": 3,
+      "markdown": 7,
+      "skipped": 10,
+      "binary": 3,
+      "omarchy-manifest": 1,
+      "javascript": 1,
+      "shell": 1
+    },
+    "unknown": [
+      "1 shell file(s) had parse errors; commands in those regions may be missed: anker_c200_backend.py",
+      "9 Python/JavaScript file(s) are only scanned for secrets; use language-specific scanners for logic review",
+      "3 QML file(s): only process/file/network surfaces and embedded commands are analysed, not QML logic"
+    ],
+    "notes": [
+      "1 script(s) inside excluded or oversized locations were read because another script invokes them: anker_c200_backend.py (by .github/workflows/ci.yml)"
+    ],
+    "scanners": [
+      {
+        "name": "omaaudit-rules",
+        "version": "0.1.0",
+        "source": "builtin",
+        "status": "ran"
+      },
+      {
+        "name": "shellcheck",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "shellcheck not found on PATH (pacman -S shellcheck)"
+      },
+      {
+        "name": "osv-scanner",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "osv-scanner not found on PATH"
+      }
+    ]
+  },
+  "dependencies": [],
+  "findings": [
+    {
+      "id": "3ecf3a6e0fb9b446",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "BoundedProcess.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "09ecc9955a9f1dfc",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "Panel.qml",
+        "startLine": 420,
+        "endLine": 420
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "mkt-4cb2ef3bc8e2",
+      "ruleId": "OA-MKT-001",
+      "title": "Omarchy plugin marketplace listing",
+      "kind": "verified",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "listed as io.github.camerontucker.anker-c200 (verified); marketplace validated commit 7ff4f534295b; this commit matches the validated snapshot. Marketplace checks are a limited baseline, not a security audit.",
+      "evidence": "catalog 4cb2ef3bc8e2 generated 2026-11-27T07:55:55.111Z",
+      "remediation": "Compare the commit you install with the validated one; `omarchy plugin add` clones upstream HEAD, which is not verification-bound.",
+      "scanner": {
+        "name": "omarchy-plugin-marketplace",
+        "version": "4cb2ef3bc8e2",
+        "source": "external"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy-plugin-marketplace/blob/main/SECURITY.md"
+      ]
+    },
+    {
+      "id": "1d420c0404efed26",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "BoundedProcess.qml",
+        "startLine": 2,
+        "endLine": 2
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "bbdcbc14f6d024f4",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "valid Omarchy plugin manifest 'io.github.camerontucker.anker-c200' (kinds: bar-widget). Plugins run as unsandboxed code inside omarchy-shell with the user's full file and process access.",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "id=io.github.camerontucker.anker-c200 kinds=bar-widget",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "89ecc983a5327d7a",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "Panel.qml",
+        "startLine": 8,
+        "endLine": 8
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    }
+  ],
+  "summary": {
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 2,
+      "info": 3
+    },
+    "capabilities": [
+      "omarchy-plugin"
+    ],
+    "verdict": "minor-notes",
+    "highestSeverity": "low"
+  },
+  "disclaimer": "OmaAudit performs static inspection only. Findings are evidence of risk patterns, not proof of malice, and the absence of findings is not proof of safety. Review the source before you install."
+}

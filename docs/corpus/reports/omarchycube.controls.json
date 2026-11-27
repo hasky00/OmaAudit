@@ -1,0 +1,235 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "omaaudit",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-11-27T09:29:14.517Z",
+  "durationMs": 2799,
+  "target": {
+    "kind": "github",
+    "name": "sterlingmchase/omarchy-cube",
+    "url": "https://github.com/sterlingmchase/omarchy-cube",
+    "commit": "669ef03ebf91a06281faff97bca74b43211ae00f",
+    "ref": "669ef03ebf91a06281faff97bca74b43211ae00f",
+    "defaultBranch": "main"
+  },
+  "repository": {
+    "description": "Native workspace cube for Omarchy with skydomes, mouse gestures and optional window dragging",
+    "stars": 0,
+    "forks": 1,
+    "openIssues": 1,
+    "license": "NOASSERTION",
+    "archived": false,
+    "fork": false,
+    "pushedAt": "2026-11-21T00:58:07Z",
+    "createdAt": "2026-11-16T22:33:11Z",
+    "topics": [],
+    "latestRelease": null,
+    "recentCommits90d": 8
+  },
+  "marketplace": {
+    "listed": true,
+    "pluginIds": [
+      "omarchycube.controls"
+    ],
+    "verificationStatus": "unverified",
+    "listingValidatedCommit": "669ef03ebf91a06281faff97bca74b43211ae00f",
+    "upstreamObservedCommit": "292d56b71792d1a878fde5620b10525279c2873e",
+    "catalogCommit": "4cb2ef3bc8e2cf566180bc9cdf2b56168a36f218",
+    "catalogGeneratedAt": "2026-11-27T07:55:55.111Z",
+    "category": "Appearance",
+    "tags": [
+      "hyprland",
+      "workspaces",
+      "bar"
+    ],
+    "driftFromValidated": false
+  },
+  "coverage": {
+    "filesListed": 33,
+    "filesInspected": 33,
+    "filesSkipped": [],
+    "bytesInspected": 242287,
+    "truncated": false,
+    "fileTypes": {
+      "other-text": 14,
+      "lua": 3,
+      "makefile": 1,
+      "omarchy-manifest": 1,
+      "markdown": 2,
+      "python": 7,
+      "qml": 4,
+      "shell": 1
+    },
+    "unknown": [
+      "5 shell file(s) had parse errors; commands in those regions may be missed: tests/settings.py, tests/install-gui.py, tests/integration.py",
+      "3 Lua file(s) (e.g. Omarchy 4 Hyprland config) are not analysed beyond secret scanning",
+      "7 Python/JavaScript file(s) are only scanned for secrets; use language-specific scanners for logic review",
+      "4 QML file(s): only process/file/network surfaces and embedded commands are analysed, not QML logic"
+    ],
+    "notes": [
+      "5 script(s) inside excluded or oversized locations were read because another script invokes them: tests/settings.py (by README.md); tests/install-gui.py (by README.md); tests/integration.py (by README.md); tests/gestures.py (by README.md); tests/window-carry.py (by README.md)"
+    ],
+    "scanners": [
+      {
+        "name": "omaaudit-rules",
+        "version": "0.1.0",
+        "source": "builtin",
+        "status": "ran"
+      },
+      {
+        "name": "shellcheck",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "shellcheck not found on PATH (pacman -S shellcheck)"
+      },
+      {
+        "name": "osv-scanner",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "osv-scanner not found on PATH"
+      }
+    ]
+  },
+  "dependencies": [],
+  "findings": [
+    {
+      "id": "44bdde9255c1327d",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "shell/Cube.qml",
+        "startLine": 76,
+        "endLine": 76
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "e266291ed5bcc644",
+      "ruleId": "OA-SH-018",
+      "title": "Installer script does not enable strict error handling",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "medium",
+      "capabilities": [],
+      "message": "no set -e / set -u / pipefail in an installer-like script",
+      "location": {
+        "path": "tests/install-gui.py",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "#!/usr/bin/env python3",
+      "remediation": "Start installer scripts with set -euo pipefail and check variables before using them in paths.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "mkt-4cb2ef3bc8e2",
+      "ruleId": "OA-MKT-001",
+      "title": "Omarchy plugin marketplace listing",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "listed as omarchycube.controls (unverified); marketplace validated commit 669ef03ebf91; this commit matches the validated snapshot. Marketplace checks are a limited baseline, not a security audit.",
+      "evidence": "catalog 4cb2ef3bc8e2 generated 2026-11-27T07:55:55.111Z",
+      "remediation": "Compare the commit you install with the validated one; `omarchy plugin add` clones upstream HEAD, which is not verification-bound.",
+      "scanner": {
+        "name": "omarchy-plugin-marketplace",
+        "version": "4cb2ef3bc8e2",
+        "source": "external"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy-plugin-marketplace/blob/main/SECURITY.md"
+      ]
+    },
+    {
+      "id": "1fc6366b626c5e55",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "valid Omarchy plugin manifest 'omarchycube.controls' (kinds: bar-widget). Plugins run as unsandboxed code inside omarchy-shell with the user's full file and process access.",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "id=omarchycube.controls kinds=bar-widget",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "dea1fce652f5aac4",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "shell/Cube.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    }
+  ],
+  "summary": {
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 2,
+      "info": 3
+    },
+    "capabilities": [
+      "omarchy-plugin"
+    ],
+    "verdict": "minor-notes",
+    "highestSeverity": "low"
+  },
+  "disclaimer": "OmaAudit performs static inspection only. Findings are evidence of risk patterns, not proof of malice, and the absence of findings is not proof of safety. Review the source before you install."
+}
