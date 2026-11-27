@@ -71,7 +71,8 @@ export async function loadTree(root: string, limits: ScanLimits = DEFAULT_LIMITS
   let truncated = false;
   const force = new Set((opts.forceInclude ?? []).map((p) => p.replace(/^\.\//, '')));
 
-  const walk = async (dir: string, depth: number): Promise<void> => {
+  let listedOnly = 0;
+  const walk = async (dir: string, depth: number, listOnly = false): Promise<void> => {
     if (truncated) return;
     if (depth > limits.maxDepth) {
       omitted.push({ path: toPosix(path.relative(absRoot, dir)), reason: 'max depth exceeded' });
@@ -98,14 +99,33 @@ export async function loadTree(root: string, limits: ScanLimits = DEFAULT_LIMITS
         continue;
       }
       if (e.isDirectory()) {
-        if (EXCLUDED_DIR_NAMES.has(e.name) && ![...force].some((f) => f.startsWith(rel + '/'))) {
+        if (!listOnly && EXCLUDED_DIR_NAMES.has(e.name) && ![...force].some((f) => f.startsWith(rel + '/'))) {
+          // Not read, but still enumerated so that shell/executable files inside can be named in coverage
+          // and read later if an installer invokes them.
           omitted.push({ path: rel, reason: 'excluded directory' });
+          await walk(full, depth + 1, true);
           continue;
         }
-        await walk(full, depth + 1);
+        await walk(full, depth + 1, listOnly);
         continue;
       }
       if (!e.isFile()) continue;
+      if (listOnly) {
+        if (listedOnly >= limits.maxFiles) {
+          omitted.push({ path: rel, reason: 'excluded directory listing budget reached' });
+          truncated = true;
+          return;
+        }
+        let st;
+        try {
+          st = await lstat(full);
+        } catch {
+          continue;
+        }
+        listedOnly++;
+        files.push({ path: rel, size: st.size, skipped: true, skipReason: 'excluded-dir', executable: (st.mode & 0o111) !== 0 });
+        continue;
+      }
       if (files.length >= limits.maxFiles) {
         truncated = true;
         omitted.push({ path: rel, reason: 'max file count reached' });
@@ -127,11 +147,7 @@ export async function loadTree(root: string, limits: ScanLimits = DEFAULT_LIMITS
       const executable = (st.mode & 0o111) !== 0;
       const sf: SourceFile = { path: rel, size: st.size, skipped: false, executable };
       const ext = path.extname(e.name).toLowerCase();
-      const inExcludedDir = rel.split('/').slice(0, -1).some((seg) => EXCLUDED_DIR_NAMES.has(seg)) && !force.has(rel);
-      if (inExcludedDir) {
-        sf.skipped = true;
-        sf.skipReason = 'excluded-dir';
-      } else if (st.size > limits.maxTextFileBytes) {
+      if (st.size > limits.maxTextFileBytes) {
         sf.skipped = true;
         sf.skipReason = 'too-large';
       } else if (BINARY_EXT.has(ext) && !force.has(rel) && !executable) {
@@ -158,4 +174,46 @@ export async function loadTree(root: string, limits: ScanLimits = DEFAULT_LIMITS
   };
   await walk(absRoot, 0);
   return { root: absRoot, files, omitted, truncated, totalBytes };
+}
+
+/** Hard cap for a file read on demand because an installer invokes it. */
+export const INVOKED_FILE_HARD_CAP = 4 * 1024 * 1024;
+
+/**
+ * Read a file that was listed but not read (excluded directory or too large) because a
+ * script invokes it. Refuses symlinks and anything outside the root. Returns the updated
+ * SourceFile or null.
+ */
+export async function readOnDemand(root: string, sf: SourceFile): Promise<SourceFile | null> {
+  const full = path.resolve(root, sf.path);
+  if (!full.startsWith(path.resolve(root) + path.sep)) return null;
+  let st;
+  try {
+    st = await lstat(full);
+  } catch {
+    return null;
+  }
+  if (!st.isFile() || st.isSymbolicLink()) return null;
+  if (st.size > INVOKED_FILE_HARD_CAP) {
+    sf.skipReason = 'too-large';
+    return sf;
+  }
+  try {
+    const buf = await readFile(full);
+    if (looksBinary(buf)) {
+      sf.skipped = true;
+      sf.skipReason = 'binary';
+      const fmt = executableFormat(buf);
+      if (fmt) (sf as SourceFile & { binaryFormat?: string }).binaryFormat = fmt;
+      return sf;
+    }
+    sf.text = buf.toString('utf8');
+    sf.size = st.size;
+    sf.skipped = false;
+    delete sf.skipReason;
+    sf.executable = (st.mode & 0o111) !== 0;
+    return sf;
+  } catch {
+    return null;
+  }
 }

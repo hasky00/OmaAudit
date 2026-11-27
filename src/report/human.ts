@@ -106,6 +106,7 @@ export function formatReport(r: Report, opts: { verbose?: boolean; maxFindings?:
   if (types) out.push(`  types: ${types}`);
   out.push(`  scanners: ${cov.scanners.map((sc) => `${sc.name}${sc.version !== 'n/a' ? ` ${sc.version}` : ''} ${sc.status === 'ran' ? c.green('ran') : sc.status === 'unavailable' ? c.yellow('unavailable') : c.dim(sc.status)}${sc.note && sc.status !== 'ran' ? c.dim(` (${sc.note})`) : ''}`).join(c.dim(' · '))}`);
   for (const u of cov.unknown) out.push(`  ${c.yellow('unknown:')} ${u}`);
+  for (const n of cov.notes ?? []) out.push(`  ${c.dim('note:')} ${n}`);
   out.push('');
   out.push(c.dim(r.disclaimer));
   out.push(c.dim(`${r.durationMs} ms`));

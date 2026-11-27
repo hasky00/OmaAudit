@@ -47,8 +47,8 @@ export async function main(argv: string[]): Promise<number> {
     code = await runCheck(target, { ...opts, shellcheck: undefined, noShellcheck: opts.shellcheck === false, noOsv: opts.osv === false, noMarketplace: opts.marketplace === false });
   });
 
-  withGlobals(program.command('scan').argument('[dir]', 'directory to audit', '.').description('Audit local source without uploading it (offline by default)')).action(async (dir: string, opts) => {
-    code = await runScan(dir, { ...opts, offline: opts.offline ?? true, noShellcheck: opts.shellcheck === false, noOsv: opts.osv === false });
+  withGlobals(program.command('scan').argument('[dir]', 'directory to audit', '.').option('--online', 'allow network use (lets osv-scanner query osv.dev); source is still never uploaded').description('Audit local source without uploading it (offline by default)')).action(async (dir: string, opts) => {
+    code = await runScan(dir, { ...opts, offline: opts.online ? false : true, noShellcheck: opts.shellcheck === false, noOsv: opts.osv === false });
   });
 
   withGlobals(

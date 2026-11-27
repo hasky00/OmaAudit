@@ -85,12 +85,14 @@ A sample of popular Omarchy-adjacent repositories showed the install vectors the
 | `check omacom/omarchy` (catalog cached) | 8.9 s | hit the 4,000-file budget; reported as truncated |
 | `find "iOS interoperability"` (catalog cached) | 0.6 s | 7,155 listings searched |
 | `compare hyprwhspr disktree` (both cached) | 1.8 s | |
-| Unit + fixture + CLI tests | ~2 s | 33 tests |
+| Unit + fixture + CLI tests | ~2 s | regression suite over self-written fixtures; not a precision/recall measurement |
 
 Time-to-value from `npm install -g` to a first `check` is dominated by the one-off catalog download; subsequent checks are seconds.
 
 ## 7. Open questions carried forward
 
+- **No real-world precision/recall has been measured.** The test suite checks expected findings on fixtures written together with the rules. A proper measurement needs an independently labeled corpus (for example a sample of marketplace repositories reviewed by hand) and is on the roadmap.
+
 - Omarchy 4's Lua Hyprland configuration is not analysed beyond secret scanning; a Lua `exec` extractor is the next parser.
 - The marketplace catalog is large (18 MB) and refreshed daily; a smaller official feed would help every third-party client. Worth proposing upstream.
-- Precision on `rm -rf "$var"` depends on knowing whether `var` can be empty; OmaAudit lowers severity when `set -u`, `${var:?}` or `mktemp` assignment is present, but does not do data-flow analysis.
+- Accuracy on `rm -rf "$var"` depends on knowing whether `var` can be empty; OmaAudit lowers severity when `set -u`, `${var:?}` or `mktemp` assignment is present, but does not do data-flow analysis.

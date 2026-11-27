@@ -19,6 +19,8 @@ export interface RuleContext {
   root: string;
   /** owner/repo of the repository under inspection, when known. */
   targetName?: string | undefined;
+  /** Scripts that were read on demand because another script invokes them (e.g. inside build/ or vendor/). */
+  invokedScripts: { path: string; invokedBy: string }[];
 }
 
 export interface FindingDraft {

@@ -28,7 +28,12 @@ describe('loadTree', () => {
     const t = await loadTree(root);
     expect(t.files.map((f) => f.path)).not.toContain('link');
     expect(t.omitted.find((o) => o.path === 'link')?.reason).toMatch(/symlink/);
-    expect(t.files.map((f) => f.path)).not.toContain('node_modules/x/index.js');
+    // Files inside excluded directories are listed (so coverage can name them) but never read.
+    const nm = t.files.find((f) => f.path === 'node_modules/x/index.js')!;
+    expect(nm.skipped).toBe(true);
+    expect(nm.skipReason).toBe('excluded-dir');
+    expect(nm.text).toBeUndefined();
+    expect(t.omitted.find((o) => o.path === 'node_modules')?.reason).toBe('excluded directory');
     expect(t.files.find((f) => f.path === 'install.sh')?.executable).toBe(true);
   });
 

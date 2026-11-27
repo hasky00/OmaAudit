@@ -5,7 +5,7 @@ Thank you for helping developers see what an Omarchy tool does before they insta
 ## Ground rules
 
 1. **Never execute audited code.** Rules read; they do not run. A PR that shells out to repository content will not be merged.
-2. **Evidence or it did not happen.** Every rule needs a labeled fixture (`test/fixtures/<name>`) and an expectation in `test/fixtures/expectations.json`. Every claim in docs about an external project is pinned to a commit or fetch date.
+2. **Evidence or it did not happen.** Every rule needs a fixture (`test/fixtures/<name>`) and an expectation in `test/fixtures/expectations.json`. Every claim in docs about an external project is pinned to a commit or fetch date.
 3. **No finding is not proof of safety.** Do not add scoring that implies a tool is "safe". Verdicts describe evidence found.
 4. **Small, reviewable commits.** One rule, one parser or one fix per PR where practical.
 5. **Secrets are redacted everywhere.** New output paths must go through `redactText`.

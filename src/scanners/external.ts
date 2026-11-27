@@ -20,6 +20,24 @@ export async function toolVersion(bin: string, args: string[] = ['--version']): 
   }
 }
 
+/** Paths are passed after `--` and prefixed with ./ so a file named `-x.sh` can never be read as an option. */
+function safeRelPath(p: string): string {
+  return p.startsWith('./') ? p : `./${p}`;
+}
+
+/**
+ * ShellCheck argv. `--norc` stops a repository-supplied .shellcheckrc (e.g. `disable=all`)
+ * from silencing findings; `--` ends option parsing before any file path.
+ */
+export function shellCheckArgs(files: string[]): string[] {
+  return ['--norc', '-f', 'json', '-s', 'bash', '-S', 'warning', '--', ...files.map(safeRelPath)];
+}
+
+/** OSV-Scanner argv. Lockfiles are passed as `--lockfile=./path` so no path can be parsed as a flag; `--` ends options. */
+export function osvScannerArgs(lockfiles: string[]): string[] {
+  return ['scan', 'source', '--format', 'json', ...lockfiles.map((f) => `--lockfile=${safeRelPath(f)}`), '--'];
+}
+
 interface ShellCheckEntry {
   file: string;
   line: number;
@@ -39,16 +57,17 @@ export async function runShellCheck(ctx: RuleContext, opts: { enabled: boolean }
   if (scripts.length === 0) return { findings: [], status: { ...base, version, status: 'skipped', note: 'no shell scripts' } };
   const findings: Finding[] = [];
   try {
-    const { stdout } = await execFileAsync('shellcheck', ['-f', 'json', '-s', 'bash', '-S', 'warning', ...scripts.slice(0, 200)], { cwd: ctx.root, timeout: 60_000, maxBuffer: 16 * 1024 * 1024 }).catch((e: { stdout?: string }) => {
+    const { stdout } = await execFileAsync('shellcheck', shellCheckArgs(scripts.slice(0, 200)), { cwd: ctx.root, timeout: 60_000, maxBuffer: 16 * 1024 * 1024 }).catch((e: { stdout?: string }) => {
       if (typeof e.stdout === 'string' && e.stdout.trim().startsWith('[')) return { stdout: e.stdout };
       throw e;
     });
     const entries = JSON.parse(stdout) as ShellCheckEntry[];
     for (const e of entries) {
       const sev = e.level === 'error' ? 'medium' : 'low';
-      const evidence = (ctx.files.find((f) => f.file.path === e.file)?.text.split('\n')[e.line - 1] ?? '').trim();
+      const file = e.file.replace(/^\.\//, '');
+      const evidence = (ctx.files.find((f) => f.file.path === file)?.text.split('\n')[e.line - 1] ?? '').trim();
       findings.push({
-        id: createHash('sha256').update(`SC${e.code}|${e.file}|${e.line}`).digest('hex').slice(0, 16),
+        id: createHash('sha256').update(`SC${e.code}|${file}|${e.line}`).digest('hex').slice(0, 16),
         ruleId: `SC${e.code}`,
         title: `ShellCheck SC${e.code}`,
         kind: 'heuristic',
@@ -56,7 +75,7 @@ export async function runShellCheck(ctx: RuleContext, opts: { enabled: boolean }
         confidence: 'high',
         capabilities: [],
         message: redactText(e.message),
-        location: { path: e.file, startLine: e.line, endLine: e.endLine || e.line },
+        location: { path: file, startLine: e.line, endLine: e.endLine || e.line },
         evidence: redactText(evidence).slice(0, 300),
         remediation: `See https://www.shellcheck.net/wiki/SC${e.code}`,
         scanner: { ...base, version },
@@ -90,8 +109,7 @@ export async function runOsvScanner(ctx: RuleContext, opts: { enabled: boolean }
   const lockfiles = ctx.files.filter((f) => /(?:^|\/)(?:package-lock\.json|pnpm-lock\.yaml|yarn\.lock|Cargo\.lock|go\.mod|go\.sum|requirements[\w.-]*\.txt|poetry\.lock|uv\.lock|Gemfile\.lock|composer\.lock|bun\.lock)$/.test(f.file.path));
   if (lockfiles.length === 0) return { findings: [], status: { ...base, version, status: 'skipped', note: 'no supported lockfiles' } };
   try {
-    const args = ['scan', 'source', '--format', 'json', ...lockfiles.flatMap((f) => ['-L', f.file.path])];
-    const { stdout } = await execFileAsync('osv-scanner', args, { cwd: ctx.root, timeout: 120_000, maxBuffer: 32 * 1024 * 1024 }).catch((e: { stdout?: string }) => {
+    const { stdout } = await execFileAsync('osv-scanner', osvScannerArgs(lockfiles.map((f) => f.file.path)), { cwd: ctx.root, timeout: 120_000, maxBuffer: 32 * 1024 * 1024 }).catch((e: { stdout?: string }) => {
       if (typeof e.stdout === 'string' && e.stdout.trim().startsWith('{')) return { stdout: e.stdout };
       throw e;
     });

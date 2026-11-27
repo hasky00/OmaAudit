@@ -48,6 +48,22 @@ jobs:
           node-version: 24
           cache: npm
       - run: sudo apt-get update && sudo apt-get install -y shellcheck
+      - name: Install osv-scanner (pinned release, checksum verified)
+        env:
+          OSV_VERSION: v2.7.1
+        run: |
+          set -euo pipefail
+          base="https://github.com/google/osv-scanner/releases/download/${OSV_VERSION}"
+          curl -fsSL -o osv-scanner "${base}/osv-scanner_linux_amd64"
+          curl -fsSL -o osv-scanner_SHA256SUMS "${base}/osv-scanner_SHA256SUMS"
+          grep ' osv-scanner_linux_amd64$' osv-scanner_SHA256SUMS | sed 's/osv-scanner_linux_amd64/osv-scanner/' | sha256sum -c -
+          chmod +x osv-scanner && sudo mv osv-scanner /usr/local/bin/osv-scanner
+          osv-scanner --version
       - run: npm ci --ignore-scripts && npm run build
       - run: node bin/omaaudit.js doctor --offline --no-color
-      - run: node bin/omaaudit.js scan test/fixtures/malicious --fail-on never --json --no-color | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const r=JSON.parse(s);const sc=r.coverage.scanners.find(x=>x.name==='shellcheck');console.log('shellcheck status:',sc.status,sc.note||'');if(sc.status!=='ran')process.exit(1);console.log('shellcheck findings:',r.findings.filter(f=>f.scanner.name==='shellcheck').length)})"
+      - name: ShellCheck integration must survive a hostile .shellcheckrc and a file named -x.sh
+        run: node bin/omaaudit.js scan test/fixtures/evasion --fail-on never --json --no-color | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const r=JSON.parse(s);const sc=r.coverage.scanners.find(x=>x.name==='shellcheck');console.log('shellcheck status:',sc.status,sc.note||'');if(sc.status!=='ran')process.exit(1);const f=r.findings.filter(f=>f.scanner.name==='shellcheck');console.log('shellcheck findings:',f.length);if(!f.some(x=>x.location&&x.location.path==='-x.sh'&&x.ruleId==='SC2164')){console.error('expected SC2164 on -x.sh');process.exit(1)}})"
+      - name: Run the shellcheck-dependent unit test
+        run: npx vitest run test/scanners.test.ts
+      - name: OSV-Scanner integration must run and find the known-vulnerable lockfile entry
+        run: node bin/omaaudit.js scan test/fixtures/deps --online --fail-on never --json --no-color | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const r=JSON.parse(s);const sc=r.coverage.scanners.find(x=>x.name==='osv-scanner');console.log('osv-scanner status:',sc.status,sc.note||'');if(sc.status!=='ran')process.exit(1);const f=r.findings.filter(f=>f.ruleId==='OA-DEP-002');console.log('osv findings:',f.length,f.slice(0,3).map(x=>x.externalId).join(','));if(f.length===0){console.error('expected at least one OSV finding for lodash 4.17.20');process.exit(1)}})"

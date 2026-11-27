@@ -12,6 +12,7 @@ interface Expectation {
   maxSeverity?: Severity;
   minSeverityAt?: Record<string, Severity>;
   unknownCoverageMentions?: string[];
+  notesMention?: string[];
 }
 
 const fixturesDir = path.resolve(__dirname, 'fixtures');
@@ -46,14 +47,14 @@ describe('labeled fixtures', async () => {
         expect(f && SEVERITY_ORDER[f.severity] >= SEVERITY_ORDER[sev], `${k} should be at least ${sev}`).toBe(true);
       }
       for (const m of exp.unknownCoverageMentions ?? []) expect(report.coverage.unknown.join('\n')).toContain(m);
+      for (const m of exp.notesMention ?? []) expect((report.coverage.notes ?? []).join('\n')).toContain(m);
     });
   }
 
-  it('reports precision and recall over the labeled set', () => {
-    const recall = totals.tp / Math.max(1, totals.tp + totals.fn);
-    const precision = totals.tp / Math.max(1, totals.tp + totals.fp);
+  it('regression suite summary (self-written fixtures; not a measurement of real-world precision or recall)', () => {
     // eslint-disable-next-line no-console
-    console.log(`labeled fixtures: tp=${totals.tp} fn=${totals.fn} fp(forbidden rules)=${totals.fp} recall=${recall.toFixed(3)} precision(vs forbidden)=${precision.toFixed(3)}`);
-    expect(recall).toBeGreaterThanOrEqual(0.95);
+    console.log(`fixture regression suite: ${totals.tp} expected findings present, ${totals.fn} missing, ${totals.fp} forbidden-rule hits`);
+    expect(totals.fn).toBe(0);
+    expect(totals.fp).toBe(0);
   });
 });

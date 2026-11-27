@@ -143,6 +143,8 @@ export const Coverage = z.object({
   scanners: z.array(Scanner.extend({ status: z.enum(['ran', 'unavailable', 'failed', 'skipped']), note: z.string().optional() })),
   /** Things OmaAudit knows it cannot judge in this target. */
   unknown: z.array(z.string()),
+  /** Coverage decisions worth knowing that are not gaps (e.g. excluded-directory scripts read because an installer invokes them). */
+  notes: z.array(z.string()).optional(),
 });
 export type Coverage = z.infer<typeof Coverage>;
 

@@ -62,7 +62,7 @@ The marketplace runs its own automated baseline on submitted plugins at a valida
 
 ## Status
 
-Version 0.1.0, first vertical slice. Verified on 2026-11-27 against `goodroot/hyprwhspr`, `tobi/disktree`, `brianblakely/omarchy-plugins` (as `b.okomart`), `omacom/omarchy` and labeled fixtures (33 tests, 47/47 labeled findings recalled, 0 forbidden-rule false positives). Known blockers and gaps:
+Version 0.1.0, first vertical slice. Verified on 2026-11-27 against `goodroot/hyprwhspr`, `tobi/disktree`, `brianblakely/omarchy-plugins` (as `b.okomart`), `omacom/omarchy` and a regression suite of self-written fixtures (all expected findings present, no forbidden rules firing). The fixtures were written alongside the rules, so that result is a regression check, not a measurement of real-world recall or precision; no such measurement has been made yet. Known blockers and gaps:
 
 - ShellCheck and OSV-Scanner integrations are implemented but were not exercised against real binaries on the development host (macOS); the CI job `external-scanners` is meant to cover that.
 - Omarchy 4 Lua Hyprland configuration is not analysed beyond secret scanning.
