@@ -1,0 +1,386 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "omaaudit",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-11-27T09:28:52.175Z",
+  "durationMs": 2703,
+  "target": {
+    "kind": "github",
+    "name": "Snackwrap/omarchy-neonbubble",
+    "url": "https://github.com/Snackwrap/omarchy-neonbubble",
+    "commit": "8e8d8515cf4f1f55fb66b9605771abcd744414fc",
+    "ref": "8e8d8515cf4f1f55fb66b9605771abcd744414fc",
+    "defaultBranch": "main"
+  },
+  "repository": {
+    "description": "A neon bubble shooter in the Omarchy bar with a daily board: the same puzzle for everyone, every day.",
+    "stars": 0,
+    "forks": 0,
+    "openIssues": 0,
+    "license": "MIT",
+    "archived": false,
+    "fork": false,
+    "pushedAt": "2026-09-05T06:11:44Z",
+    "createdAt": "2026-09-03T03:33:35Z",
+    "topics": [],
+    "latestRelease": null,
+    "recentCommits90d": 7
+  },
+  "marketplace": {
+    "listed": true,
+    "pluginIds": [
+      "com.leafbox.neonbubble"
+    ],
+    "verificationStatus": "unverified",
+    "listingValidatedCommit": "8e8d8515cf4f1f55fb66b9605771abcd744414fc",
+    "upstreamObservedCommit": "00c4cb923b5b6a65c00f0d98381626c1044bdf5d",
+    "catalogCommit": "4cb2ef3bc8e2cf566180bc9cdf2b56168a36f218",
+    "catalogGeneratedAt": "2026-11-27T07:55:55.111Z",
+    "category": "Widgets",
+    "tags": [
+      "games",
+      "bar",
+      "quickshell"
+    ],
+    "driftFromValidated": false
+  },
+  "coverage": {
+    "filesListed": 42,
+    "filesInspected": 23,
+    "filesSkipped": [
+      {
+        "path": "assets/scenes/chain.png",
+        "reason": "binary"
+      },
+      {
+        "path": "assets/scenes/gameover.png",
+        "reason": "binary"
+      },
+      {
+        "path": "assets/scenes/off.png",
+        "reason": "binary"
+      },
+      {
+        "path": "assets/scenes/play.png",
+        "reason": "binary"
+      },
+      {
+        "path": "assets/sfx/bomb.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "assets/sfx/charged.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "assets/sfx/cleared.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "assets/sfx/descend.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "assets/sfx/drop.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "assets/sfx/fire.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "assets/sfx/gameover.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "assets/sfx/pop.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "assets/sfx/star_in.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "assets/sfx/star.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "assets/sfx/start.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "assets/sfx/stick.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "assets/sfx/wall.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "assets/sfx/wild.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "preview.png",
+        "reason": "binary"
+      }
+    ],
+    "bytesInspected": 132192,
+    "truncated": false,
+    "fileTypes": {
+      "other-text": 2,
+      "binary": 19,
+      "qml": 7,
+      "shell": 4,
+      "javascript": 4,
+      "omarchy-manifest": 1,
+      "markdown": 1,
+      "python": 4
+    },
+    "unknown": [
+      "4 shell file(s) had parse errors; commands in those regions may be missed: tools/sim.mjs, tools/build-preview.py, tools/verify-shot.py",
+      "8 Python/JavaScript file(s) are only scanned for secrets; use language-specific scanners for logic review",
+      "7 QML file(s): only process/file/network surfaces and embedded commands are analysed, not QML logic"
+    ],
+    "notes": [
+      "4 script(s) inside excluded or oversized locations were read because another script invokes them: tools/sim.mjs (by README.md); tools/build-preview.py (by tools/build-preview.sh); tools/verify-shot.py (by tools/capture-preview.sh); tools/extract-helpers.py (by tools/check-score-io.sh)"
+    ],
+    "scanners": [
+      {
+        "name": "omaaudit-rules",
+        "version": "0.1.0",
+        "source": "builtin",
+        "status": "ran"
+      },
+      {
+        "name": "shellcheck",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "shellcheck not found on PATH (pacman -S shellcheck)"
+      },
+      {
+        "name": "osv-scanner",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "osv-scanner not found on PATH"
+      }
+    ]
+  },
+  "dependencies": [],
+  "findings": [
+    {
+      "id": "a71c650c10ed991d",
+      "ruleId": "OA-SH-013",
+      "title": "A security control is disabled or weakened",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "high",
+      "capabilities": [
+        "security-downgrade"
+      ],
+      "message": "chmod grants world-writable permissions",
+      "location": {
+        "path": "tools/check-score-io.sh",
+        "startLine": 52,
+        "endLine": 52
+      },
+      "evidence": "chmod 777 \"$WORK/hb/.local/state/omarchy\"",
+      "remediation": "Remove the flag. Fix certificates or keys properly instead of bypassing verification. Use the narrowest permissions that work.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "45efe3eb1f0f723e",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "Panel.qml",
+        "startLine": 240,
+        "endLine": 240
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "88fe6e188c45974c",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "Sfx.qml",
+        "startLine": 76,
+        "endLine": 76
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "mkt-4cb2ef3bc8e2",
+      "ruleId": "OA-MKT-001",
+      "title": "Omarchy plugin marketplace listing",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "listed as com.leafbox.neonbubble (unverified); marketplace validated commit 8e8d8515cf4f; this commit matches the validated snapshot. Marketplace checks are a limited baseline, not a security audit.",
+      "evidence": "catalog 4cb2ef3bc8e2 generated 2026-11-27T07:55:55.111Z",
+      "remediation": "Compare the commit you install with the validated one; `omarchy plugin add` clones upstream HEAD, which is not verification-bound.",
+      "scanner": {
+        "name": "omarchy-plugin-marketplace",
+        "version": "4cb2ef3bc8e2",
+        "source": "external"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy-plugin-marketplace/blob/main/SECURITY.md"
+      ]
+    },
+    {
+      "id": "3f668d84833fdb30",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "valid Omarchy plugin manifest 'com.leafbox.neonbubble' (kinds: bar-widget). Plugins run as unsandboxed code inside omarchy-shell with the user's full file and process access.",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "id=com.leafbox.neonbubble kinds=bar-widget",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "129b25ba53e24222",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "Panel.qml",
+        "startLine": 3,
+        "endLine": 3
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "63637b5b887ea8b4",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses FileView",
+      "location": {
+        "path": "Panel.qml",
+        "startLine": 270,
+        "endLine": 270
+      },
+      "evidence": "FileView {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "6169f1ef7a4aa3ac",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "Sfx.qml",
+        "startLine": 2,
+        "endLine": 2
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    }
+  ],
+  "summary": {
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 1,
+      "low": 2,
+      "info": 5
+    },
+    "capabilities": [
+      "omarchy-plugin",
+      "security-downgrade"
+    ],
+    "verdict": "review-recommended",
+    "highestSeverity": "medium"
+  },
+  "disclaimer": "OmaAudit performs static inspection only. Findings are evidence of risk patterns, not proof of malice, and the absence of findings is not proof of safety. Review the source before you install."
+}

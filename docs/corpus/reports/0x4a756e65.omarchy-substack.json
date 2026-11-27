@@ -1,0 +1,296 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "omaaudit",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-11-27T09:28:20.517Z",
+  "durationMs": 3156,
+  "target": {
+    "kind": "github",
+    "name": "0x4A756E65/omarchy-substack-feed",
+    "url": "https://github.com/0x4A756E65/omarchy-substack-feed",
+    "commit": "392de02531f548bd30e90d0559924b36c6adbd61",
+    "ref": "392de02531f548bd30e90d0559924b36c6adbd61",
+    "defaultBranch": "main"
+  },
+  "repository": {
+    "description": "A calm Omarchy feed for your Substack subscriptions, with notifications and browser handoff.",
+    "stars": 0,
+    "forks": 0,
+    "openIssues": 3,
+    "license": "MIT",
+    "archived": false,
+    "fork": false,
+    "pushedAt": "2026-11-09T08:27:04Z",
+    "createdAt": "2026-09-01T20:57:08Z",
+    "topics": [],
+    "latestRelease": {
+      "tag": "v0.4.0",
+      "publishedAt": "2026-09-01T21:01:38Z"
+    },
+    "recentCommits90d": 7
+  },
+  "marketplace": {
+    "listed": true,
+    "pluginIds": [
+      "0x4a756e65.omarchy-substack"
+    ],
+    "verificationStatus": "verified",
+    "listingValidatedCommit": "392de02531f548bd30e90d0559924b36c6adbd61",
+    "upstreamObservedCommit": "392de02531f548bd30e90d0559924b36c6adbd61",
+    "catalogCommit": "4cb2ef3bc8e2cf566180bc9cdf2b56168a36f218",
+    "catalogGeneratedAt": "2026-11-27T07:55:55.111Z",
+    "category": "Widgets",
+    "tags": [
+      "bar",
+      "quickshell"
+    ],
+    "driftFromValidated": false
+  },
+  "coverage": {
+    "filesListed": 15,
+    "filesInspected": 14,
+    "filesSkipped": [
+      {
+        "path": "preview.png",
+        "reason": "binary"
+      }
+    ],
+    "bytesInspected": 173480,
+    "truncated": false,
+    "fileTypes": {
+      "other-text": 4,
+      "github-workflow": 2,
+      "markdown": 3,
+      "omarchy-manifest": 1,
+      "qml": 2,
+      "binary": 1,
+      "python": 2
+    },
+    "unknown": [
+      "2 shell file(s) had parse errors; commands in those regions may be missed: manifest.json, substack_backend.py",
+      "2 Python/JavaScript file(s) are only scanned for secrets; use language-specific scanners for logic review",
+      "2 QML file(s): only process/file/network surfaces and embedded commands are analysed, not QML logic"
+    ],
+    "notes": [
+      "2 script(s) inside excluded or oversized locations were read because another script invokes them: manifest.json (by .github/workflows/test.yml); substack_backend.py (by .github/workflows/test.yml)"
+    ],
+    "scanners": [
+      {
+        "name": "omaaudit-rules",
+        "version": "0.1.0",
+        "source": "builtin",
+        "status": "ran"
+      },
+      {
+        "name": "shellcheck",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "shellcheck not found on PATH (pacman -S shellcheck)"
+      },
+      {
+        "name": "osv-scanner",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "osv-scanner not found on PATH"
+      }
+    ]
+  },
+  "dependencies": [],
+  "findings": [
+    {
+      "id": "408f9ea217267f5e",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "Panel.qml",
+        "startLine": 295,
+        "endLine": 295
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "c2f4c85237f79e5c",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "Service.qml",
+        "startLine": 33,
+        "endLine": 33
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "mkt-4cb2ef3bc8e2",
+      "ruleId": "OA-MKT-001",
+      "title": "Omarchy plugin marketplace listing",
+      "kind": "verified",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "listed as 0x4a756e65.omarchy-substack (verified); marketplace validated commit 392de02531f5; this commit matches the validated snapshot. Marketplace checks are a limited baseline, not a security audit.",
+      "evidence": "catalog 4cb2ef3bc8e2 generated 2026-11-27T07:55:55.111Z",
+      "remediation": "Compare the commit you install with the validated one; `omarchy plugin add` clones upstream HEAD, which is not verification-bound.",
+      "scanner": {
+        "name": "omarchy-plugin-marketplace",
+        "version": "4cb2ef3bc8e2",
+        "source": "external"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy-plugin-marketplace/blob/main/SECURITY.md"
+      ]
+    },
+    {
+      "id": "10805757c2178d5e",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "valid Omarchy plugin manifest '0x4a756e65.omarchy-substack' (kinds: service, bar-widget). Plugins run as unsandboxed code inside omarchy-shell with the user's full file and process access.",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "id=0x4a756e65.omarchy-substack kinds=service,bar-widget",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "aa8efa8825cdfc30",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin",
+        "persistence"
+      ],
+      "message": "headless service: runs for the whole session without a visible surface",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "kinds includes \"service\"",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "eb3a2767412ebe50",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "Panel.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "6134250a69662b26",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "Service.qml",
+        "startLine": 3,
+        "endLine": 3
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    }
+  ],
+  "summary": {
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 2,
+      "info": 4
+    },
+    "capabilities": [
+      "omarchy-plugin",
+      "persistence"
+    ],
+    "verdict": "minor-notes",
+    "highestSeverity": "low"
+  },
+  "disclaimer": "OmaAudit performs static inspection only. Findings are evidence of risk patterns, not proof of malice, and the absence of findings is not proof of safety. Review the source before you install."
+}

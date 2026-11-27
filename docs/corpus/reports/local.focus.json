@@ -1,0 +1,491 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "omaaudit",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-11-27T09:29:11.636Z",
+  "durationMs": 2881,
+  "target": {
+    "kind": "github",
+    "name": "BennetMC2/omarchy-focus",
+    "url": "https://github.com/BennetMC2/omarchy-focus",
+    "commit": "70f79ba28fb0b5f82b3a9b8800e21a6629ce6c2e",
+    "ref": "70f79ba28fb0b5f82b3a9b8800e21a6629ce6c2e",
+    "defaultBranch": "main"
+  },
+  "repository": {
+    "description": "Bouncer: a to-do list for Omarchy that keeps you focused. Distracting sites and apps stay blocked until an agent has checked your tasks are done.",
+    "stars": 3,
+    "forks": 0,
+    "openIssues": 0,
+    "license": "MIT",
+    "archived": false,
+    "fork": false,
+    "pushedAt": "2026-10-24T02:42:35Z",
+    "createdAt": "2026-10-03T06:34:33Z",
+    "topics": [
+      "focus",
+      "focus-management",
+      "focus-mode",
+      "hyprland",
+      "omarchy",
+      "omarchy-linux",
+      "omarchy-plugin",
+      "omarchy-plugins",
+      "omarchy-quattro",
+      "productivity",
+      "quickshell",
+      "todo-list",
+      "website-blocker"
+    ],
+    "latestRelease": null,
+    "recentCommits90d": 31
+  },
+  "marketplace": {
+    "listed": true,
+    "pluginIds": [
+      "local.focus"
+    ],
+    "verificationStatus": "unverified",
+    "listingValidatedCommit": "70f79ba28fb0b5f82b3a9b8800e21a6629ce6c2e",
+    "upstreamObservedCommit": "ed9a882aab775c169841397f2dace05e27e5b91a",
+    "catalogCommit": "4cb2ef3bc8e2cf566180bc9cdf2b56168a36f218",
+    "catalogGeneratedAt": "2026-11-27T07:55:55.111Z",
+    "category": "Productivity",
+    "tags": [
+      "ai",
+      "quickshell",
+      "hyprland"
+    ],
+    "driftFromValidated": false
+  },
+  "coverage": {
+    "filesListed": 50,
+    "filesInspected": 47,
+    "filesSkipped": [
+      {
+        "path": "docs/images/card.png",
+        "reason": "binary"
+      },
+      {
+        "path": "docs/images/settings.png",
+        "reason": "binary"
+      },
+      {
+        "path": "preview.png",
+        "reason": "binary"
+      }
+    ],
+    "bytesInspected": 381073,
+    "truncated": false,
+    "fileTypes": {
+      "github-workflow": 1,
+      "other-text": 7,
+      "python": 17,
+      "markdown": 8,
+      "javascript": 3,
+      "qml": 8,
+      "binary": 3,
+      "shell": 2,
+      "omarchy-manifest": 1
+    },
+    "unknown": [
+      "3 shell file(s) had parse errors; commands in those regions may be missed: tests/browser.test.cjs, dev/agent_smoke.py, browser/extension/background.js",
+      "20 Python/JavaScript file(s) are only scanned for secrets; use language-specific scanners for logic review",
+      "8 QML file(s): only process/file/network surfaces and embedded commands are analysed, not QML logic"
+    ],
+    "notes": [
+      "3 script(s) inside excluded or oversized locations were read because another script invokes them: tests/browser.test.cjs (by .github/workflows/test.yml); dev/agent_smoke.py (by docs/compatibility.md); browser/extension/background.js (by tests/browser.test.cjs)"
+    ],
+    "scanners": [
+      {
+        "name": "omaaudit-rules",
+        "version": "0.1.0",
+        "source": "builtin",
+        "status": "ran"
+      },
+      {
+        "name": "shellcheck",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "shellcheck not found on PATH (pacman -S shellcheck)"
+      },
+      {
+        "name": "osv-scanner",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "osv-scanner not found on PATH"
+      }
+    ]
+  },
+  "dependencies": [],
+  "findings": [
+    {
+      "id": "ec099103b0b6ac14",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory (found in documentation: this is what users are told to run)",
+      "location": {
+        "path": "README.md",
+        "startLine": 17,
+        "endLine": 17
+      },
+      "evidence": "ln -sf ~/.config/omarchy/plugins/local.focus/focusctl ~/.local/bin/focusctl",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "3d6f8de2085f1478",
+      "ruleId": "OA-SH-004",
+      "title": "Commands run with elevated privileges",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "privilege-escalation"
+      ],
+      "message": "sudo runs apt-get (embedded in GitHub Actions run step) (2 occurrences in this file: lines 21)",
+      "location": {
+        "path": ".github/workflows/test.yml",
+        "startLine": 21,
+        "endLine": 21
+      },
+      "evidence": "sudo apt-get update\nsudo apt-get install -y bubblewrap",
+      "remediation": "Confirm every privileged command is necessary, scoped to a fixed command surface, and documented. Prefer user-level installation where possible.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "f648515cf01b7d90",
+      "ruleId": "OA-SH-004",
+      "title": "Commands run with elevated privileges",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "privilege-escalation"
+      ],
+      "message": "sudo runs sysctl (embedded in GitHub Actions run step)",
+      "location": {
+        "path": ".github/workflows/test.yml",
+        "startLine": 25,
+        "endLine": 25
+      },
+      "evidence": "sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0",
+      "remediation": "Confirm every privileged command is necessary, scoped to a fixed command surface, and documented. Prefer user-level installation where possible.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "e762007db086f577",
+      "ruleId": "OA-SH-015",
+      "title": "Kernel modules, initramfs or bootloader are modified",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "medium",
+      "capabilities": [
+        "kernel-or-driver",
+        "system-file-write"
+      ],
+      "message": "kernel parameter changed at runtime (embedded in GitHub Actions run step)",
+      "location": {
+        "path": ".github/workflows/test.yml",
+        "startLine": 25,
+        "endLine": 25
+      },
+      "evidence": "sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0",
+      "remediation": "Hardware tools may legitimately need this; verify the module source and ship changes through a package with a pacman hook so they are reversible.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "15c7743af5651085",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "Focus.qml",
+        "startLine": 60,
+        "endLine": 60
+      },
+      "evidence": "Process { id: opener; command: [\"omarchy-shell\", \"local.focus\", \"open\"] }",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "92ae521650fea046",
+      "ruleId": "OA-SH-004",
+      "title": "Commands run with elevated privileges",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "medium",
+      "capabilities": [
+        "privilege-escalation"
+      ],
+      "message": "pkexec runs focus-root-helper (found in documentation: this is what users are told to run)",
+      "location": {
+        "path": "README.md",
+        "startLine": 96,
+        "endLine": 96
+      },
+      "evidence": "pkexec /usr/local/bin/focus-root-helper recover",
+      "remediation": "Confirm every privileged command is necessary, scoped to a fixed command surface, and documented. Prefer user-level installation where possible.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "4acf8856a5a60b47",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "Service.qml",
+        "startLine": 145,
+        "endLine": 145
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "mkt-4cb2ef3bc8e2",
+      "ruleId": "OA-MKT-001",
+      "title": "Omarchy plugin marketplace listing",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "listed as local.focus (unverified); marketplace validated commit 70f79ba28fb0; this commit matches the validated snapshot. Marketplace checks are a limited baseline, not a security audit.",
+      "evidence": "catalog 4cb2ef3bc8e2 generated 2026-11-27T07:55:55.111Z",
+      "remediation": "Compare the commit you install with the validated one; `omarchy plugin add` clones upstream HEAD, which is not verification-bound.",
+      "scanner": {
+        "name": "omarchy-plugin-marketplace",
+        "version": "4cb2ef3bc8e2",
+        "source": "external"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy-plugin-marketplace/blob/main/SECURITY.md"
+      ]
+    },
+    {
+      "id": "fb78907bf7485d04",
+      "ruleId": "OA-SH-009",
+      "title": "Packages are installed",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "package-management"
+      ],
+      "message": "apt-get installs packages (not native to Omarchy/Arch) (embedded in GitHub Actions run step)",
+      "location": {
+        "path": ".github/workflows/test.yml",
+        "startLine": 21,
+        "endLine": 21
+      },
+      "evidence": "sudo apt-get install -y bubblewrap",
+      "remediation": "Prefer official repositories or the Omarchy package repo. For AUR packages, read the PKGBUILD. Avoid pacman -U from URLs.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "8ce1cb7d7195a8d2",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "Focus.qml",
+        "startLine": 3,
+        "endLine": 3
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "b00aad5cc5d758c0",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "valid Omarchy plugin manifest 'local.focus' (kinds: service, bar-widget, panel, overlay, keepLoaded). Plugins run as unsandboxed code inside omarchy-shell with the user's full file and process access.",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "id=local.focus kinds=service,bar-widget,panel,overlay",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "aa8efa8825cdfc30",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin",
+        "persistence"
+      ],
+      "message": "headless service: runs for the whole session without a visible surface",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "kinds includes \"service\"",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "6134250a69662b26",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "Service.qml",
+        "startLine": 3,
+        "endLine": 3
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "978c0d05f1f91106",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Socket",
+      "location": {
+        "path": "Service.qml",
+        "startLine": 153,
+        "endLine": 153
+      },
+      "evidence": "Socket {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    }
+  ],
+  "summary": {
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 1,
+      "low": 6,
+      "info": 7
+    },
+    "capabilities": [
+      "kernel-or-driver",
+      "omarchy-plugin",
+      "package-management",
+      "persistence",
+      "privilege-escalation",
+      "system-file-write"
+    ],
+    "verdict": "review-recommended",
+    "highestSeverity": "medium"
+  },
+  "disclaimer": "OmaAudit performs static inspection only. Findings are evidence of risk patterns, not proof of malice, and the absence of findings is not proof of safety. Review the source before you install."
+}

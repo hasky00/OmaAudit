@@ -1,0 +1,348 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "omaaudit",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-11-27T09:28:49.392Z",
+  "durationMs": 2861,
+  "target": {
+    "kind": "github",
+    "name": "07dcolem/omarchy-appimages",
+    "url": "https://github.com/07dcolem/omarchy-appimages",
+    "commit": "5c7f68f3a11cbcc22efc938b2b176e1a8a7d4e84",
+    "ref": "5c7f68f3a11cbcc22efc938b2b176e1a8a7d4e84",
+    "defaultBranch": "main"
+  },
+  "repository": {
+    "description": "Install, launch and remove AppImages on Omarchy, the same way it handles web apps and TUIs",
+    "stars": 3,
+    "forks": 0,
+    "openIssues": 0,
+    "license": "MIT",
+    "archived": false,
+    "fork": true,
+    "pushedAt": "2026-11-23T22:27:52Z",
+    "createdAt": "2026-09-23T01:27:46Z",
+    "topics": [],
+    "latestRelease": null,
+    "recentCommits90d": 30
+  },
+  "marketplace": {
+    "listed": true,
+    "pluginIds": [
+      "07dcolem.appimages"
+    ],
+    "verificationStatus": "unverified",
+    "listingValidatedCommit": "5c7f68f3a11cbcc22efc938b2b176e1a8a7d4e84",
+    "upstreamObservedCommit": "58a76bc482fbea66a7282ebf52fb2d3a467fd006",
+    "catalogCommit": "4cb2ef3bc8e2cf566180bc9cdf2b56168a36f218",
+    "catalogGeneratedAt": "2026-11-27T07:55:55.111Z",
+    "category": "System",
+    "tags": [
+      "bar",
+      "launcher",
+      "system"
+    ],
+    "driftFromValidated": false
+  },
+  "coverage": {
+    "filesListed": 53,
+    "filesInspected": 51,
+    "filesSkipped": [
+      {
+        "path": "assets/icon.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "preview.png",
+        "reason": "binary"
+      }
+    ],
+    "bytesInspected": 333199,
+    "truncated": false,
+    "fileTypes": {
+      "markdown": 8,
+      "github-workflow": 1,
+      "other-text": 15,
+      "binary": 2,
+      "qml": 2,
+      "shell": 21,
+      "python": 1,
+      "makefile": 1,
+      "omarchy-manifest": 1,
+      "javascript": 1
+    },
+    "unknown": [
+      "1 shell file(s) had parse errors; commands in those regions may be missed: bin/omarchy-appimage-remove",
+      "2 download command(s) build their URL from variables; the destination could not be determined statically",
+      "2 Python/JavaScript file(s) are only scanned for secrets; use language-specific scanners for logic review",
+      "2 QML file(s): only process/file/network surfaces and embedded commands are analysed, not QML logic"
+    ],
+    "scanners": [
+      {
+        "name": "omaaudit-rules",
+        "version": "0.1.0",
+        "source": "builtin",
+        "status": "ran"
+      },
+      {
+        "name": "shellcheck",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "shellcheck not found on PATH (pacman -S shellcheck)"
+      },
+      {
+        "name": "osv-scanner",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "osv-scanner not found on PATH"
+      }
+    ]
+  },
+  "dependencies": [],
+  "findings": [
+    {
+      "id": "95dcddafcdefe29d",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "downloaded file is executed directly without verification (found in documentation: this is what users are told to run)",
+      "location": {
+        "path": "appimage-integration-spec.md",
+        "startLine": 297,
+        "endLine": 297
+      },
+      "evidence": "\"$TARGET\" --appimage-extract",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "0f1d7e1915d23d79",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "downloaded file is made executable (found in documentation: this is what users are told to run)",
+      "location": {
+        "path": "appimage-integration-spec.md",
+        "startLine": 284,
+        "endLine": 284
+      },
+      "evidence": "chmod +x \"$TARGET\"",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "3fd13e304d77dd88",
+      "ruleId": "OA-SH-011",
+      "title": "Obfuscated or dynamically constructed code is executed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "low",
+      "capabilities": [
+        "obfuscation",
+        "remote-code-execution"
+      ],
+      "message": "long base64 blob with a decoder present in the same file",
+      "location": {
+        "path": "tests/helpers/fixtures.bash",
+        "startLine": 25,
+        "endLine": 25
+      },
+      "evidence": "iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAIAAABMXPacAAAAyElEQVR42u3R… (343 chars)",
+      "remediation": "Replace encoded payloads with plain, reviewable source. Avoid eval; use arrays and functions instead.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "aa32613789046ece",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "Panel.qml",
+        "startLine": 525,
+        "endLine": 525
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "mkt-4cb2ef3bc8e2",
+      "ruleId": "OA-MKT-001",
+      "title": "Omarchy plugin marketplace listing",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "listed as 07dcolem.appimages (unverified); marketplace validated commit 5c7f68f3a11c; this commit matches the validated snapshot. Marketplace checks are a limited baseline, not a security audit.",
+      "evidence": "catalog 4cb2ef3bc8e2 generated 2026-11-27T07:55:55.111Z",
+      "remediation": "Compare the commit you install with the validated one; `omarchy plugin add` clones upstream HEAD, which is not verification-bound.",
+      "scanner": {
+        "name": "omarchy-plugin-marketplace",
+        "version": "4cb2ef3bc8e2",
+        "source": "external"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy-plugin-marketplace/blob/main/SECURITY.md"
+      ]
+    },
+    {
+      "id": "ff31f71de4f0845c",
+      "ruleId": "OA-SH-009",
+      "title": "Packages are installed",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "package-management"
+      ],
+      "message": "pacman installs: git shellcheck shfmt bats desktop-file-utils jq perl python squashfs-tools (embedded in GitHub Actions run step)",
+      "location": {
+        "path": ".github/workflows/ci.yml",
+        "startLine": 16,
+        "endLine": 16
+      },
+      "evidence": "pacman -Sy --noconfirm --needed git shellcheck shfmt bats desktop-file-utils jq perl python squashfs-tools",
+      "remediation": "Prefer official repositories or the Omarchy package repo. For AUR packages, read the PKGBUILD. Avoid pacman -U from URLs.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "2351991a40705f4e",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "valid Omarchy plugin manifest '07dcolem.appimages' (kinds: bar-widget, panel). Plugins run as unsandboxed code inside omarchy-shell with the user's full file and process access.",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "id=07dcolem.appimages kinds=bar-widget,panel",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "129b25ba53e24222",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "Panel.qml",
+        "startLine": 3,
+        "endLine": 3
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "915c6974c995b872",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses FileView",
+      "location": {
+        "path": "Panel.qml",
+        "startLine": 652,
+        "endLine": 652
+      },
+      "evidence": "FileView {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    }
+  ],
+  "summary": {
+    "counts": {
+      "critical": 0,
+      "high": 1,
+      "medium": 2,
+      "low": 1,
+      "info": 5
+    },
+    "capabilities": [
+      "network-download",
+      "obfuscation",
+      "omarchy-plugin",
+      "package-management",
+      "remote-code-execution"
+    ],
+    "verdict": "high-risk-indicators",
+    "highestSeverity": "high"
+  },
+  "disclaimer": "OmaAudit performs static inspection only. Findings are evidence of risk patterns, not proof of malice, and the absence of findings is not proof of safety. Review the source before you install."
+}

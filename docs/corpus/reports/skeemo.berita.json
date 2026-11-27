@@ -1,0 +1,233 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "omaaudit",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-11-27T09:29:17.306Z",
+  "durationMs": 2723,
+  "target": {
+    "kind": "github",
+    "name": "sickelmo/omarchy-berita",
+    "url": "https://github.com/sickelmo/omarchy-berita",
+    "commit": "e6c30f552708d0d06640b4a0fbf423b72fc17471",
+    "ref": "e6c30f552708d0d06640b4a0fbf423b72fc17471",
+    "defaultBranch": "master"
+  },
+  "repository": {
+    "description": "Malaysia newspaper — Omarchy news feed for Berita Harian, Harian Metro and Utusan. By Skeemo.",
+    "stars": 0,
+    "forks": 0,
+    "openIssues": 0,
+    "license": "MIT",
+    "archived": false,
+    "fork": false,
+    "pushedAt": "2026-11-16T08:21:32Z",
+    "createdAt": "2026-11-15T06:33:58Z",
+    "topics": [],
+    "latestRelease": null,
+    "recentCommits90d": 4
+  },
+  "marketplace": {
+    "listed": true,
+    "pluginIds": [
+      "skeemo.berita"
+    ],
+    "verificationStatus": "unverified",
+    "listingValidatedCommit": "e6c30f552708d0d06640b4a0fbf423b72fc17471",
+    "upstreamObservedCommit": "da6dcf3c207d4791beb231bc3810a99dd4437ae6",
+    "catalogCommit": "4cb2ef3bc8e2cf566180bc9cdf2b56168a36f218",
+    "catalogGeneratedAt": "2026-11-27T07:55:55.111Z",
+    "category": "Widgets",
+    "tags": [
+      "bar",
+      "media",
+      "quickshell"
+    ],
+    "driftFromValidated": false
+  },
+  "coverage": {
+    "filesListed": 9,
+    "filesInspected": 9,
+    "filesSkipped": [],
+    "bytesInspected": 15806,
+    "truncated": false,
+    "fileTypes": {
+      "other-text": 4,
+      "qml": 1,
+      "omarchy-manifest": 1,
+      "markdown": 1,
+      "python": 2
+    },
+    "unknown": [
+      "1 shell file(s) had parse errors; commands in those regions may be missed: src/feed.py",
+      "2 Python/JavaScript file(s) are only scanned for secrets; use language-specific scanners for logic review",
+      "1 QML file(s): only process/file/network surfaces and embedded commands are analysed, not QML logic"
+    ],
+    "notes": [
+      "1 script(s) inside excluded or oversized locations were read because another script invokes them: src/feed.py (by BarWidget.qml)"
+    ],
+    "scanners": [
+      {
+        "name": "omaaudit-rules",
+        "version": "0.1.0",
+        "source": "builtin",
+        "status": "ran"
+      },
+      {
+        "name": "shellcheck",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "shellcheck not found on PATH (pacman -S shellcheck)"
+      },
+      {
+        "name": "osv-scanner",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "osv-scanner not found on PATH"
+      }
+    ]
+  },
+  "dependencies": [],
+  "findings": [
+    {
+      "id": "0a1f23d61dece13c",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "BarWidget.qml",
+        "startLine": 31,
+        "endLine": 31
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "mkt-4cb2ef3bc8e2",
+      "ruleId": "OA-MKT-001",
+      "title": "Omarchy plugin marketplace listing",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "listed as skeemo.berita (unverified); marketplace validated commit e6c30f552708; this commit matches the validated snapshot. Marketplace checks are a limited baseline, not a security audit.",
+      "evidence": "catalog 4cb2ef3bc8e2 generated 2026-11-27T07:55:55.111Z",
+      "remediation": "Compare the commit you install with the validated one; `omarchy plugin add` clones upstream HEAD, which is not verification-bound.",
+      "scanner": {
+        "name": "omarchy-plugin-marketplace",
+        "version": "4cb2ef3bc8e2",
+        "source": "external"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy-plugin-marketplace/blob/main/SECURITY.md"
+      ]
+    },
+    {
+      "id": "07426c545966be3e",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "BarWidget.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "ba63abcf4d060c22",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Qt.openUrlExternally",
+      "location": {
+        "path": "BarWidget.qml",
+        "startLine": 29,
+        "endLine": 29
+      },
+      "evidence": "Qt.openUrlExternally(article.url);",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "c32a863154aa6c2d",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "valid Omarchy plugin manifest 'skeemo.berita' (kinds: bar-widget). Plugins run as unsandboxed code inside omarchy-shell with the user's full file and process access.",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "id=skeemo.berita kinds=bar-widget",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    }
+  ],
+  "summary": {
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 1,
+      "info": 4
+    },
+    "capabilities": [
+      "omarchy-plugin"
+    ],
+    "verdict": "minor-notes",
+    "highestSeverity": "low"
+  },
+  "disclaimer": "OmaAudit performs static inspection only. Findings are evidence of risk patterns, not proof of malice, and the absence of findings is not proof of safety. Review the source before you install."
+}

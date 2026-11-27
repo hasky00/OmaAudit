@@ -1,0 +1,241 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "omaaudit",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-11-27T09:28:25.755Z",
+  "durationMs": 2533,
+  "target": {
+    "kind": "github",
+    "name": "ggregoro/Omarchy-Clipboard-Cards",
+    "url": "https://github.com/ggregoro/Omarchy-Clipboard-Cards",
+    "commit": "31545354a080dde12a28e9f83f6525a64c745525",
+    "ref": "31545354a080dde12a28e9f83f6525a64c745525",
+    "defaultBranch": "main"
+  },
+  "repository": {
+    "description": "Omarchy's clipboard manager with a card layout: history list and a separate preview panel",
+    "stars": 6,
+    "forks": 1,
+    "openIssues": 0,
+    "license": "GPL-3.0",
+    "archived": false,
+    "fork": false,
+    "pushedAt": "2026-10-10T12:27:04Z",
+    "createdAt": "2026-10-03T16:04:58Z",
+    "topics": [],
+    "latestRelease": null,
+    "recentCommits90d": 4
+  },
+  "marketplace": {
+    "listed": true,
+    "pluginIds": [
+      "ggregoro.clipboard-cards"
+    ],
+    "verificationStatus": "verified",
+    "listingValidatedCommit": "31545354a080dde12a28e9f83f6525a64c745525",
+    "upstreamObservedCommit": "31545354a080dde12a28e9f83f6525a64c745525",
+    "catalogCommit": "4cb2ef3bc8e2cf566180bc9cdf2b56168a36f218",
+    "catalogGeneratedAt": "2026-11-27T07:55:55.111Z",
+    "category": "Productivity",
+    "tags": [
+      "quickshell"
+    ],
+    "driftFromValidated": false
+  },
+  "coverage": {
+    "filesListed": 9,
+    "filesInspected": 6,
+    "filesSkipped": [
+      {
+        "path": "preview-image.webp",
+        "reason": "binary"
+      },
+      {
+        "path": "preview-text.webp",
+        "reason": "binary"
+      },
+      {
+        "path": "preview.webp",
+        "reason": "binary"
+      }
+    ],
+    "bytesInspected": 74585,
+    "truncated": false,
+    "fileTypes": {
+      "qml": 1,
+      "javascript": 1,
+      "other-text": 2,
+      "omarchy-manifest": 1,
+      "binary": 3,
+      "markdown": 1
+    },
+    "unknown": [
+      "1 Python/JavaScript file(s) are only scanned for secrets; use language-specific scanners for logic review",
+      "1 QML file(s): only process/file/network surfaces and embedded commands are analysed, not QML logic"
+    ],
+    "scanners": [
+      {
+        "name": "omaaudit-rules",
+        "version": "0.1.0",
+        "source": "builtin",
+        "status": "ran"
+      },
+      {
+        "name": "shellcheck",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "shellcheck not found on PATH (pacman -S shellcheck)"
+      },
+      {
+        "name": "osv-scanner",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "osv-scanner not found on PATH"
+      }
+    ]
+  },
+  "dependencies": [],
+  "findings": [
+    {
+      "id": "927a2d796f0f3c45",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "Clipboard.qml",
+        "startLine": 297,
+        "endLine": 297
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "mkt-4cb2ef3bc8e2",
+      "ruleId": "OA-MKT-001",
+      "title": "Omarchy plugin marketplace listing",
+      "kind": "verified",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "listed as ggregoro.clipboard-cards (verified); marketplace validated commit 31545354a080; this commit matches the validated snapshot. Marketplace checks are a limited baseline, not a security audit.",
+      "evidence": "catalog 4cb2ef3bc8e2 generated 2026-11-27T07:55:55.111Z",
+      "remediation": "Compare the commit you install with the validated one; `omarchy plugin add` clones upstream HEAD, which is not verification-bound.",
+      "scanner": {
+        "name": "omarchy-plugin-marketplace",
+        "version": "4cb2ef3bc8e2",
+        "source": "external"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy-plugin-marketplace/blob/main/SECURITY.md"
+      ]
+    },
+    {
+      "id": "1c1b598b8714c1be",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "Clipboard.qml",
+        "startLine": 10,
+        "endLine": 10
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "e150b50d9ef2f697",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses FileView",
+      "location": {
+        "path": "Clipboard.qml",
+        "startLine": 283,
+        "endLine": 283
+      },
+      "evidence": "FileView {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "ddb073e7909f6dff",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "valid Omarchy plugin manifest 'ggregoro.clipboard-cards' (kinds: overlay, keepLoaded). Plugins run as unsandboxed code inside omarchy-shell with the user's full file and process access.",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "id=ggregoro.clipboard-cards kinds=overlay",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    }
+  ],
+  "summary": {
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 1,
+      "info": 3
+    },
+    "capabilities": [
+      "omarchy-plugin"
+    ],
+    "verdict": "minor-notes",
+    "highestSeverity": "low"
+  },
+  "disclaimer": "OmaAudit performs static inspection only. Findings are evidence of risk patterns, not proof of malice, and the absence of findings is not proof of safety. Review the source before you install."
+}

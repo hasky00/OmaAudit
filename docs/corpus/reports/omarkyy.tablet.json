@@ -1,0 +1,438 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "omaaudit",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-11-27T09:28:43.589Z",
+  "durationMs": 2598,
+  "target": {
+    "kind": "github",
+    "name": "alertxsto/omarchy-touch-mode",
+    "url": "https://github.com/alertxsto/omarchy-touch-mode",
+    "commit": "69639aa15b14407debeb51afcbd839033cafbb1e",
+    "ref": "69639aa15b14407debeb51afcbd839033cafbb1e",
+    "defaultBranch": "main"
+  },
+  "repository": {
+    "description": "Floating touch keyboard, reversible tablet mode, and accelerometer rotation for Omarchy Quattro",
+    "stars": 1,
+    "forks": 1,
+    "openIssues": 0,
+    "license": "NOASSERTION",
+    "archived": false,
+    "fork": false,
+    "pushedAt": "2026-10-04T23:01:24Z",
+    "createdAt": "2026-10-04T23:01:18Z",
+    "topics": [],
+    "latestRelease": null,
+    "recentCommits90d": 1
+  },
+  "marketplace": {
+    "listed": true,
+    "pluginIds": [
+      "omarkyy.tablet"
+    ],
+    "verificationStatus": "verified",
+    "listingValidatedCommit": "69639aa15b14407debeb51afcbd839033cafbb1e",
+    "upstreamObservedCommit": "69639aa15b14407debeb51afcbd839033cafbb1e",
+    "catalogCommit": "4cb2ef3bc8e2cf566180bc9cdf2b56168a36f218",
+    "catalogGeneratedAt": "2026-11-27T07:55:55.111Z",
+    "category": "Hardware",
+    "tags": [
+      "bar",
+      "hyprland",
+      "quickshell"
+    ],
+    "driftFromValidated": false
+  },
+  "coverage": {
+    "filesListed": 20,
+    "filesInspected": 19,
+    "filesSkipped": [
+      {
+        "path": "preview.png",
+        "reason": "binary"
+      }
+    ],
+    "bytesInspected": 147247,
+    "truncated": false,
+    "fileTypes": {
+      "other-text": 5,
+      "qml": 3,
+      "markdown": 5,
+      "shell": 2,
+      "omarchy-manifest": 1,
+      "python": 3,
+      "binary": 1
+    },
+    "unknown": [
+      "2 shell file(s) had parse errors; commands in those regions may be missed: platform.py, setup.py",
+      "3 Python/JavaScript file(s) are only scanned for secrets; use language-specific scanners for logic review",
+      "3 QML file(s): only process/file/network surfaces and embedded commands are analysed, not QML logic"
+    ],
+    "notes": [
+      "2 script(s) inside excluded or oversized locations were read because another script invokes them: platform.py (by docs/architecture.md); setup.py (by docs/install.md)"
+    ],
+    "scanners": [
+      {
+        "name": "omaaudit-rules",
+        "version": "0.1.0",
+        "source": "builtin",
+        "status": "ran"
+      },
+      {
+        "name": "shellcheck",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "shellcheck not found on PATH (pacman -S shellcheck)"
+      },
+      {
+        "name": "osv-scanner",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "osv-scanner not found on PATH"
+      }
+    ]
+  },
+  "dependencies": [],
+  "findings": [
+    {
+      "id": "a874fc856e1191cc",
+      "ruleId": "OA-SH-004",
+      "title": "Commands run with elevated privileges",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "medium",
+      "capabilities": [
+        "privilege-escalation"
+      ],
+      "message": "sudo runs pacman (found in documentation: this is what users are told to run)",
+      "location": {
+        "path": "docs/install.md",
+        "startLine": 18,
+        "endLine": 18
+      },
+      "evidence": "sudo pacman -S --needed base-devel wayland wayland-protocols libxkbcommon glib2 python iio-sensor-proxy util-linux coreutils",
+      "remediation": "Confirm every privileged command is necessary, scoped to a fixed command surface, and documented. Prefer user-level installation where possible.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "df514a0bde19509d",
+      "ruleId": "OA-SH-004",
+      "title": "Commands run with elevated privileges",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "medium",
+      "capabilities": [
+        "privilege-escalation"
+      ],
+      "message": "sudo runs systemctl (found in documentation: this is what users are told to run)",
+      "location": {
+        "path": "docs/troubleshooting.md",
+        "startLine": 157,
+        "endLine": 157
+      },
+      "evidence": "sudo systemctl start iio-sensor-proxy.service",
+      "remediation": "Confirm every privileged command is necessary, scoped to a fixed command surface, and documented. Prefer user-level installation where possible.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "012ad2a1c06acec7",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "Keyboard.qml",
+        "startLine": 184,
+        "endLine": 184
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "507430880c31c50a",
+      "ruleId": "OA-SH-004",
+      "title": "Commands run with elevated privileges",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "medium",
+      "capabilities": [
+        "privilege-escalation"
+      ],
+      "message": "sudo runs pacman (found in documentation: this is what users are told to run)",
+      "location": {
+        "path": "README.md",
+        "startLine": 36,
+        "endLine": 36
+      },
+      "evidence": "sudo pacman -S --needed base-devel wayland wayland-protocols libxkbcommon glib2 python iio-sensor-proxy util-linux coreutils",
+      "remediation": "Confirm every privileged command is necessary, scoped to a fixed command surface, and documented. Prefer user-level installation where possible.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "c18bcdb4e4b1b327",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "Service.qml",
+        "startLine": 60,
+        "endLine": 60
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "7427d6a9814273dc",
+      "ruleId": "OA-SH-018",
+      "title": "Installer script does not enable strict error handling",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "medium",
+      "capabilities": [],
+      "message": "no set -e / set -u / pipefail in an installer-like script",
+      "location": {
+        "path": "setup.py",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "#!/usr/bin/env python3",
+      "remediation": "Start installer scripts with set -euo pipefail and check variables before using them in paths.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "mkt-4cb2ef3bc8e2",
+      "ruleId": "OA-MKT-001",
+      "title": "Omarchy plugin marketplace listing",
+      "kind": "verified",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "listed as omarkyy.tablet (verified); marketplace validated commit 69639aa15b14; this commit matches the validated snapshot. Marketplace checks are a limited baseline, not a security audit.",
+      "evidence": "catalog 4cb2ef3bc8e2 generated 2026-11-27T07:55:55.111Z",
+      "remediation": "Compare the commit you install with the validated one; `omarchy plugin add` clones upstream HEAD, which is not verification-bound.",
+      "scanner": {
+        "name": "omarchy-plugin-marketplace",
+        "version": "4cb2ef3bc8e2",
+        "source": "external"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy-plugin-marketplace/blob/main/SECURITY.md"
+      ]
+    },
+    {
+      "id": "c82d27c77d034e5b",
+      "ruleId": "OA-SH-009",
+      "title": "Packages are installed",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "package-management"
+      ],
+      "message": "pacman installs: base-devel wayland wayland-protocols libxkbcommon glib2 python iio-sensor-proxy util-linux coreutils (found in documentation: this is what users are told to run)",
+      "location": {
+        "path": "docs/install.md",
+        "startLine": 18,
+        "endLine": 18
+      },
+      "evidence": "sudo pacman -S --needed base-devel wayland wayland-protocols libxkbcommon glib2 python iio-sensor-proxy util-linux coreutils",
+      "remediation": "Prefer official repositories or the Omarchy package repo. For AUR packages, read the PKGBUILD. Avoid pacman -U from URLs.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "5905892ad003be49",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "Keyboard.qml",
+        "startLine": 2,
+        "endLine": 2
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "a38231fc7bb37d05",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "valid Omarchy plugin manifest 'omarkyy.tablet' (kinds: service, bar-widget). Plugins run as unsandboxed code inside omarchy-shell with the user's full file and process access.",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "id=omarkyy.tablet kinds=service,bar-widget",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "aa8efa8825cdfc30",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin",
+        "persistence"
+      ],
+      "message": "headless service: runs for the whole session without a visible surface",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "kinds includes \"service\"",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "6139a3a240c5a6ef",
+      "ruleId": "OA-SH-009",
+      "title": "Packages are installed",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "package-management"
+      ],
+      "message": "pacman installs: base-devel wayland wayland-protocols libxkbcommon glib2 python iio-sensor-proxy util-linux coreutils (found in documentation: this is what users are told to run)",
+      "location": {
+        "path": "README.md",
+        "startLine": 36,
+        "endLine": 36
+      },
+      "evidence": "sudo pacman -S --needed base-devel wayland wayland-protocols libxkbcommon glib2 python iio-sensor-proxy util-linux coreutils",
+      "remediation": "Prefer official repositories or the Omarchy package repo. For AUR packages, read the PKGBUILD. Avoid pacman -U from URLs.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "6134250a69662b26",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "Service.qml",
+        "startLine": 3,
+        "endLine": 3
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    }
+  ],
+  "summary": {
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 6,
+      "info": 6
+    },
+    "capabilities": [
+      "omarchy-plugin",
+      "package-management",
+      "persistence",
+      "privilege-escalation"
+    ],
+    "verdict": "minor-notes",
+    "highestSeverity": "low"
+  },
+  "disclaimer": "OmaAudit performs static inspection only. Findings are evidence of risk patterns, not proof of malice, and the absence of findings is not proof of safety. Review the source before you install."
+}

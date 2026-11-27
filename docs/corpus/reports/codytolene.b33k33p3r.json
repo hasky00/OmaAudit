@@ -1,0 +1,244 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "omaaudit",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-11-27T09:28:23.102Z",
+  "durationMs": 2511,
+  "target": {
+    "kind": "github",
+    "name": "CodyTolene/B33K33P3R-Plugin",
+    "url": "https://github.com/CodyTolene/B33K33P3R-Plugin",
+    "commit": "9a296dd9076eb3753f4ecb66c0bb884c432a577e",
+    "ref": "9a296dd9076eb3753f4ecb66c0bb884c432a577e",
+    "defaultBranch": "main"
+  },
+  "repository": {
+    "description": "A bar widget for B33K33P3R, the desktop app that puts a colony of AI coding bees to work on a task.",
+    "stars": 0,
+    "forks": 0,
+    "openIssues": 0,
+    "license": "MIT",
+    "archived": false,
+    "fork": false,
+    "pushedAt": "2026-11-23T22:18:55Z",
+    "createdAt": "2026-11-21T16:24:32Z",
+    "topics": [
+      "ai-agents",
+      "ai-managed",
+      "ai-management",
+      "ai-management-system",
+      "ai-management-systems",
+      "ai-manager",
+      "omarchy",
+      "omarchy-plugin",
+      "omarchy-plugins"
+    ],
+    "latestRelease": {
+      "tag": "v1.0.1",
+      "publishedAt": "2026-11-23T22:18:56Z"
+    },
+    "recentCommits90d": 5
+  },
+  "marketplace": {
+    "listed": true,
+    "pluginIds": [
+      "codytolene.b33k33p3r"
+    ],
+    "verificationStatus": "verified",
+    "listingValidatedCommit": "9a296dd9076eb3753f4ecb66c0bb884c432a577e",
+    "upstreamObservedCommit": "9a296dd9076eb3753f4ecb66c0bb884c432a577e",
+    "catalogCommit": "4cb2ef3bc8e2cf566180bc9cdf2b56168a36f218",
+    "catalogGeneratedAt": "2026-11-27T07:55:55.111Z",
+    "category": "Widgets",
+    "tags": [
+      "ai"
+    ],
+    "driftFromValidated": false
+  },
+  "coverage": {
+    "filesListed": 8,
+    "filesInspected": 7,
+    "filesSkipped": [
+      {
+        "path": "preview.png",
+        "reason": "binary"
+      }
+    ],
+    "bytesInspected": 28816,
+    "truncated": false,
+    "fileTypes": {
+      "qml": 4,
+      "other-text": 1,
+      "omarchy-manifest": 1,
+      "binary": 1,
+      "markdown": 1
+    },
+    "unknown": [
+      "4 QML file(s): only process/file/network surfaces and embedded commands are analysed, not QML logic"
+    ],
+    "scanners": [
+      {
+        "name": "omaaudit-rules",
+        "version": "0.1.0",
+        "source": "builtin",
+        "status": "ran"
+      },
+      {
+        "name": "shellcheck",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "shellcheck not found on PATH (pacman -S shellcheck)"
+      },
+      {
+        "name": "osv-scanner",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "osv-scanner not found on PATH"
+      }
+    ]
+  },
+  "dependencies": [],
+  "findings": [
+    {
+      "id": "08e525cc7216ee50",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "Hive.qml",
+        "startLine": 164,
+        "endLine": 164
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "mkt-4cb2ef3bc8e2",
+      "ruleId": "OA-MKT-001",
+      "title": "Omarchy plugin marketplace listing",
+      "kind": "verified",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "listed as codytolene.b33k33p3r (verified); marketplace validated commit 9a296dd9076e; this commit matches the validated snapshot. Marketplace checks are a limited baseline, not a security audit.",
+      "evidence": "catalog 4cb2ef3bc8e2 generated 2026-11-27T07:55:55.111Z",
+      "remediation": "Compare the commit you install with the validated one; `omarchy plugin add` clones upstream HEAD, which is not verification-bound.",
+      "scanner": {
+        "name": "omarchy-plugin-marketplace",
+        "version": "4cb2ef3bc8e2",
+        "source": "external"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy-plugin-marketplace/blob/main/SECURITY.md"
+      ]
+    },
+    {
+      "id": "275d0163914eab59",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "Hive.qml",
+        "startLine": 3,
+        "endLine": 3
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "af8f5ece21df8706",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Socket",
+      "location": {
+        "path": "Hive.qml",
+        "startLine": 145,
+        "endLine": 145
+      },
+      "evidence": "Socket {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "5d9acebebbccb4a5",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "valid Omarchy plugin manifest 'codytolene.b33k33p3r' (kinds: bar-widget). Plugins run as unsandboxed code inside omarchy-shell with the user's full file and process access.",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "id=codytolene.b33k33p3r kinds=bar-widget",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    }
+  ],
+  "summary": {
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 1,
+      "info": 3
+    },
+    "capabilities": [
+      "omarchy-plugin"
+    ],
+    "verdict": "minor-notes",
+    "highestSeverity": "low"
+  },
+  "disclaimer": "OmaAudit performs static inspection only. Findings are evidence of risk patterns, not proof of malice, and the absence of findings is not proof of safety. Review the source before you install."
+}

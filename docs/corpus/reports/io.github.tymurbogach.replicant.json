@@ -1,0 +1,5568 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "omaaudit",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-11-27T09:29:08.683Z",
+  "durationMs": 3207,
+  "target": {
+    "kind": "github",
+    "name": "tymurbogach/replicant",
+    "url": "https://github.com/tymurbogach/replicant",
+    "commit": "9e6af06e9da66aafeb21be24fc90f05ab87cb803",
+    "ref": "9e6af06e9da66aafeb21be24fc90f05ab87cb803",
+    "defaultBranch": "main"
+  },
+  "repository": {
+    "description": "Save and restore a real Omarchy setup across machines, with per-device scopes and a private GitHub backup.",
+    "stars": 4,
+    "forks": 1,
+    "openIssues": 2,
+    "license": "MIT",
+    "archived": false,
+    "fork": false,
+    "pushedAt": "2026-11-07T20:26:17Z",
+    "createdAt": "2026-09-02T00:37:03Z",
+    "topics": [
+      "archlinux",
+      "backup",
+      "dotfiles",
+      "hyprland",
+      "omarchy",
+      "omarchy-plugin",
+      "quickshell"
+    ],
+    "latestRelease": {
+      "tag": "v0.9.0",
+      "publishedAt": "2026-09-13T13:43:44Z"
+    },
+    "recentCommits90d": 100
+  },
+  "marketplace": {
+    "listed": true,
+    "pluginIds": [
+      "io.github.tymurbogach.replicant"
+    ],
+    "verificationStatus": "unverified",
+    "listingValidatedCommit": "9e6af06e9da66aafeb21be24fc90f05ab87cb803",
+    "upstreamObservedCommit": "019cab6f08c89c01cb875a12c8d3571ca38ead00",
+    "catalogCommit": "4cb2ef3bc8e2cf566180bc9cdf2b56168a36f218",
+    "catalogGeneratedAt": "2026-11-27T07:55:55.111Z",
+    "category": "System",
+    "tags": [
+      "bar",
+      "security",
+      "system"
+    ],
+    "driftFromValidated": false
+  },
+  "coverage": {
+    "filesListed": 162,
+    "filesInspected": 150,
+    "filesSkipped": [
+      {
+        "path": "docs/images/configs.png",
+        "reason": "binary"
+      },
+      {
+        "path": "docs/images/overview.png",
+        "reason": "binary"
+      },
+      {
+        "path": "docs/images/settings.png",
+        "reason": "binary"
+      },
+      {
+        "path": "preview.png",
+        "reason": "binary"
+      },
+      {
+        "path": "tests/fixtures/g7/screens/cancelled.png",
+        "reason": "binary"
+      },
+      {
+        "path": "tests/fixtures/g7/screens/conflict.png",
+        "reason": "binary"
+      },
+      {
+        "path": "tests/fixtures/g7/screens/empty.png",
+        "reason": "binary"
+      },
+      {
+        "path": "tests/fixtures/g7/screens/failure.png",
+        "reason": "binary"
+      },
+      {
+        "path": "tests/fixtures/g7/screens/loading.png",
+        "reason": "binary"
+      },
+      {
+        "path": "tests/fixtures/g7/screens/local-only.png",
+        "reason": "binary"
+      },
+      {
+        "path": "tests/fixtures/g7/screens/locked.png",
+        "reason": "binary"
+      },
+      {
+        "path": "tests/fixtures/g7/screens/overview.png",
+        "reason": "binary"
+      }
+    ],
+    "bytesInspected": 1310740,
+    "truncated": false,
+    "fileTypes": {
+      "github-workflow": 1,
+      "other-text": 30,
+      "qml": 41,
+      "shell": 68,
+      "markdown": 7,
+      "binary": 12,
+      "omarchy-manifest": 1,
+      "javascript": 1,
+      "dockerfile": 1
+    },
+    "unknown": [
+      "1 shell file(s) had parse errors; commands in those regions may be missed: bin/replicant",
+      "1 download command(s) build their URL from variables; the destination could not be determined statically",
+      "1 Python/JavaScript file(s) are only scanned for secrets; use language-specific scanners for logic review",
+      "41 QML file(s): only process/file/network surfaces and embedded commands are analysed, not QML logic"
+    ],
+    "scanners": [
+      {
+        "name": "omaaudit-rules",
+        "version": "0.1.0",
+        "source": "builtin",
+        "status": "ran"
+      },
+      {
+        "name": "shellcheck",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "shellcheck not found on PATH (pacman -S shellcheck)"
+      },
+      {
+        "name": "osv-scanner",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "osv-scanner not found on PATH"
+      }
+    ]
+  },
+  "dependencies": [],
+  "findings": [
+    {
+      "id": "488f4711018cf51f",
+      "ruleId": "OA-SH-010",
+      "title": "Destructive filesystem or disk operation",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "destructive-operation"
+      ],
+      "message": "rm -rf on a path built only from a variable ($d); an empty variable deletes the parent and the script has no set -u",
+      "location": {
+        "path": "bin/lib/crypto.sh",
+        "startLine": 39,
+        "endLine": 39
+      },
+      "evidence": "rm -rf -- \"$d\"",
+      "remediation": "Quote and validate every path before rm -rf, never recurse on $HOME or / and refuse to run when a variable is empty (set -u, [[ -n $var ]]).",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "e817c9b5781b3318",
+      "ruleId": "OA-SH-004",
+      "title": "Commands run with elevated privileges",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "high",
+      "capabilities": [
+        "privilege-escalation"
+      ],
+      "message": "sudo runs rm (3 occurrences in this file: lines 55, 62, 75)",
+      "location": {
+        "path": "bin/lib/crypto.sh",
+        "startLine": 55,
+        "endLine": 55
+      },
+      "evidence": "sudo -n rm -f -- \"${_VAULT_TEMPS[@]}\" 2>/dev/null\nsudo -n rm -f -- \"$_pt\" 2>/dev/null\nsudo -n rm -f -- \"$f\" 2>/dev/null",
+      "remediation": "Confirm every privileged command is necessary, scoped to a fixed command surface, and documented. Prefer user-level installation where possible.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "f218058888a77944",
+      "ruleId": "OA-SH-003",
+      "title": "Code is obtained from a mutable remote reference and built or installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "build-from-source",
+        "network-download"
+      ],
+      "message": "git clone of a mutable reference",
+      "location": {
+        "path": "bin/lib/repo.sh",
+        "startLine": 277,
+        "endLine": 277
+      },
+      "evidence": "git clone -- \"$url\" \"$stage\" 2>&1",
+      "remediation": "Pin to a full 40-character commit (git checkout <sha>, cargo --rev <sha>, go @<version>, pip @<sha>) or to a signed release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "6e328b59c629db96",
+      "ruleId": "OA-SH-010",
+      "title": "Destructive filesystem or disk operation",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "destructive-operation"
+      ],
+      "message": "rm -rf on a path built only from a variable ($aside); an empty variable deletes the parent and the script has no set -u",
+      "location": {
+        "path": "bin/lib/scopes.sh",
+        "startLine": 333,
+        "endLine": 333
+      },
+      "evidence": "rm -rf -- \"$aside\"",
+      "remediation": "Quote and validate every path before rm -rf, never recurse on $HOME or / and refuse to run when a variable is empty (set -u, [[ -n $var ]]).",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "c8d0e88ad89c87ab",
+      "ruleId": "OA-SH-010",
+      "title": "Destructive filesystem or disk operation",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "destructive-operation"
+      ],
+      "message": "rm -rf on a path built only from a variable ($aside); an empty variable deletes the parent and the script has no set -u",
+      "location": {
+        "path": "bin/lib/scopes.sh",
+        "startLine": 337,
+        "endLine": 337
+      },
+      "evidence": "rm -rf -- \"$aside\"",
+      "remediation": "Quote and validate every path before rm -rf, never recurse on $HOME or / and refuse to run when a variable is empty (set -u, [[ -n $var ]]).",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "b1ea0511869b2806",
+      "ruleId": "OA-SH-004",
+      "title": "Commands run with elevated privileges",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "high",
+      "capabilities": [
+        "privilege-escalation"
+      ],
+      "message": "pkexec runs sh",
+      "location": {
+        "path": "bin/lib/settings.sh",
+        "startLine": 137,
+        "endLine": 137
+      },
+      "evidence": "pkexec /bin/sh -c \"$script\" _ \"$dst\" \"$staged\" \"$after\" 2>/dev/null",
+      "remediation": "Confirm every privileged command is necessary, scoped to a fixed command surface, and documented. Prefer user-level installation where possible.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "c61b26f353721f4e",
+      "ruleId": "OA-SH-004",
+      "title": "Commands run with elevated privileges",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "high",
+      "capabilities": [
+        "privilege-escalation"
+      ],
+      "message": "sudo runs sh",
+      "location": {
+        "path": "bin/lib/settings.sh",
+        "startLine": 140,
+        "endLine": 140
+      },
+      "evidence": "sudo -n /bin/sh -c \"$script\" _ \"$dst\" \"$staged\" \"$after\" 2>/dev/null",
+      "remediation": "Confirm every privileged command is necessary, scoped to a fixed command surface, and documented. Prefer user-level installation where possible.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "432bb9490c7eda1c",
+      "ruleId": "OA-SH-010",
+      "title": "Destructive filesystem or disk operation",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "destructive-operation"
+      ],
+      "message": "rm -rf on a path built only from a variable ($copy); an empty variable deletes the parent and the script has no set -u",
+      "location": {
+        "path": "bin/lib/track.sh",
+        "startLine": 141,
+        "endLine": 141
+      },
+      "evidence": "rm -rf -- \"$copy\"",
+      "remediation": "Quote and validate every path before rm -rf, never recurse on $HOME or / and refuse to run when a variable is empty (set -u, [[ -n $var ]]).",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "63d447dcdecdf17d",
+      "ruleId": "OA-SH-010",
+      "title": "Destructive filesystem or disk operation",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "destructive-operation"
+      ],
+      "message": "rm -rf on a path built only from a variable ($txrepo); an empty variable deletes the parent and the script has no set -u",
+      "location": {
+        "path": "bin/lib/transaction.sh",
+        "startLine": 115,
+        "endLine": 115
+      },
+      "evidence": "rm -rf -- \"$txrepo\"",
+      "remediation": "Quote and validate every path before rm -rf, never recurse on $HOME or / and refuse to run when a variable is empty (set -u, [[ -n $var ]]).",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "9564719e5339cd05",
+      "ruleId": "OA-SH-010",
+      "title": "Destructive filesystem or disk operation",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "destructive-operation"
+      ],
+      "message": "rm -rf on a path built only from a variable ($txdir); an empty variable deletes the parent and the script has no set -u",
+      "location": {
+        "path": "bin/lib/transaction.sh",
+        "startLine": 118,
+        "endLine": 118
+      },
+      "evidence": "rm -rf -- \"$txdir\" 2>/dev/null",
+      "remediation": "Quote and validate every path before rm -rf, never recurse on $HOME or / and refuse to run when a variable is empty (set -u, [[ -n $var ]]).",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "b3d803c180bdb9b4",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "bin/replicant",
+        "startLine": 967,
+        "endLine": 967
+      },
+      "evidence": "printf '      create the file, or remove its require line from ~/.config/hypr/\\n' >&2",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "8cdb44d879787990",
+      "ruleId": "OA-SH-005",
+      "title": "Files under system paths are written or modified",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "high",
+      "capabilities": [
+        "system-file-write"
+      ],
+      "message": "output is redirected to / (found in documentation: this is what users are told to run)",
+      "location": {
+        "path": "docs/SPEC.md",
+        "startLine": 15,
+        "endLine": 15
+      },
+      "evidence": "state/<machine>/",
+      "remediation": "Prefer per-user locations (~/.local, ~/.config). If a system path is required, ship a package (PKGBUILD) so pacman tracks the files and can remove them.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "bc72902bb42fed0d",
+      "ruleId": "OA-SH-005",
+      "title": "Files under system paths are written or modified",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "high",
+      "capabilities": [
+        "system-file-write"
+      ],
+      "message": "output is redirected to / (found in documentation: this is what users are told to run)",
+      "location": {
+        "path": "README.md",
+        "startLine": 223,
+        "endLine": 223
+      },
+      "evidence": "$P/bin/replicant clone https://github.com/<you>/<hostname>-replicant",
+      "remediation": "Prefer per-user locations (~/.local, ~/.config). If a system path is required, ship a package (PKGBUILD) so pacman tracks the files and can remove them.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "ff98057a6bd808b8",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/panel-capture.sh",
+        "startLine": 15,
+        "endLine": 15
+      },
+      "evidence": "printf 'local input\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "2c3b0990d1821b29",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/parity-dump.sh",
+        "startLine": 26,
+        "endLine": 26
+      },
+      "evidence": "printf 'live input v1\\n'  > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "91329ef77b73693e",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/parity-dump.sh",
+        "startLine": 27,
+        "endLine": 27
+      },
+      "evidence": "printf 'land base\\n'      > \"$HOME/.config/hypr/hyprland.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "02275cfaf8020046",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/parity-dump.sh",
+        "startLine": 28,
+        "endLine": 28
+      },
+      "evidence": "printf 'lock conf\\n'      > \"$HOME/.config/hypr/hyprlock.conf\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "744429e460d6e78a",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/parity-dump.sh",
+        "startLine": 29,
+        "endLine": 29
+      },
+      "evidence": "printf 'autostart\\n'      > \"$HOME/.config/hypr/autostart.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "b739b88ec085dca9",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/parity-dump.sh",
+        "startLine": 30,
+        "endLine": 30
+      },
+      "evidence": "printf 'monitors\\n'       > \"$HOME/.config/hypr/monitors.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "7638c502d7adfe37",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/parity-dump.sh",
+        "startLine": 31,
+        "endLine": 31
+      },
+      "evidence": "printf 'xdph\\n'           > \"$HOME/.config/hypr/xdph.conf\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "b325bea14f01ca58",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/parity-dump.sh",
+        "startLine": 75,
+        "endLine": 75
+      },
+      "evidence": "printf 'live input v2\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "0d6db262c84d8856",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/parity-dump.sh",
+        "startLine": 77,
+        "endLine": 77
+      },
+      "evidence": "printf 'land from laptop\\n' > \"$HOME/.config/hypr/hyprland.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "f6b98a41c042ec1b",
+      "ruleId": "OA-SH-010",
+      "title": "Destructive filesystem or disk operation",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "destructive-operation"
+      ],
+      "message": "rm -rf on a path built only from a variable ($REPO_DIR); an empty variable deletes the parent and the script has no set -u",
+      "location": {
+        "path": "tests/test-bootstrap.sh",
+        "startLine": 72,
+        "endLine": 72
+      },
+      "evidence": "rm -rf -- \"$REPO_DIR\"",
+      "remediation": "Quote and validate every path before rm -rf, never recurse on $HOME or / and refuse to run when a variable is empty (set -u, [[ -n $var ]]).",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "0d3e09ffee9b338c",
+      "ruleId": "OA-SH-010",
+      "title": "Destructive filesystem or disk operation",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "destructive-operation"
+      ],
+      "message": "rm -rf on a path built only from a variable ($REPO_DIR); an empty variable deletes the parent and the script has no set -u",
+      "location": {
+        "path": "tests/test-bootstrap.sh",
+        "startLine": 89,
+        "endLine": 89
+      },
+      "evidence": "rm -rf -- \"$REPO_DIR\"",
+      "remediation": "Quote and validate every path before rm -rf, never recurse on $HOME or / and refuse to run when a variable is empty (set -u, [[ -n $var ]]).",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "620e69c6da8afe4a",
+      "ruleId": "OA-SH-010",
+      "title": "Destructive filesystem or disk operation",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "destructive-operation"
+      ],
+      "message": "rm -rf on a path built only from a variable ($REPO_DIR); an empty variable deletes the parent and the script has no set -u",
+      "location": {
+        "path": "tests/test-bootstrap.sh",
+        "startLine": 101,
+        "endLine": 101
+      },
+      "evidence": "rm -rf -- \"$REPO_DIR\"",
+      "remediation": "Quote and validate every path before rm -rf, never recurse on $HOME or / and refuse to run when a variable is empty (set -u, [[ -n $var ]]).",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "f853526177e4b4c8",
+      "ruleId": "OA-SH-010",
+      "title": "Destructive filesystem or disk operation",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "destructive-operation"
+      ],
+      "message": "rm -rf on a path built only from a variable ($REPO_DIR); an empty variable deletes the parent and the script has no set -u",
+      "location": {
+        "path": "tests/test-bootstrap.sh",
+        "startLine": 145,
+        "endLine": 145
+      },
+      "evidence": "rm -rf -- \"$REPO_DIR\"",
+      "remediation": "Quote and validate every path before rm -rf, never recurse on $HOME or / and refuse to run when a variable is empty (set -u, [[ -n $var ]]).",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "8f28d194f8701e73",
+      "ruleId": "OA-SH-010",
+      "title": "Destructive filesystem or disk operation",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "destructive-operation"
+      ],
+      "message": "rm -rf on a path built only from a variable ($REPO_DIR); an empty variable deletes the parent and the script has no set -u",
+      "location": {
+        "path": "tests/test-bootstrap.sh",
+        "startLine": 155,
+        "endLine": 155
+      },
+      "evidence": "rm -rf -- \"$REPO_DIR\"",
+      "remediation": "Quote and validate every path before rm -rf, never recurse on $HOME or / and refuse to run when a variable is empty (set -u, [[ -n $var ]]).",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "9c686cf0a83b9cec",
+      "ruleId": "OA-SH-010",
+      "title": "Destructive filesystem or disk operation",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "destructive-operation"
+      ],
+      "message": "rm -rf on a path built only from a variable ($REPO_DIR); an empty variable deletes the parent and the script has no set -u",
+      "location": {
+        "path": "tests/test-bootstrap.sh",
+        "startLine": 174,
+        "endLine": 174
+      },
+      "evidence": "rm -rf -- \"$REPO_DIR\"",
+      "remediation": "Quote and validate every path before rm -rf, never recurse on $HOME or / and refuse to run when a variable is empty (set -u, [[ -n $var ]]).",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "fe0c39879f5a1a2b",
+      "ruleId": "OA-SH-010",
+      "title": "Destructive filesystem or disk operation",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "destructive-operation"
+      ],
+      "message": "rm -rf on a path built only from a variable ($REPO_DIR); an empty variable deletes the parent and the script has no set -u",
+      "location": {
+        "path": "tests/test-bootstrap.sh",
+        "startLine": 186,
+        "endLine": 186
+      },
+      "evidence": "rm -rf -- \"$REPO_DIR\"",
+      "remediation": "Quote and validate every path before rm -rf, never recurse on $HOME or / and refuse to run when a variable is empty (set -u, [[ -n $var ]]).",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "40be7c1629cd584c",
+      "ruleId": "OA-SH-010",
+      "title": "Destructive filesystem or disk operation",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "destructive-operation"
+      ],
+      "message": "rm -rf on a path built only from a variable ($REPO_DIR); an empty variable deletes the parent and the script has no set -u",
+      "location": {
+        "path": "tests/test-bootstrap.sh",
+        "startLine": 191,
+        "endLine": 191
+      },
+      "evidence": "rm -rf -- \"$REPO_DIR\"",
+      "remediation": "Quote and validate every path before rm -rf, never recurse on $HOME or / and refuse to run when a variable is empty (set -u, [[ -n $var ]]).",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "4d6fe63fdeca7333",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-bulk.sh",
+        "startLine": 12,
+        "endLine": 12
+      },
+      "evidence": "printf 'one\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "0910394d307476d6",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-bulk.sh",
+        "startLine": 13,
+        "endLine": 13
+      },
+      "evidence": "printf 'two\\n' > \"$HOME/.config/hypr/hyprlock.conf\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "508b6d4a6393b344",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-bulk.sh",
+        "startLine": 30,
+        "endLine": 30
+      },
+      "evidence": "printf 'saved by bulk\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "a77fe3bc101ad3ef",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-cli.sh",
+        "startLine": 27,
+        "endLine": 27
+      },
+      "evidence": "printf 'my own input\\n'   > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "636ab983fca8073c",
+      "ruleId": "OA-SH-008",
+      "title": "Shell startup files are modified",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "shell-config-change",
+        "persistence"
+      ],
+      "message": "$HOME/.bashrc is modified",
+      "location": {
+        "path": "tests/test-cli.sh",
+        "startLine": 28,
+        "endLine": 28
+      },
+      "evidence": "printf 'my own bashrc\\n'  > \"$HOME/.bashrc\"",
+      "remediation": "Ask before editing dotfiles, show the exact lines, and provide an uninstall that removes them.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "fb87989b13db390c",
+      "ruleId": "OA-SH-010",
+      "title": "Destructive filesystem or disk operation",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "destructive-operation"
+      ],
+      "message": "rm -rf on a path built only from a variable ($broken); an empty variable deletes the parent and the script has no set -u",
+      "location": {
+        "path": "tests/test-cli.sh",
+        "startLine": 122,
+        "endLine": 122
+      },
+      "evidence": "rm -rf \"$broken\"",
+      "remediation": "Quote and validate every path before rm -rf, never recurse on $HOME or / and refuse to run when a variable is empty (set -u, [[ -n $var ]]).",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "1f55e017f747ca0b",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-cli.sh",
+        "startLine": 146,
+        "endLine": 146
+      },
+      "evidence": "printf 'changed on this machine\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "7b05f75f4574be8a",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-cli.sh",
+        "startLine": 208,
+        "endLine": 208
+      },
+      "evidence": "printf 'edited again\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "b4855c12e8ca3d93",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-cli.sh",
+        "startLine": 217,
+        "endLine": 217
+      },
+      "evidence": "printf 'saved where there is no remote\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "ad6ce324bfc4d418",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-cli.sh",
+        "startLine": 359,
+        "endLine": 359
+      },
+      "evidence": "printf 'edited after the last save\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "29ad79c6f6843f11",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-cli.sh",
+        "startLine": 368,
+        "endLine": 368
+      },
+      "evidence": "printf 'o.bind(\"SUPER + J\", \"Journal\", \"obsidian\")\\n' > \"$HOME/.config/hypr/bindings.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "115e5ebeef2a8d68",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-cli.sh",
+        "startLine": 393,
+        "endLine": 393
+      },
+      "evidence": "printf 'require(\"hypr.extra\")\\nrequire(\"hypr.gone\")\\n' > \"$HOME/.config/hypr/hyprland.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "1a5c58650e78f2ad",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-cli.sh",
+        "startLine": 394,
+        "endLine": 394
+      },
+      "evidence": "printf -- '-- mine\\n' > \"$HOME/.config/hypr/extra.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "03e6ecea1ec391d1",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-cli.sh",
+        "startLine": 501,
+        "endLine": 501
+      },
+      "evidence": "printf 'monitor = eDP-1\\n' > \"$HOME/.config/hypr/monitors.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "21d0e3529cb5adb9",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-cli.sh",
+        "startLine": 504,
+        "endLine": 504
+      },
+      "evidence": "printf 'monitor = eDP-1, changed\\n' > \"$HOME/.config/hypr/monitors.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "b894c8451eaf1765",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-cli.sh",
+        "startLine": 543,
+        "endLine": 543
+      },
+      "evidence": "printf 'version one\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "22937332d63b3594",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-cli.sh",
+        "startLine": 544,
+        "endLine": 544
+      },
+      "evidence": "cp \"$HOME/.config/hypr/input.lua\" \"$HOME/.config/hypr/input.lua.bak.1700000000\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "7d36e2c487ed542b",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-cli.sh",
+        "startLine": 545,
+        "endLine": 545
+      },
+      "evidence": "printf 'version two\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "59d484eb97c0752b",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-cli.sh",
+        "startLine": 546,
+        "endLine": 546
+      },
+      "evidence": "cp \"$HOME/.config/hypr/input.lua\" \"$HOME/.config/hypr/input.lua.bak.1700000900\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "43d10d9c69a40bac",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-cli.sh",
+        "startLine": 547,
+        "endLine": 547
+      },
+      "evidence": "printf 'version three\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "2f461e2bbddb48f7",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-cli.sh",
+        "startLine": 556,
+        "endLine": 556
+      },
+      "evidence": "cp \"$HOME/.config/hypr/input.lua\" \"$HOME/.config/hypr/input.lua.bak.1700001000\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "64a149d3ae2b48cf",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-cli.sh",
+        "startLine": 567,
+        "endLine": 567
+      },
+      "evidence": "cat \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "c8f5068319998ba0",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-cli.sh",
+        "startLine": 577,
+        "endLine": 577
+      },
+      "evidence": "cat \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "70eb9d0c5c9ae928",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-cli.sh",
+        "startLine": 594,
+        "endLine": 594
+      },
+      "evidence": "printf 'my own input\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "17cbc672986556e2",
+      "ruleId": "OA-SH-003",
+      "title": "Code is obtained from a mutable remote reference and built or installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "build-from-source",
+        "network-download"
+      ],
+      "message": "git clone of a mutable reference",
+      "location": {
+        "path": "tests/test-cli.sh",
+        "startLine": 879,
+        "endLine": 879
+      },
+      "evidence": "git clone -q \"$porigin\" \"$pinst\" 2>/dev/null",
+      "remediation": "Pin to a full 40-character commit (git checkout <sha>, cargo --rev <sha>, go @<version>, pip @<sha>) or to a signed release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "80fb5a1fd84a32a3",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 32,
+        "endLine": 32
+      },
+      "evidence": "cp \"$OMARCHY_PATH/config/hypr/looknfeel.lua\" \"$HOME/.config/hypr/looknfeel.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "7e39c135fc656456",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 33,
+        "endLine": 33
+      },
+      "evidence": "printf 'my own input\\n'  > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "e88ded5041506c8d",
+      "ruleId": "OA-SH-008",
+      "title": "Shell startup files are modified",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "shell-config-change",
+        "persistence"
+      ],
+      "message": "$HOME/.bashrc is modified",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 34,
+        "endLine": 34
+      },
+      "evidence": "printf 'my own bashrc\\n\" > /dev/null'  > \"$HOME/.bashrc\"",
+      "remediation": "Ask before editing dotfiles, show the exact lines, and provide an uninstall that removes them.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "131c97245088509f",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 38,
+        "endLine": 38
+      },
+      "evidence": "printf '{\"id\":\"com.example.demo\",\"name\":\"Demo Plugin\"}\\n' > \"$HOME/.config/omarchy/plugins/com.example.demo/manifest.json\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "ee56d7f450843615",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 42,
+        "endLine": 42
+      },
+      "evidence": "printf '{\"id\":\"com.example.silent\",\"name\":\"Silent\"}\\n' > \"$HOME/.config/omarchy/plugins/com.example.silent/manifest.json\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "f86052dd610aa472",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 81,
+        "endLine": 81
+      },
+      "evidence": "printf '{\"id\":\"local.only\",\"name\":\"Local Only\",\"version\":\"1.0.0\"}\\n' \\\n  > \"$HOME/.config/omarchy/plugins/local.only/manifest.json\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "a8efaa0b1726816c",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 91,
+        "endLine": 91
+      },
+      "evidence": "printf '{\"id\":\"from.checkout\",\"name\":\"From Checkout\",\"version\":\"1.0.0\"}\\n' \\\n  > \"$HOME/.config/omarchy/plugins/from.checkout/manifest.json\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "98a98c65a0e1d20d",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 107,
+        "endLine": 107
+      },
+      "evidence": "printf '{\"id\":\"mine.clock\",\"name\":\"My Clock\",\"version\":\"1.0.0\",\"omarchy\":{\"clonedFrom\":\"omarchy.clock\"}}\\n' \\\n  > \"$HOME/.config/omarchy/plugins/mine.clock/manifest.json\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "58561782ff1513e9",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 124,
+        "endLine": 124
+      },
+      "evidence": "cp \"$TMP/roots/dev/my-widget/manifest.json\" \"$HOME/.config/omarchy/plugins/mine.widget/manifest.json\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "c265316dc4c01174",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 176,
+        "endLine": 176
+      },
+      "evidence": "printf 'changed again\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "55521f77f2084e69",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 195,
+        "endLine": 195
+      },
+      "evidence": "cp \"$HOME/.config/hypr/input.lua\" \"$TMP/input.saved\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "e3f18aa00ad1a8c9",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 196,
+        "endLine": 196
+      },
+      "evidence": "printf 'edited but never saved\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "cb4ae0ab8ca75f28",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 201,
+        "endLine": 201
+      },
+      "evidence": "cp \"$TMP/input.saved\" \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "5bd4e96df220de28",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 209,
+        "endLine": 209
+      },
+      "evidence": "cp \"$def_src\" \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "f5f4a66e6491407f",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 212,
+        "endLine": 212
+      },
+      "evidence": "cp \"$TMP/input.saved\" \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "40303759e000232d",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 216,
+        "endLine": 216
+      },
+      "evidence": "printf 'copied in, not committed\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "77b0cc88959ecb0a",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 220,
+        "endLine": 220
+      },
+      "evidence": "cp \"$TMP/input.saved\" \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "225c8a29796ff0c7",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 374,
+        "endLine": 374
+      },
+      "evidence": "printf 'monitors as of now\\n' > \"$HOME/.config/hypr/monitors.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "4043ca28478e972d",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 478,
+        "endLine": 478
+      },
+      "evidence": "printf '{\"id\":\"mine.lock\",\"version\":\"1.0.0\",\"omarchy\":{\"clonedFrom\":\"omarchy.lock\"}}\\n' \\\n  > \"$HOME/.config/omarchy/plugins/mine.lock/manifest.json\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "cc7a7be041ccf573",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 486,
+        "endLine": 486
+      },
+      "evidence": "printf '{\"id\":\"zz.plain\",\"version\":\"1.0.0\"}\\n' \\\n  > \"$HOME/.config/omarchy/plugins/zz.plain/manifest.json\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "5094e4d2e2ba272c",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 496,
+        "endLine": 496
+      },
+      "evidence": "printf '{\"id\":\"mine.lock\",\"version\":\"1.0.0\",\"omarchy\":{\"clonedFrom\":\"omarchy.lock\",\"derivedBy\":\"omarchy-matrix\"}}\\n' \\\n  > \"$HOME/.config/omarchy/plugins/mine.lock/manifest.json\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "c399d0ac4d39f54d",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 500,
+        "endLine": 500
+      },
+      "evidence": "printf '{\"id\":\"mine.lock\",\"version\":\"1.0.0\",\"omarchy\":{\"clonedFrom\":\"omarchy.lock\"}}\\n' \\\n  > \"$HOME/.config/omarchy/plugins/mine.lock/manifest.json\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "43f04b4753dfeff4",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 506,
+        "endLine": 506
+      },
+      "evidence": "printf 'import QtQuick\\nItem { }\\n' > \"$HOME/.config/omarchy/plugins/mine.lock/MatrixRain.qml\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "502a38368194828b",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 620,
+        "endLine": 620
+      },
+      "evidence": "cat > \"$HOME/.config/hypr/bindings.lua\" <<'BINDINGS'\n-- o.bind(\"SUPER + X\", \"Commented out\", \"never-runs\")\no.bind(\"SUPER + SHIFT + R\", \"SSH\", \"alacritty -e ssh box\")\nhl.unbind(\"SUPER + SPACE\")\no.bind(\"SUPER + H\", nil, \"voxtype record toggle\")\nBINDINGS",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "69ecd508a78233a4",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 647,
+        "endLine": 647
+      },
+      "evidence": "mv \"$HOME/.config/hypr/bindings.lua\" \"$TMP/bindings.keep\" 2>/dev/null",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "fe16f12a503cac80",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 652,
+        "endLine": 652
+      },
+      "evidence": "mv \"$TMP/bindings.keep\" \"$HOME/.config/hypr/bindings.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "772e7b440122afae",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 803,
+        "endLine": 803
+      },
+      "evidence": "cp \"$HOME/.config/hypr/input.lua\" \"$TMP/input.keep\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "b62f30d403e6f3f5",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 804,
+        "endLine": 804
+      },
+      "evidence": "printf 'live version\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "b228a3e5394a6a1e",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 811,
+        "endLine": 811
+      },
+      "evidence": "cat \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "69f5e7652357865b",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 814,
+        "endLine": 814
+      },
+      "evidence": "cp \"$TMP/input.keep\" \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "e102bba4e56c629a",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 826,
+        "endLine": 826
+      },
+      "evidence": "cp \"$HOME/.config/hypr/input.lua\" \"$TMP/input.keep\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "b550bac3c14ea94d",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 827,
+        "endLine": 827
+      },
+      "evidence": "printf 'saved content\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "ba31e939e9131021",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 838,
+        "endLine": 838
+      },
+      "evidence": "cp \"$TMP/input.keep\" \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "4619d6c7148c07ac",
+      "ruleId": "OA-SH-010",
+      "title": "Destructive filesystem or disk operation",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "destructive-operation"
+      ],
+      "message": "rm -rf on a path built only from a variable ($probe); an empty variable deletes the parent and the script has no set -u",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 1117,
+        "endLine": 1117
+      },
+      "evidence": "rm -rf -- \"$probe\"",
+      "remediation": "Quote and validate every path before rm -rf, never recurse on $HOME or / and refuse to run when a variable is empty (set -u, [[ -n $var ]]).",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "ea9872606c2be8d5",
+      "ruleId": "OA-SH-010",
+      "title": "Destructive filesystem or disk operation",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "destructive-operation"
+      ],
+      "message": "rm -rf on a path built only from a variable ($proberepo); an empty variable deletes the parent and the script has no set -u",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 1251,
+        "endLine": 1251
+      },
+      "evidence": "rm -rf \"$proberepo\" \"$fakeplugin\" \"$TMP/hook-probe.sh\"",
+      "remediation": "Quote and validate every path before rm -rf, never recurse on $HOME or / and refuse to run when a variable is empty (set -u, [[ -n $var ]]).",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "16f3bdf6a033dc23",
+      "ruleId": "OA-SH-010",
+      "title": "Destructive filesystem or disk operation",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "destructive-operation"
+      ],
+      "message": "rm -rf on a path built only from a variable ($fakeplugin); an empty variable deletes the parent and the script has no set -u",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 1251,
+        "endLine": 1251
+      },
+      "evidence": "rm -rf \"$proberepo\" \"$fakeplugin\" \"$TMP/hook-probe.sh\"",
+      "remediation": "Quote and validate every path before rm -rf, never recurse on $HOME or / and refuse to run when a variable is empty (set -u, [[ -n $var ]]).",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "8e33960e50d87d2c",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 1341,
+        "endLine": 1341
+      },
+      "evidence": "cat > \"$HOME/.config/hypr/hyprland.lua\" <<'EOF'\nrequire(\"hypr.input\")\n-- require(\"hypr.retired\")\nrequire \"hypr.extra.nested\"\nrequire('hypr.omasettings')\nrequire(\"hypr.nowhere\")\nEOF",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "9abf31ea3c45f78e",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 1348,
+        "endLine": 1348
+      },
+      "evidence": "printf 'hl.config({ input = { touchpad = { scroll_factor = 1.0 } } })\\nrequire(\"hypr.deeper\")\\n' \\\n  > \"$HOME/.config/hypr/omasettings.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "664dcd9d318cf9b0",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 1350,
+        "endLine": 1350
+      },
+      "evidence": "printf -- '-- loaded by omasettings.lua\\n' > \"$HOME/.config/hypr/deeper.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "faeef16ec8711ca7",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 1351,
+        "endLine": 1351
+      },
+      "evidence": "printf -- '-- nested\\n'                    > \"$HOME/.config/hypr/extra/nested.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "e4ed0223b33a2ac1",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 1352,
+        "endLine": 1352
+      },
+      "evidence": "printf -- '-- nobody loads this\\n'         > \"$HOME/.config/hypr/retired.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "4892ff4ae23e32fb",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 1372,
+        "endLine": 1372
+      },
+      "evidence": "printf '{\"id\":\"com.example.omasettings\",\"name\":\"OmaSettings\"}\\n' \\\n  > \"$HOME/.config/omarchy/plugins/com.example.omasettings/manifest.json\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "b7b331bc4283c8f4",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 1382,
+        "endLine": 1382
+      },
+      "evidence": "cp \"$HOME/.config/hypr/hyprland.lua\" \"$TMP/hyprland.keep\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "b198295bff59ed5e",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 1383,
+        "endLine": 1383
+      },
+      "evidence": "cp \"$HOME/.config/hypr/omasettings.lua\" \"$TMP/omasettings.keep\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "dec3ee63c449f62d",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 1384,
+        "endLine": 1384
+      },
+      "evidence": "printf 'require(\"hypr.input\")\\n' > \"$HOME/.config/hypr/hyprland.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "0122e55aa30a4606",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 1391,
+        "endLine": 1391
+      },
+      "evidence": "cp \"$TMP/hyprland.keep\" \"$HOME/.config/hypr/hyprland.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "4f9fa90369e0932e",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 1392,
+        "endLine": 1392
+      },
+      "evidence": "cp \"$TMP/omasettings.keep\" \"$HOME/.config/hypr/omasettings.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "3e743b6f6cbaaa02",
+      "ruleId": "OA-SH-010",
+      "title": "Destructive filesystem or disk operation",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "destructive-operation"
+      ],
+      "message": "rm -rf with a broad wildcard (\"$HOME/.config\"/linked.conf*)",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 1456,
+        "endLine": 1456
+      },
+      "evidence": "rm -rf \"$HOME/.config\"/linked.conf* \"$HOME/.config\"/linkedtree* \"$CONFIG_DIR/linkedtree\"",
+      "remediation": "Quote and validate every path before rm -rf, never recurse on $HOME or / and refuse to run when a variable is empty (set -u, [[ -n $var ]]).",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "67ef86c6545e6ca9",
+      "ruleId": "OA-SH-010",
+      "title": "Destructive filesystem or disk operation",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "destructive-operation"
+      ],
+      "message": "rm -rf with a broad wildcard (\"$HOME/.config\"/linkedtree*)",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 1456,
+        "endLine": 1456
+      },
+      "evidence": "rm -rf \"$HOME/.config\"/linked.conf* \"$HOME/.config\"/linkedtree* \"$CONFIG_DIR/linkedtree\"",
+      "remediation": "Quote and validate every path before rm -rf, never recurse on $HOME or / and refuse to run when a variable is empty (set -u, [[ -n $var ]]).",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "e83a31c395269393",
+      "ruleId": "OA-SH-010",
+      "title": "Destructive filesystem or disk operation",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "destructive-operation"
+      ],
+      "message": "rm -rf on a path built only from a variable ($fresh); an empty variable deletes the parent and the script has no set -u",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 1522,
+        "endLine": 1522
+      },
+      "evidence": "rm -rf \"$fresh\"",
+      "remediation": "Quote and validate every path before rm -rf, never recurse on $HOME or / and refuse to run when a variable is empty (set -u, [[ -n $var ]]).",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "9659ff926feb1dad",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 1585,
+        "endLine": 1585
+      },
+      "evidence": "cp \"$HOME/.config/hypr/input.lua\" \"$TMP/input.keep\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "c93192ea5a4b8d31",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 1586,
+        "endLine": 1586
+      },
+      "evidence": "printf 'saved before the pull\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "a68c3820116b99fa",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 1591,
+        "endLine": 1591
+      },
+      "evidence": "printf 'edited after the pull\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "53bc55b97014ef54",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 1595,
+        "endLine": 1595
+      },
+      "evidence": "cp \"$TMP/input.keep\" \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "5adff24ba8ade613",
+      "ruleId": "OA-SH-003",
+      "title": "Code is obtained from a mutable remote reference and built or installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "build-from-source",
+        "network-download"
+      ],
+      "message": "git clone of a mutable reference",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 1607,
+        "endLine": 1607
+      },
+      "evidence": "git clone -q --bare \"$TMP/edited-src\" \"$TMP/edited-origin.git\"",
+      "remediation": "Pin to a full 40-character commit (git checkout <sha>, cargo --rev <sha>, go @<version>, pip @<sha>) or to a signed release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "130a3e8e97e27d91",
+      "ruleId": "OA-SH-003",
+      "title": "Code is obtained from a mutable remote reference and built or installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "build-from-source",
+        "network-download"
+      ],
+      "message": "git clone of a mutable reference",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 1609,
+        "endLine": 1609
+      },
+      "evidence": "git clone -q \"$TMP/edited-origin.git\" \"$P\"",
+      "remediation": "Pin to a full 40-character commit (git checkout <sha>, cargo --rev <sha>, go @<version>, pip @<sha>) or to a signed release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "08094ec03f07fa83",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 1640,
+        "endLine": 1640
+      },
+      "evidence": "ln -s \"$P\" \"$HOME/.config/omarchy/plugins/com.example.devlink\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "e928bba39ddc49cc",
+      "ruleId": "OA-SH-010",
+      "title": "Destructive filesystem or disk operation",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "destructive-operation"
+      ],
+      "message": "rm -rf on a path built only from a variable ($P); an empty variable deletes the parent and the script has no set -u",
+      "location": {
+        "path": "tests/test-core.sh",
+        "startLine": 1642,
+        "endLine": 1642
+      },
+      "evidence": "rm -rf \"$P\"",
+      "remediation": "Quote and validate every path before rm -rf, never recurse on $HOME or / and refuse to run when a variable is empty (set -u, [[ -n $var ]]).",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "ad29a45c2d956bac",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-crypto.sh",
+        "startLine": 33,
+        "endLine": 33
+      },
+      "evidence": "printf 'my own input\\n'       > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "e531c51d07122829",
+      "ruleId": "OA-SH-003",
+      "title": "Code is obtained from a mutable remote reference and built or installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "build-from-source",
+        "network-download"
+      ],
+      "message": "git clone of a mutable reference",
+      "location": {
+        "path": "tests/test-crypto.sh",
+        "startLine": 211,
+        "endLine": 211
+      },
+      "evidence": "git clone -q \"$REPO_DIR\" \"$M2/replicant/repo\" 2>/dev/null",
+      "remediation": "Pin to a full 40-character commit (git checkout <sha>, cargo --rev <sha>, go @<version>, pip @<sha>) or to a signed release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "ca49768bcce5aae6",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-interruptions.sh",
+        "startLine": 17,
+        "endLine": 17
+      },
+      "evidence": "printf 'local input\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "d1952a3e25917072",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-interruptions.sh",
+        "startLine": 65,
+        "endLine": 65
+      },
+      "evidence": "printf 'changed before encryption\\n' >> \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "7d608fa0fcef720c",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-interruptions.sh",
+        "startLine": 78,
+        "endLine": 78
+      },
+      "evidence": "printf 'commit interruption\\n' >> \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "36a3c7bd55070a7d",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-interruptions.sh",
+        "startLine": 85,
+        "endLine": 85
+      },
+      "evidence": "printf 'fast-forward interruption\\n' >> \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "d308c269fdc5d6c8",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-interruptions.sh",
+        "startLine": 94,
+        "endLine": 94
+      },
+      "evidence": "printf 'push interruption\\n' >> \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "b68f35794c3d5135",
+      "ruleId": "OA-SH-003",
+      "title": "Code is obtained from a mutable remote reference and built or installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "build-from-source",
+        "network-download"
+      ],
+      "message": "git clone of a mutable reference",
+      "location": {
+        "path": "tests/test-journey.sh",
+        "startLine": 218,
+        "endLine": 218
+      },
+      "evidence": "git clone -q \"$TMP/origin.git\" \"$TMP/elsewhere\" >/dev/null 2>&1",
+      "remediation": "Pin to a full 40-character commit (git checkout <sha>, cargo --rev <sha>, go @<version>, pip @<sha>) or to a signed release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "d799209e1475057a",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-leaks.sh",
+        "startLine": 19,
+        "endLine": 19
+      },
+      "evidence": "printf 'live\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "18451acc34d55456",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-progress.sh",
+        "startLine": 28,
+        "endLine": 28
+      },
+      "evidence": "printf 'local input\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "d87bb4c4344bd711",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-progress.sh",
+        "startLine": 36,
+        "endLine": 36
+      },
+      "evidence": "printf 'progress fixture\\n' >> \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "f3af6f6661d4c906",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-progress.sh",
+        "startLine": 51,
+        "endLine": 51
+      },
+      "evidence": "printf 'local only fixture\\n' >> \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "85c985cd5820cfcb",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-progress.sh",
+        "startLine": 57,
+        "endLine": 57
+      },
+      "evidence": "printf 'compat fixture\\n' >> \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "ec1de99bd2d77019",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-progress.sh",
+        "startLine": 74,
+        "endLine": 74
+      },
+      "evidence": "printf 'tracked fixture\\n' > \"$HOME/.config/hypr/custom.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "389204232d7aff0f",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-progress.sh",
+        "startLine": 83,
+        "endLine": 83
+      },
+      "evidence": "printf 'local shape fixture\\n' > \"$HOME/.config/hypr/local-only.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "2192e000fa68fe04",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-progress.sh",
+        "startLine": 105,
+        "endLine": 105
+      },
+      "evidence": "printf 'cancel before commit\\n' >> \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "cb23a597acf1595f",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-restore-secrets.sh",
+        "startLine": 33,
+        "endLine": 33
+      },
+      "evidence": "printf 'my own input\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "1d3fb78abb503adc",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-save.sh",
+        "startLine": 26,
+        "endLine": 26
+      },
+      "evidence": "printf 'my own input\\n'   > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "c0244b6369935210",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-save.sh",
+        "startLine": 43,
+        "endLine": 43
+      },
+      "evidence": "printf 'edited once\\n' >> \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "daae64546be46cf6",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-save.sh",
+        "startLine": 55,
+        "endLine": 55
+      },
+      "evidence": "printf 'edited twice\\n' >> \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "469540337486e6e6",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-save.sh",
+        "startLine": 62,
+        "endLine": 62
+      },
+      "evidence": "printf 'edited thrice\\n' >> \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "5c552900be409e0f",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-save.sh",
+        "startLine": 99,
+        "endLine": 99
+      },
+      "evidence": "printf 'per-file\\n' >> \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "717dfab04949a729",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-save.sh",
+        "startLine": 109,
+        "endLine": 109
+      },
+      "evidence": "printf 'must stay local\\n' >> \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "00eede82e07e7e57",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-save.sh",
+        "startLine": 114,
+        "endLine": 114
+      },
+      "evidence": "printf 'dirty me\\n' >> \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "3ff70b22d1e32810",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-save.sh",
+        "startLine": 134,
+        "endLine": 134
+      },
+      "evidence": "printf 'token = %sabcdefghijklmnopqrstuvwxyz0123456789\\n' \"$P_GH\" \\\n  > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "1c9d15e8fc66501a",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-save.sh",
+        "startLine": 142,
+        "endLine": 142
+      },
+      "evidence": "printf 'my own input\\nedited once\\nedited twice\\nedited thrice\\nleft for a reason\\nper-file\\ndirty me\\n' \\\n  > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "268bd7445b51c858",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-save.sh",
+        "startLine": 150,
+        "endLine": 150
+      },
+      "evidence": "printf 'one more\\n' >> \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "3ab993885fc30465",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-save.sh",
+        "startLine": 174,
+        "endLine": 174
+      },
+      "evidence": "printf 'review me\\n' >> \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "3620305a77a33976",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-save.sh",
+        "startLine": 187,
+        "endLine": 187
+      },
+      "evidence": "printf 'dirty pull\\n' >> \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "7b186919f5dbf0ff",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-save.sh",
+        "startLine": 205,
+        "endLine": 205
+      },
+      "evidence": "printf 'push me\\n' >> \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "a742c3eea0bf3423",
+      "ruleId": "OA-SH-010",
+      "title": "Destructive filesystem or disk operation",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "destructive-operation"
+      ],
+      "message": "rm -rf on a path built only from a variable ($probe); an empty variable deletes the parent and the script has no set -u",
+      "location": {
+        "path": "tests/test-save.sh",
+        "startLine": 248,
+        "endLine": 248
+      },
+      "evidence": "rm -rf -- \"$probe\"",
+      "remediation": "Quote and validate every path before rm -rf, never recurse on $HOME or / and refuse to run when a variable is empty (set -u, [[ -n $var ]]).",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "0db1e2e6e2503c18",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-save.sh",
+        "startLine": 254,
+        "endLine": 254
+      },
+      "evidence": "printf 'my own input\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "2c17121ef3982e3a",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-save.sh",
+        "startLine": 257,
+        "endLine": 257
+      },
+      "evidence": "printf 'edited\\n' >> \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "7acda1bd59e9606c",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-schema.sh",
+        "startLine": 20,
+        "endLine": 20
+      },
+      "evidence": "printf 'my own input\\n'  > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "2740e9a7114212a6",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-settings-save.sh",
+        "startLine": 14,
+        "endLine": 14
+      },
+      "evidence": "printf 'original input\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "3cc5caeb777a2a82",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-settings-save.sh",
+        "startLine": 29,
+        "endLine": 29
+      },
+      "evidence": "printf 'unrelated live edit\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "3c81b4c1f7c3bb58",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-settings-save.sh",
+        "startLine": 49,
+        "endLine": 49
+      },
+      "evidence": "printf 'unrelated edit before revert\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "3238e42dfcf42ea2",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-settings.sh",
+        "startLine": 403,
+        "endLine": 403
+      },
+      "evidence": "cat > \"$HOME/.config/hypr/input.lua\" <<'LUA'\nhl.config({\n  input = {\n    kb_layout = \"es\",\n    repeat_rate = 40,\n    touchpad = {\n      natural_scroll = true,\n      tap_to_click = true,\n    },\n  },\n})\nLUA",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "62ecfc5d4993681e",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-settings.sh",
+        "startLine": 415,
+        "endLine": 415
+      },
+      "evidence": "printf 'require(\"hypr.input\")\\nrequire(\"hypr.omasettings\")\\n' > \"$HOME/.config/hypr/hyprland.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "284470534c8f492d",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-settings.sh",
+        "startLine": 416,
+        "endLine": 416
+      },
+      "evidence": "cat > \"$HOME/.config/hypr/omasettings.lua\" <<'LUA'\nhl.config({\n  input = {\n    touchpad = {\n      natural_scroll = false,\n    },\n  },\n})\nLUA",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "962c0169958ce518",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-state.sh",
+        "startLine": 20,
+        "endLine": 20
+      },
+      "evidence": "printf 'my own input\\n'  > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "bfbe9cb6a777b826",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-state.sh",
+        "startLine": 24,
+        "endLine": 24
+      },
+      "evidence": "printf '{\"id\":\"io.example.demoifact\",\"name\":\"Demoifact\"}\\n' \\\n  > \"$HOME/.config/omarchy/plugins/demoifact/manifest.json\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "fc6029c769430b9d",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-state.sh",
+        "startLine": 104,
+        "endLine": 104
+      },
+      "evidence": "printf 'changed\\n' >> \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "5e2e301218d19d8f",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-state.sh",
+        "startLine": 106,
+        "endLine": 106
+      },
+      "evidence": "printf 'my own input\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "9ebed1de0c1992ae",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-state.sh",
+        "startLine": 113,
+        "endLine": 113
+      },
+      "evidence": "printf 'changed\\n' >> \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "77dc9d72d60bbef0",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-state.sh",
+        "startLine": 117,
+        "endLine": 117
+      },
+      "evidence": "printf 'my own input\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "3bd47a00014fc655",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-state.sh",
+        "startLine": 129,
+        "endLine": 129
+      },
+      "evidence": "printf 'default input\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "a6d43aca80b93704",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-state.sh",
+        "startLine": 149,
+        "endLine": 149
+      },
+      "evidence": "printf 'cache check line\\n' >> \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "16c1ba58acb4b700",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-state.sh",
+        "startLine": 152,
+        "endLine": 152
+      },
+      "evidence": "printf 'default input\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "a6d44ccaf831191d",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-state.sh",
+        "startLine": 155,
+        "endLine": 155
+      },
+      "evidence": "printf 'default inpuX\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "37488624728d9a37",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-state.sh",
+        "startLine": 165,
+        "endLine": 165
+      },
+      "evidence": "printf 'default input\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "36b5d9ba01430cbe",
+      "ruleId": "OA-SH-010",
+      "title": "Destructive filesystem or disk operation",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "destructive-operation"
+      ],
+      "message": "rm -rf on a path built only from a variable ($probe); an empty variable deletes the parent and the script has no set -u",
+      "location": {
+        "path": "tests/test-state.sh",
+        "startLine": 223,
+        "endLine": 223
+      },
+      "evidence": "rm -rf -- \"$probe\"",
+      "remediation": "Quote and validate every path before rm -rf, never recurse on $HOME or / and refuse to run when a variable is empty (set -u, [[ -n $var ]]).",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "8bbde8b9e5867640",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-state.sh",
+        "startLine": 286,
+        "endLine": 286
+      },
+      "evidence": "printf 'staged change\\n' >> \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "09ef67382a40bfe0",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-transaction.sh",
+        "startLine": 25,
+        "endLine": 25
+      },
+      "evidence": "printf 'one\\n' > \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "4f84aed2391732de",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-transaction.sh",
+        "startLine": 26,
+        "endLine": 26
+      },
+      "evidence": "printf 'two\\n' > \"$HOME/.config/hypr/hyprlock.conf\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "11119c97244f3ac5",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-transaction.sh",
+        "startLine": 45,
+        "endLine": 45
+      },
+      "evidence": "printf 'journal proof\\n' >> \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "c9e802be490fbaf0",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-transaction.sh",
+        "startLine": 101,
+        "endLine": 101
+      },
+      "evidence": "printf 'one more\\n' >> \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "eb8ab2fe1e74f98b",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-transaction.sh",
+        "startLine": 105,
+        "endLine": 105
+      },
+      "evidence": "printf 'bulk proof\\n' >> \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "574f82c4809d8e02",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-transaction.sh",
+        "startLine": 119,
+        "endLine": 119
+      },
+      "evidence": "printf 'race a\\n' >> \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "9eb0922534869f60",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory",
+      "location": {
+        "path": "tests/test-transaction.sh",
+        "startLine": 175,
+        "endLine": 175
+      },
+      "evidence": "printf 'killed proof %s\\n' \"$sig\" >> \"$HOME/.config/hypr/input.lua\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "c04744af06e01703",
+      "ruleId": "OA-SH-010",
+      "title": "Destructive filesystem or disk operation",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "destructive-operation"
+      ],
+      "message": "rm -rf on a path built only from a variable ($probe); an empty variable deletes the parent and the script has no set -u",
+      "location": {
+        "path": "tests/test-transaction.sh",
+        "startLine": 208,
+        "endLine": 208
+      },
+      "evidence": "rm -rf -- \"$probe\"",
+      "remediation": "Quote and validate every path before rm -rf, never recurse on $HOME or / and refuse to run when a variable is empty (set -u, [[ -n $var ]]).",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "11cf2742938d08c9",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "BarWidget.qml",
+        "startLine": 165,
+        "endLine": 165
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "b5409d72ca9a1808",
+      "ruleId": "OA-SH-004",
+      "title": "Commands run with elevated privileges",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "privilege-escalation"
+      ],
+      "message": "pkexec runs command",
+      "location": {
+        "path": "bin/lib/crypto.sh",
+        "startLine": 520,
+        "endLine": 520
+      },
+      "evidence": "command -v pkexec >/dev/null 2>&1",
+      "remediation": "Confirm every privileged command is necessary, scoped to a fixed command surface, and documented. Prefer user-level installation where possible.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "551fe889e7e2a02b",
+      "ruleId": "OA-SH-004",
+      "title": "Commands run with elevated privileges",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "privilege-escalation"
+      ],
+      "message": "pkexec runs $@",
+      "location": {
+        "path": "bin/lib/crypto.sh",
+        "startLine": 521,
+        "endLine": 521
+      },
+      "evidence": "pkexec \"$@\" 2>/dev/null",
+      "remediation": "Confirm every privileged command is necessary, scoped to a fixed command surface, and documented. Prefer user-level installation where possible.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "d3ec26714635b762",
+      "ruleId": "OA-SH-004",
+      "title": "Commands run with elevated privileges",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "privilege-escalation"
+      ],
+      "message": "sudo runs true",
+      "location": {
+        "path": "bin/lib/crypto.sh",
+        "startLine": 523,
+        "endLine": 523
+      },
+      "evidence": "sudo -n true 2>/dev/null",
+      "remediation": "Confirm every privileged command is necessary, scoped to a fixed command surface, and documented. Prefer user-level installation where possible.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "185469ede30115a1",
+      "ruleId": "OA-SH-004",
+      "title": "Commands run with elevated privileges",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "privilege-escalation"
+      ],
+      "message": "sudo runs $@",
+      "location": {
+        "path": "bin/lib/crypto.sh",
+        "startLine": 524,
+        "endLine": 524
+      },
+      "evidence": "sudo -n \"$@\" 2>/dev/null",
+      "remediation": "Confirm every privileged command is necessary, scoped to a fixed command surface, and documented. Prefer user-level installation where possible.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "011f53be851db246",
+      "ruleId": "OA-SH-004",
+      "title": "Commands run with elevated privileges",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "privilege-escalation"
+      ],
+      "message": "pkexec runs command",
+      "location": {
+        "path": "bin/lib/settings.sh",
+        "startLine": 136,
+        "endLine": 136
+      },
+      "evidence": "command -v pkexec >/dev/null 2>&1",
+      "remediation": "Confirm every privileged command is necessary, scoped to a fixed command surface, and documented. Prefer user-level installation where possible.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "b1473b9feb587ad0",
+      "ruleId": "OA-SH-004",
+      "title": "Commands run with elevated privileges",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "privilege-escalation"
+      ],
+      "message": "sudo runs true",
+      "location": {
+        "path": "bin/lib/settings.sh",
+        "startLine": 139,
+        "endLine": 139
+      },
+      "evidence": "sudo -n true 2>/dev/null",
+      "remediation": "Confirm every privileged command is necessary, scoped to a fixed command surface, and documented. Prefer user-level installation where possible.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "7e653fcd121104c3",
+      "ruleId": "OA-SH-018",
+      "title": "Installer script does not enable strict error handling",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "medium",
+      "capabilities": [],
+      "message": "no set -e / set -u / pipefail in an installer-like script",
+      "location": {
+        "path": "bin/lib/update.sh",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "# shellcheck shell=bash disable=SC2034",
+      "remediation": "Start installer scripts with set -euo pipefail and check variables before using them in paths.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "eaa17f1727d1d540",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "ReplicantController.qml",
+        "startLine": 172,
+        "endLine": 172
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "14b6a9ece942d447",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "Service.qml",
+        "startLine": 48,
+        "endLine": 48
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "133cd09c3e349447",
+      "ruleId": "OA-SH-017",
+      "title": "Artifacts are downloaded without any checksum or signature check in the script",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "low",
+      "capabilities": [
+        "network-download"
+      ],
+      "message": "1 download with no verification step anywhere in the script",
+      "location": {
+        "path": "tests/gate.sh",
+        "startLine": 96,
+        "endLine": 96
+      },
+      "evidence": "curl https://example.com >/dev/null 2>&1",
+      "remediation": "Publish checksums with each release and verify them in the installer.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "09322b2e05d897d9",
+      "ruleId": "OA-SH-004",
+      "title": "Commands run with elevated privileges",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "privilege-escalation"
+      ],
+      "message": "sudo runs true",
+      "location": {
+        "path": "tests/gate.sh",
+        "startLine": 98,
+        "endLine": 98
+      },
+      "evidence": "sudo true >/dev/null 2>&1",
+      "remediation": "Confirm every privileged command is necessary, scoped to a fixed command surface, and documented. Prefer user-level installation where possible.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "adffe5893bb37fd4",
+      "ruleId": "OA-SH-018",
+      "title": "Installer script does not enable strict error handling",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "medium",
+      "capabilities": [],
+      "message": "no set -e / set -u / pipefail in an installer-like script",
+      "location": {
+        "path": "tests/test-bootstrap.sh",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "#!/bin/bash",
+      "remediation": "Start installer scripts with set -euo pipefail and check variables before using them in paths.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "9459206e7f4f1ddd",
+      "ruleId": "OA-SH-004",
+      "title": "Commands run with elevated privileges",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "privilege-escalation"
+      ],
+      "message": "sudo runs command",
+      "location": {
+        "path": "tests/test-cli.sh",
+        "startLine": 46,
+        "endLine": 46
+      },
+      "evidence": "command -v sudo",
+      "remediation": "Confirm every privileged command is necessary, scoped to a fixed command surface, and documented. Prefer user-level installation where possible.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "mkt-4cb2ef3bc8e2",
+      "ruleId": "OA-MKT-001",
+      "title": "Omarchy plugin marketplace listing",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "listed as io.github.tymurbogach.replicant (unverified); marketplace validated commit 9e6af06e9da6; this commit matches the validated snapshot. Marketplace checks are a limited baseline, not a security audit.",
+      "evidence": "catalog 4cb2ef3bc8e2 generated 2026-11-27T07:55:55.111Z",
+      "remediation": "Compare the commit you install with the validated one; `omarchy plugin add` clones upstream HEAD, which is not verification-bound.",
+      "scanner": {
+        "name": "omarchy-plugin-marketplace",
+        "version": "4cb2ef3bc8e2",
+        "source": "external"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy-plugin-marketplace/blob/main/SECURITY.md"
+      ]
+    },
+    {
+      "id": "cba9ebb66417da68",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "BarWidget.qml",
+        "startLine": 3,
+        "endLine": 3
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "7aea7e1a7c2f78cb",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "components/AddFilesCard.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "353b119a41b90f31",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "components/BrowseRow.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "a74a94531b6d2adb",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "components/Card.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "a0768e97bac92eb9",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "components/CardHeader.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "b4c4ca3317a27cd9",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "components/CardLabel.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "1a095cf41d7c4336",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "components/CardNote.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "07ea21a79dcb23c8",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "components/CategoryCard.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "431b11d2569d7665",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "components/CommitRow.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "f6dd681c64e48a75",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "components/ConfigsTab.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "9d7726fa2691c3ba",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "components/FactRow.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "13ea9fe257b44eab",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "components/FileDetails.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "eac3e5cf932b42a2",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "components/FileRow.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "bb98fdb32fffa230",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "components/FilterBar.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "5aa747a52355be7e",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "components/ListRow.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "cb1080ed4b262232",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "components/MachinesCard.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "74f81b6a911be506",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "components/OverviewTab.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "93907e26c2cada13",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "components/PanelHeader.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "196b4fa01ff3785b",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "components/PluginsView.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "081357161299cacd",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "components/RestoreTab.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "c1adef0698c4509f",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "components/ResultBar.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "35ea70b3a7f3a81d",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "components/RowAction.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "521a51290511217a",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "components/SettingCard.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "85552cad52984475",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "components/SettingRow.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "e1906911ab9ef205",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "components/SettingsTab.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "3c0b2e693a569524",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "components/ShortcutsView.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "686719c818e4cc34",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "components/StatusCard.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "a823a6df149dd1a6",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "components/SuggestRow.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "11fe40b9623078da",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "components/TextViewer.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "d6c9e26b7af32139",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "valid Omarchy plugin manifest 'io.github.tymurbogach.replicant' (kinds: bar-widget, service, keepLoaded). Plugins run as unsandboxed code inside omarchy-shell with the user's full file and process access.",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "id=io.github.tymurbogach.replicant kinds=bar-widget,service",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "aa8efa8825cdfc30",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin",
+        "persistence"
+      ],
+      "message": "headless service: runs for the whole session without a visible surface",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "kinds includes \"service\"",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "eb3a2767412ebe50",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "Panel.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "d638d3cc8a85392c",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "ReplicantController.qml",
+        "startLine": 2,
+        "endLine": 2
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "6134250a69662b26",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "Service.qml",
+        "startLine": 3,
+        "endLine": 3
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "2bce0ecc6d5c6514",
+      "ruleId": "OA-SH-009",
+      "title": "Packages are installed",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "package-management"
+      ],
+      "message": "pacman installs: git jq shellcheck diffutils which qt6-declarative age (embedded in Dockerfile RUN)",
+      "location": {
+        "path": "tests/Dockerfile",
+        "startLine": 19,
+        "endLine": 19
+      },
+      "evidence": "pacman -Syu --noconfirm --needed git jq shellcheck diffutils which qt6-declarative age",
+      "remediation": "Prefer official repositories or the Omarchy package repo. For AUR packages, read the PKGBUILD. Avoid pacman -U from URLs.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    }
+  ],
+  "summary": {
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 174,
+      "low": 14,
+      "info": 36
+    },
+    "capabilities": [
+      "build-from-source",
+      "destructive-operation",
+      "network-download",
+      "omarchy-plugin",
+      "package-management",
+      "persistence",
+      "privilege-escalation",
+      "shell-config-change",
+      "system-file-write"
+    ],
+    "verdict": "review-recommended",
+    "highestSeverity": "medium"
+  },
+  "disclaimer": "OmaAudit performs static inspection only. Findings are evidence of risk patterns, not proof of malice, and the absence of findings is not proof of safety. Review the source before you install."
+}

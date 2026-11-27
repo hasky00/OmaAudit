@@ -1,0 +1,236 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "omaaudit",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-11-27T09:28:46.428Z",
+  "durationMs": 2750,
+  "target": {
+    "kind": "github",
+    "name": "skajvitler/omarchy-steam-trends",
+    "url": "https://github.com/skajvitler/omarchy-steam-trends",
+    "commit": "dfcf708ffd155b1fa26c1b1e5ac6c0118341075e",
+    "ref": "dfcf708ffd155b1fa26c1b1e5ac6c0118341075e",
+    "defaultBranch": "main"
+  },
+  "repository": {
+    "description": null,
+    "stars": 0,
+    "forks": 0,
+    "openIssues": 0,
+    "license": "MIT",
+    "archived": false,
+    "fork": false,
+    "pushedAt": "2026-09-02T07:40:07Z",
+    "createdAt": "2026-09-01T22:46:11Z",
+    "topics": [],
+    "latestRelease": null,
+    "recentCommits90d": 6
+  },
+  "marketplace": {
+    "listed": true,
+    "pluginIds": [
+      "skajvitler.steam-trends"
+    ],
+    "verificationStatus": "verified",
+    "listingValidatedCommit": "dfcf708ffd155b1fa26c1b1e5ac6c0118341075e",
+    "upstreamObservedCommit": "dfcf708ffd155b1fa26c1b1e5ac6c0118341075e",
+    "catalogCommit": "4cb2ef3bc8e2cf566180bc9cdf2b56168a36f218",
+    "catalogGeneratedAt": "2026-11-27T07:55:55.111Z",
+    "category": "Widgets",
+    "tags": [
+      "games"
+    ],
+    "driftFromValidated": false
+  },
+  "coverage": {
+    "filesListed": 7,
+    "filesInspected": 6,
+    "filesSkipped": [
+      {
+        "path": "screenshot.png",
+        "reason": "binary"
+      }
+    ],
+    "bytesInspected": 54151,
+    "truncated": false,
+    "fileTypes": {
+      "qml": 2,
+      "other-text": 1,
+      "omarchy-manifest": 1,
+      "javascript": 1,
+      "markdown": 1,
+      "binary": 1
+    },
+    "unknown": [
+      "1 Python/JavaScript file(s) are only scanned for secrets; use language-specific scanners for logic review",
+      "2 QML file(s): only process/file/network surfaces and embedded commands are analysed, not QML logic"
+    ],
+    "scanners": [
+      {
+        "name": "omaaudit-rules",
+        "version": "0.1.0",
+        "source": "builtin",
+        "status": "ran"
+      },
+      {
+        "name": "shellcheck",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "shellcheck not found on PATH (pacman -S shellcheck)"
+      },
+      {
+        "name": "osv-scanner",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "osv-scanner not found on PATH"
+      }
+    ]
+  },
+  "dependencies": [],
+  "findings": [
+    {
+      "id": "b7c3dbef431affe7",
+      "ruleId": "OA-SH-003",
+      "title": "Code is obtained from a mutable remote reference and built or installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "build-from-source",
+        "network-download"
+      ],
+      "message": "git clone of a mutable reference (found in documentation: this is what users are told to run)",
+      "location": {
+        "path": "README.md",
+        "startLine": 30,
+        "endLine": 30
+      },
+      "evidence": "git clone <repo-url> ~/.config/omarchy/plugins/skajvitler.steam-trends",
+      "remediation": "Pin to a full 40-character commit (git checkout <sha>, cargo --rev <sha>, go @<version>, pip @<sha>) or to a signed release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "aaee8ed0c37564bf",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "Panel.qml",
+        "startLine": 409,
+        "endLine": 409
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "mkt-4cb2ef3bc8e2",
+      "ruleId": "OA-MKT-001",
+      "title": "Omarchy plugin marketplace listing",
+      "kind": "verified",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "listed as skajvitler.steam-trends (verified); marketplace validated commit dfcf708ffd15; this commit matches the validated snapshot. Marketplace checks are a limited baseline, not a security audit.",
+      "evidence": "catalog 4cb2ef3bc8e2 generated 2026-11-27T07:55:55.111Z",
+      "remediation": "Compare the commit you install with the validated one; `omarchy plugin add` clones upstream HEAD, which is not verification-bound.",
+      "scanner": {
+        "name": "omarchy-plugin-marketplace",
+        "version": "4cb2ef3bc8e2",
+        "source": "external"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy-plugin-marketplace/blob/main/SECURITY.md"
+      ]
+    },
+    {
+      "id": "f7799160a31dde48",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "valid Omarchy plugin manifest 'skajvitler.steam-trends' (kinds: bar-widget). Plugins run as unsandboxed code inside omarchy-shell with the user's full file and process access.",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "id=skajvitler.steam-trends kinds=bar-widget",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "129b25ba53e24222",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "Panel.qml",
+        "startLine": 3,
+        "endLine": 3
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.1",
+        "source": "builtin"
+      }
+    }
+  ],
+  "summary": {
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 1,
+      "low": 1,
+      "info": 2
+    },
+    "capabilities": [
+      "build-from-source",
+      "network-download",
+      "omarchy-plugin"
+    ],
+    "verdict": "review-recommended",
+    "highestSeverity": "medium"
+  },
+  "disclaimer": "OmaAudit performs static inspection only. Findings are evidence of risk patterns, not proof of malice, and the absence of findings is not proof of safety. Review the source before you install."
+}
