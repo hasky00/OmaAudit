@@ -109,8 +109,9 @@ export async function buildContext(tree: SourceTree, opts: { targetName?: string
   const shellUnits: ShellUnit[] = [];
   const invokedScripts: { path: string; invokedBy: string }[] = [];
 
-  const parseFile = async (cf: ClassifiedFile, context?: string): Promise<void> => {
-    if (cf.type === 'shell' || cf.type === 'pkgbuild' || cf.type === 'pkgbuild-install' || (context && SHELL_PARSEABLE.has(cf.type))) {
+  // `asShell`: a script runs this file with bash/sh/source, so the shell parses it whatever its shebang or extension say.
+  const parseFile = async (cf: ClassifiedFile, context?: string, asShell = false): Promise<void> => {
+    if (asShell || cf.type === 'shell' || cf.type === 'pkgbuild' || cf.type === 'pkgbuild-install' || (context && SHELL_PARSEABLE.has(cf.type))) {
       try {
         shellUnits.push(await parseShell(cf.text, { path: cf.file.path, origin: 'script', context: context ?? cf.type }));
       } catch (e) {
@@ -164,13 +165,14 @@ export async function buildContext(tree: SourceTree, opts: { targetName?: string
   const parsedAsScript = new Set(shellUnits.filter((u) => u.origin === 'script').map((u) => u.path));
   const tried = new Set<string>();
   for (let round = 0; round < MAX_FOLLOW_ROUNDS; round++) {
-    const wanted: { rel: string; by: string }[] = [];
-    for (const u of shellUnits) for (const c of u.commands) for (const rel of invokedScriptPaths(c)) wanted.push({ rel, by: u.path });
+    const wanted: { rel: string; by: string; asShell: boolean }[] = [];
+    for (const u of shellUnits) for (const c of u.commands) for (const rel of invokedScriptPaths(c)) wanted.push({ rel, by: u.path, asShell: SCRIPT_INTERPRETERS.has(c.name) });
     let progressed = false;
-    for (const { rel, by } of wanted) {
+    for (const { rel, by, asShell } of wanted) {
       for (const cand of candidatesFor(by, rel, byPath.keys())) {
-        if (tried.has(cand)) continue;
-        tried.add(cand);
+        const key = asShell ? `${cand}\u0000sh` : cand;
+        if (tried.has(key)) continue;
+        tried.add(key);
         let cf = byPath.get(cand);
         if (!cf) {
           const sf = await readOnDemand(tree.root, { path: cand, size: 0, skipped: true, skipReason: 'excluded-dir', executable: false });
@@ -189,9 +191,10 @@ export async function buildContext(tree: SourceTree, opts: { targetName?: string
         }
         if (cf.type === 'binary' || cf.type === 'skipped') continue;
         if (parsedAsScript.has(cand)) continue;
+        if (!asShell && !SHELL_PARSEABLE.has(cf.type)) continue; // run directly: its own interpreter, not the shell
         parsedAsScript.add(cand);
         invokedScripts.push({ path: cand, invokedBy: by });
-        await parseFile(cf, `script invoked by ${by}`);
+        await parseFile(cf, asShell && !SHELL_PARSEABLE.has(cf.type) ? `script run with a shell by ${by} (classified ${cf.type}; parsed as shell)` : `script invoked by ${by}`, asShell);
         progressed = true;
       }
     }
@@ -199,11 +202,16 @@ export async function buildContext(tree: SourceTree, opts: { targetName?: string
   }
   await expandInlineCode();
 
-  // A repository that defines its own `fetch` (or curl/wget wrapper) function sources or evals it elsewhere;
-  // treat that name as shadowed in every unit so the downloader rules do not fire on the function.
-  const shadowed = new Set<string>();
-  for (const u of shellUnits) for (const fn of u.definedFunctions) if (/^(?:fetch|curl|wget|aria2c|xh)$/.test(fn)) shadowed.add(fn);
-  for (const u of shellUnits) for (const fn of shadowed) u.definedFunctions.add(fn);
+  // A repository that defines its own `fetch` (or curl/wget) function sources or evals it elsewhere; treat that
+  // name as shadowed in every unit, unless some definition wraps a real downloader (`curl() { command curl "$@"; }`).
+  // A wrapper downloads, so its name keeps counting as a downloader everywhere, whatever else defines it.
+  const wrappers = new Set<string>();
+  const plain = new Set<string>();
+  for (const u of shellUnits) for (const fn of u.definedFunctions) if (/^(?:fetch|curl|wget|aria2c|xh)$/.test(fn)) (u.downloaderWrappers.has(fn) ? wrappers : plain).add(fn);
+  for (const u of shellUnits) {
+    for (const fn of wrappers) u.downloaderWrappers.add(fn);
+    for (const fn of plain) if (!wrappers.has(fn)) u.definedFunctions.add(fn);
+  }
 
   const sourcedScripts = new Set<string>();
   for (const u of shellUnits) for (const c of u.commands) if (c.name === 'source' || c.name === '.') for (const rel of invokedScriptPaths(c)) for (const cand of candidatesFor(u.path, rel, byPath.keys())) sourcedScripts.add(cand);

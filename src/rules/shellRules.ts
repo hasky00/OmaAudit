@@ -106,9 +106,14 @@ function argText(c: ShellCommand): string {
   return c.args.map(unquote).join(' ');
 }
 
+/** A function named after a downloader shadows it only when its body never calls a real downloader. */
+function shadowsDownloader(name: string, u?: ShellUnit): boolean {
+  return u !== undefined && u.definedFunctions.has(name) && !u.downloaderWrappers.has(name);
+}
+
 function isDownloader(c: ShellCommand, u?: ShellUnit): boolean {
   if (!DOWNLOADERS.has(c.name)) return false;
-  if (u && u.definedFunctions.has(c.name)) return false; // a shell function named fetch/curl is not the network tool
+  if (shadowsDownloader(c.name, u)) return false; // a plain shell function named fetch/curl is not the network tool
   return !(c.name === 'curl' && c.args.some((a) => /^-[a-zA-Z]*I/.test(a) || a === '--head'));
 }
 
@@ -118,11 +123,13 @@ function isInterpreter(c: ShellCommand): boolean {
 
 /** True when the text runs a downloader as a command (not merely mentions one, e.g. in a path like bin/deen-fetch). */
 function containsDownload(text: string, u?: ShellUnit): boolean {
-  const re = /(?:^|[\s(|;&`{])(?:\/usr\/bin\/|\/bin\/)?(curl|wget|aria2c|xh|fetch)(?=\s|$|\))/g;
+  // A downloader behind any path prefix (/usr/local/bin/curl), a leading backslash (\curl) or quotes counts; a
+  // name that merely contains one (bin/deen-fetch) does not, because `-` and `_` are not word boundaries here.
+  const re = /(?:^|[\s(|;&`{"'])\\?(?:\/?(?:[\w.~+-]+\/)+)?(curl|wget|aria2c|xh|fetch)(?=[\s"')|;&`}]|$)/g;
   let m: RegExpExecArray | null;
   while ((m = re.exec(text))) {
     const name = m[1]!;
-    if (u && u.definedFunctions.has(name)) continue;
+    if (shadowsDownloader(name, u)) continue;
     return true;
   }
   return false;

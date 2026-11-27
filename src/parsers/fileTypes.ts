@@ -41,7 +41,9 @@ export function classify(file: SourceFile): FileType {
   const text = file.text ?? '';
   const firstLine = text.slice(0, 200).split('\n')[0] ?? '';
 
-  // A shebang for another interpreter decides first, whatever the file is called (`install` with #!/usr/bin/python3).
+  // The extension decides first: install.sh with a Python shebang is still run as `bash install.sh` by its README.
+  if (SHELL_EXT.has(ext)) return 'shell';
+  // Otherwise a shebang for another interpreter decides, whatever the file is called (`install` with #!/usr/bin/python3).
   const interp = /^#!\s*(?:\/usr\/bin\/env\s+(?:-S\s+)?)?(?:\/[\w./-]*\/)?(python[0-9.]*|node|nodejs|deno|bun|perl|ruby|php|lua[0-9.]*)\b/.exec(firstLine)?.[1];
   if (interp) {
     if (interp.startsWith('python')) return 'python';

