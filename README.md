@@ -77,7 +77,10 @@ Measured honestly, and so far only in a limited way.
 - **First run:** all 308 checked finding locations matched the source line. The informational notes were accurate. Most medium-and-above warnings were not: 157 of 334 reviewed findings were labeled incorrect, and the spot check found five things the tool had missed.
 - **After fixing the rules:** all 157 incorrect findings are gone, 139 of the 140 correct ones remain, and the five misses are now reported (`docs/corpus/rerun-round1.md`).
 
-What this does and does not show: the rules were fixed using the same 20 repositories they were measured on, so these numbers show the known problems are fixed. They are not a measurement of accuracy on repositories the tool has not seen, and no recall figure exists yet. A fresh, separately labeled corpus is the next step.
+- **Round 2 (20 unseen repositories):** 122 of 136 findings correct, but only 9 of 21 at medium or above, and all 5 criticals were false alarms with one cause, since fixed (`docs/corpus/round2/`).
+- **Round 3 (20 more unseen repositories, after those fixes):** 10 of 12 medium findings correct and no false criticals, but also 34 false high findings on one repository, a regression introduced by a rule change the same day (`docs/corpus/round3/`).
+
+What this does and does not show: the rules were fixed using the same 20 repositories they were measured on, so these numbers show the known problems are fixed. Rounds 2 and 3 are the measurements on unseen repositories; each one found problems the previous round could not. No recall figure exists yet.
 
 ## Status
 

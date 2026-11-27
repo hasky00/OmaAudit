@@ -1,0 +1,428 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "omaaudit",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-11-27T16:38:52.764Z",
+  "durationMs": 272,
+  "target": {
+    "kind": "local",
+    "name": "/home/claude/corpus3-tree/markschellhas.omasong"
+  },
+  "coverage": {
+    "filesListed": 119,
+    "filesInspected": 50,
+    "filesSkipped": [
+      {
+        "path": "samples/piano/F#3.wav",
+        "reason": "total byte budget reached"
+      },
+      {
+        "path": "preview.png",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/epiano/A#3.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/epiano/A#4.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/epiano/A3.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/epiano/A4.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/epiano/B3.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/epiano/B4.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/epiano/C#3.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/epiano/C#4.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/epiano/C3.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/epiano/C4.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/epiano/C5.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/epiano/D#3.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/epiano/D#4.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/epiano/D3.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/epiano/D4.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/epiano/E3.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/epiano/E4.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/epiano/F#3.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/epiano/F#4.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/epiano/F3.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/epiano/F4.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/epiano/G#3.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/epiano/G#4.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/epiano/G3.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/epiano/G4.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/organ/A#3.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/organ/A#4.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/organ/A3.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/organ/A4.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/organ/B3.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/organ/B4.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/organ/C#3.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/organ/C#4.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/organ/C3.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/organ/C4.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/organ/C5.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/organ/D#3.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/organ/D#4.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/organ/D3.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/organ/D4.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/organ/E3.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/organ/E4.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/organ/F#3.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/organ/F#4.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/organ/F3.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/organ/F4.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/organ/G#3.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/organ/G#4.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/organ/G3.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/organ/G4.wav",
+        "reason": "binary"
+      },
+      {
+        "path": "samples/piano/A#3.wav",
+        "reason": "too-large"
+      },
+      {
+        "path": "samples/piano/A#4.wav",
+        "reason": "too-large"
+      },
+      {
+        "path": "samples/piano/A3.wav",
+        "reason": "too-large"
+      },
+      {
+        "path": "samples/piano/A4.wav",
+        "reason": "too-large"
+      },
+      {
+        "path": "samples/piano/B3.wav",
+        "reason": "too-large"
+      },
+      {
+        "path": "samples/piano/B4.wav",
+        "reason": "too-large"
+      },
+      {
+        "path": "samples/piano/C#3.wav",
+        "reason": "too-large"
+      },
+      {
+        "path": "samples/piano/C#4.wav",
+        "reason": "too-large"
+      },
+      {
+        "path": "samples/piano/C3.wav",
+        "reason": "too-large"
+      },
+      {
+        "path": "samples/piano/C4.wav",
+        "reason": "too-large"
+      },
+      {
+        "path": "samples/piano/C5.wav",
+        "reason": "too-large"
+      },
+      {
+        "path": "samples/piano/D#3.wav",
+        "reason": "too-large"
+      },
+      {
+        "path": "samples/piano/D#4.wav",
+        "reason": "too-large"
+      },
+      {
+        "path": "samples/piano/D3.wav",
+        "reason": "too-large"
+      },
+      {
+        "path": "samples/piano/D4.wav",
+        "reason": "too-large"
+      },
+      {
+        "path": "samples/piano/E3.wav",
+        "reason": "too-large"
+      },
+      {
+        "path": "samples/piano/E4.wav",
+        "reason": "too-large"
+      }
+    ],
+    "bytesInspected": 282791,
+    "truncated": true,
+    "fileTypes": {
+      "other-text": 25,
+      "qml": 8,
+      "markdown": 7,
+      "javascript": 8,
+      "omarchy-manifest": 1,
+      "python": 1,
+      "binary": 51,
+      "skipped": 17
+    },
+    "unknown": [
+      "9 Python/JavaScript file(s) are only scanned for secrets; use language-specific scanners for logic review",
+      "8 QML file(s): only process/file/network surfaces and embedded commands are analysed, not QML logic",
+      "the file tree was truncated by resource limits; results are incomplete"
+    ],
+    "scanners": [
+      {
+        "name": "omaaudit-rules",
+        "version": "0.1.0",
+        "source": "builtin",
+        "status": "ran"
+      },
+      {
+        "name": "shellcheck",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "shellcheck not found on PATH (pacman -S shellcheck)"
+      },
+      {
+        "name": "osv-scanner",
+        "version": "n/a",
+        "source": "external",
+        "status": "skipped",
+        "note": "disabled (offline or by flag)"
+      }
+    ]
+  },
+  "dependencies": [],
+  "findings": [
+    {
+      "id": "54c3b81ee67c7817",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "entry point file not found: Songwriter.qml",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "{ \"schemaVersion\": 1, \"id\": \"markschellhas.omasong\", \"name\": \"OMASONG\", \"version\": \"0.2.0\", \"author\": \"Mark Schellhas\", \"license\": \"MIT\", \"descrip",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "cba9ebb66417da68",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "BarWidget.qml",
+        "startLine": 3,
+        "endLine": 3
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "328e1a8bd3fd10b5",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses FileView",
+      "location": {
+        "path": "BarWidget.qml",
+        "startLine": 33,
+        "endLine": 33
+      },
+      "evidence": "FileView {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    }
+  ],
+  "summary": {
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 1,
+      "low": 0,
+      "info": 2
+    },
+    "capabilities": [
+      "omarchy-plugin"
+    ],
+    "verdict": "review-recommended",
+    "highestSeverity": "medium"
+  },
+  "disclaimer": "OmaAudit performs static inspection only. Findings are evidence of risk patterns, not proof of malice, and the absence of findings is not proof of safety. Review the source before you install."
+}

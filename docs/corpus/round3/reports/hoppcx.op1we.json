@@ -1,0 +1,267 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "omaaudit",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-11-27T16:38:45.353Z",
+  "durationMs": 184,
+  "target": {
+    "kind": "local",
+    "name": "/home/claude/corpus3-tree/hoppcx.op1we"
+  },
+  "coverage": {
+    "filesListed": 43,
+    "filesInspected": 39,
+    "filesSkipped": [
+      {
+        "path": "docs/preview.png",
+        "reason": "too-large"
+      },
+      {
+        "path": "docs/profiles.png",
+        "reason": "binary"
+      },
+      {
+        "path": "docs/sensitivity.png",
+        "reason": "binary"
+      },
+      {
+        "path": "preview.png",
+        "reason": "too-large"
+      }
+    ],
+    "bytesInspected": 386580,
+    "truncated": false,
+    "fileTypes": {
+      "github-workflow": 1,
+      "other-text": 7,
+      "python": 14,
+      "markdown": 6,
+      "skipped": 2,
+      "binary": 2,
+      "omarchy-manifest": 1,
+      "qml": 4,
+      "javascript": 2,
+      "shell": 4
+    },
+    "unknown": [
+      "16 Python/JavaScript file(s) are only scanned for secrets; use language-specific scanners for logic review",
+      "4 QML file(s): only process/file/network surfaces and embedded commands are analysed, not QML logic"
+    ],
+    "scanners": [
+      {
+        "name": "omaaudit-rules",
+        "version": "0.1.0",
+        "source": "builtin",
+        "status": "ran"
+      },
+      {
+        "name": "shellcheck",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "shellcheck not found on PATH (pacman -S shellcheck)"
+      },
+      {
+        "name": "osv-scanner",
+        "version": "n/a",
+        "source": "external",
+        "status": "skipped",
+        "note": "disabled (offline or by flag)"
+      }
+    ]
+  },
+  "dependencies": [],
+  "findings": [
+    {
+      "id": "cfa666172796bf4f",
+      "ruleId": "OA-SH-004",
+      "title": "Commands run with elevated privileges",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "privilege-escalation"
+      ],
+      "message": "sudo runs install (found in documentation: this is what users are told to run)",
+      "location": {
+        "path": "README.md",
+        "startLine": 57,
+        "endLine": 57
+      },
+      "evidence": "sudo install -m 0644 udev/70-op1we-control.rules /etc/udev/rules.d/70-op1we-control.rules",
+      "remediation": "Confirm every privileged command is necessary, scoped to a fixed command surface, and documented. Prefer user-level installation where possible.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "238d4cf0f8a446f0",
+      "ruleId": "OA-SH-005",
+      "title": "Files under system paths are written or modified",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "high",
+      "capabilities": [
+        "system-file-write"
+      ],
+      "message": "install modifies /etc/udev/rules.d/70-op1we-control.rules as root (found in documentation: this is what users are told to run)",
+      "location": {
+        "path": "README.md",
+        "startLine": 57,
+        "endLine": 57
+      },
+      "evidence": "sudo install -m 0644 udev/70-op1we-control.rules /etc/udev/rules.d/70-op1we-control.rules",
+      "remediation": "Prefer per-user locations (~/.local, ~/.config). If a system path is required, ship a package (PKGBUILD) so pacman tracks the files and can remove them.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "cbab0f93cb8d7f3b",
+      "ruleId": "OA-SH-005",
+      "title": "Files under system paths are written or modified",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "high",
+      "capabilities": [
+        "system-file-write"
+      ],
+      "message": "ln modifies /usr/share/omarchy/shell/Ui (2 occurrences in this file: lines 49, 50)",
+      "location": {
+        "path": "scripts/check.sh",
+        "startLine": 49,
+        "endLine": 49
+      },
+      "evidence": "ln -s /usr/share/omarchy/shell/Ui \"$lint_root/qs/Ui\"\nln -s /usr/share/omarchy/shell/Commons \"$lint_root/qs/Commons\"",
+      "remediation": "Prefer per-user locations (~/.local, ~/.config). If a system path is required, ship a package (PKGBUILD) so pacman tracks the files and can remove them.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "946e5c29a261d8b3",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "qml/Controller.qml",
+        "startLine": 447,
+        "endLine": 447
+      },
+      "evidence": "component HelperProc: Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "429b46ce9e29e365",
+      "ruleId": "OA-SH-004",
+      "title": "Commands run with elevated privileges",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "medium",
+      "capabilities": [
+        "privilege-escalation"
+      ],
+      "message": "sudo runs udevadm (found in documentation: this is what users are told to run)",
+      "location": {
+        "path": "README.md",
+        "startLine": 58,
+        "endLine": 58
+      },
+      "evidence": "sudo udevadm control --reload-rules",
+      "remediation": "Confirm every privileged command is necessary, scoped to a fixed command surface, and documented. Prefer user-level installation where possible.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "624aa7926aa9fcdf",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "valid Omarchy plugin manifest 'hoppcx.op1we' (kinds: bar-widget). Plugins run as unsandboxed code inside omarchy-shell with the user's full file and process access.",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "id=hoppcx.op1we kinds=bar-widget",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "af3e11678b484fbb",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "qml/Controller.qml",
+        "startLine": 2,
+        "endLine": 2
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    }
+  ],
+  "summary": {
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 3,
+      "low": 2,
+      "info": 2
+    },
+    "capabilities": [
+      "omarchy-plugin",
+      "privilege-escalation",
+      "system-file-write"
+    ],
+    "verdict": "review-recommended",
+    "highestSeverity": "medium"
+  },
+  "disclaimer": "OmaAudit performs static inspection only. Findings are evidence of risk patterns, not proof of malice, and the absence of findings is not proof of safety. Review the source before you install."
+}

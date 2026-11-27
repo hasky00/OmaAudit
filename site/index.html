@@ -152,15 +152,15 @@ npm link</code></pre>
 
   <section id="accuracy">
     <h2>How accurate is it</h2>
-    <p>This is an early preview, and it has been measured rather than promised. The rules were run on 20 marketplace plugins they had never seen, and every finding was labeled by an AI reviewer (Claude) working separately from the session that wrote the rules. One reviewer, one pass, a small sample.</p>
+    <p>This is an early preview, and it has been measured rather than promised. Three times so far, the rules were run on 20 marketplace plugins they had never seen, and every finding was labeled by an AI reviewer (Claude) working separately from the session that wrote the rules. One reviewer, one pass, small samples.</p>
     <ul>
       <li>Every finding checked pointed at the right file and line.</li>
-      <li>About 90% of all findings were correct, most of them informational notes such as "this plugin spawns processes".</li>
-      <li>The louder warnings were weaker: 9 of 21 findings at medium or above were correct for code a user runs.</li>
-      <li>All five critical findings in that run were false alarms with one shared cause. That bug is being fixed.</li>
-      <li>It also missed behaviours that had no rule yet, such as a plugin adding hooks to AI coding agent settings.</li>
+      <li>Informational notes, such as "this plugin spawns processes", have been reliably correct.</li>
+      <li>The louder warnings are improving but not there yet. In the latest round, 10 of 12 medium findings were correct, and there were no false criticals.</li>
+      <li>That same round also found 34 false high findings on one plugin, caused by a rule change made the same day. It is recorded in the corpus and is being fixed.</li>
+      <li>It still misses things. Python and JavaScript logic is not analysed, only scanned for secrets, so an installer written in Python can do a lot that OmaAudit will not report.</li>
     </ul>
-    <p class="muted">The full data, labels and method are in the repository under <a href="https://github.com/hasky00/OmaAudit/tree/main/docs/corpus">docs/corpus</a>. Python and JavaScript logic is not analysed yet, only scanned for secrets.</p>
+    <p class="muted">The full data, labels and method for every round are in the repository under <a href="https://github.com/hasky00/OmaAudit/tree/main/docs/corpus">docs/corpus</a>.</p>
   </section>
 
 </main>

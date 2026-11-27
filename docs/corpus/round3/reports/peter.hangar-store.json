@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "omaaudit",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-11-27T16:38:55.111Z",
+  "durationMs": 122,
+  "target": {
+    "kind": "local",
+    "name": "/home/claude/corpus3-tree/peter.hangar-store"
+  },
+  "coverage": {
+    "filesListed": 21,
+    "filesInspected": 10,
+    "filesSkipped": [
+      {
+        "path": "docs/screenshots/01-featured.png",
+        "reason": "binary"
+      },
+      {
+        "path": "docs/screenshots/02-sort-by-size.png",
+        "reason": "binary"
+      },
+      {
+        "path": "docs/screenshots/03-updates-tab.png",
+        "reason": "binary"
+      },
+      {
+        "path": "docs/screenshots/04-details-update.png",
+        "reason": "binary"
+      },
+      {
+        "path": "docs/screenshots/05-aur-trust-warnings.png",
+        "reason": "binary"
+      },
+      {
+        "path": "docs/screenshots/06-aur-sorted-by-votes.png",
+        "reason": "binary"
+      },
+      {
+        "path": "docs/screenshots/07-details-aur-trust.png",
+        "reason": "binary"
+      },
+      {
+        "path": "docs/screenshots/08-launch-and-icons.png",
+        "reason": "binary"
+      },
+      {
+        "path": "docs/screenshots/09-bundles.png",
+        "reason": "binary"
+      },
+      {
+        "path": "docs/screenshots/10-details-icon.png",
+        "reason": "binary"
+      },
+      {
+        "path": "preview.png",
+        "reason": "binary"
+      }
+    ],
+    "bytesInspected": 86535,
+    "truncated": false,
+    "fileTypes": {
+      "javascript": 3,
+      "markdown": 3,
+      "shell": 1,
+      "binary": 11,
+      "qml": 1,
+      "other-text": 1,
+      "omarchy-manifest": 1
+    },
+    "unknown": [
+      "3 Python/JavaScript file(s) are only scanned for secrets; use language-specific scanners for logic review",
+      "1 QML file(s): only process/file/network surfaces and embedded commands are analysed, not QML logic"
+    ],
+    "scanners": [
+      {
+        "name": "omaaudit-rules",
+        "version": "0.1.0",
+        "source": "builtin",
+        "status": "ran"
+      },
+      {
+        "name": "shellcheck",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "shellcheck not found on PATH (pacman -S shellcheck)"
+      },
+      {
+        "name": "osv-scanner",
+        "version": "n/a",
+        "source": "external",
+        "status": "skipped",
+        "note": "disabled (offline or by flag)"
+      }
+    ]
+  },
+  "dependencies": [],
+  "findings": [
+    {
+      "id": "d49e9539061d493c",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "HangarStore.qml",
+        "startLine": 387,
+        "endLine": 387
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "631c2f38b259f0bb",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "HangarStore.qml",
+        "startLine": 2,
+        "endLine": 2
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "b208172569698f3e",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "valid Omarchy plugin manifest 'peter.hangar-store' (kinds: overlay). Plugins run as unsandboxed code inside omarchy-shell with the user's full file and process access.",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "id=peter.hangar-store kinds=overlay",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    }
+  ],
+  "summary": {
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 1,
+      "info": 2
+    },
+    "capabilities": [
+      "omarchy-plugin"
+    ],
+    "verdict": "minor-notes",
+    "highestSeverity": "low"
+  },
+  "disclaimer": "OmaAudit performs static inspection only. Findings are evidence of risk patterns, not proof of malice, and the absence of findings is not proof of safety. Review the source before you install."
+}

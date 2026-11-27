@@ -1,0 +1,1284 @@
+{
+ "schema": "omaaudit-corpus-labels/1",
+ "round": 3,
+ "labeledAt": "2026-11-27",
+ "toolCommit": "6a28194",
+ "labeler": "AI reviewer (Claude), a session separate from the one that wrote the rules. Not yet spot-checked by the maintainer.",
+ "method": "20 marketplace repositories not used in rounds 1 or 2. Each was fetched at its pinned commit and read, never executed. Every finding location was checked against the source line, then judged by rule. Labels as in earlier rounds.",
+ "limits": "One reviewer, one pass, 20 repositories. \"missed\" comes from reading installers and grepping for common patterns, not an exhaustive search, so no recall figure can be derived.",
+ "totals": {
+  "correct": 101,
+  "incorrect": 36,
+  "correct-nonruntime": 15
+ },
+ "reviewed": 152,
+ "precision": {
+  "all_findings_strict": 0.664,
+  "medium_and_above": {
+   "total": 46,
+   "correct": 10,
+   "incorrect": 36
+  },
+  "medium_and_above_excluding_OA-SH-002": {
+   "total": 12,
+   "correct": 10,
+   "incorrect": 2
+  }
+ },
+ "regression": "All 34 OA-SH-002 findings come from one repository and were introduced by PR #13. The same repository scanned at 0d5b07d (before PR #8) and at 516edc9 (after PR #8, before PR #13) produces no OA-SH-002 finding.",
+ "bySeverity": {
+  "info": {
+   "correct": 66,
+   "correct-nonruntime": 12
+  },
+  "low": {
+   "correct": 25,
+   "correct-nonruntime": 3
+  },
+  "medium": {
+   "correct": 10,
+   "incorrect": 2
+  },
+  "high": {
+   "incorrect": 34
+  }
+ },
+ "byRule": {
+  "OA-CI-001": {
+   "correct-nonruntime": 3
+  },
+  "OA-OMA-001": {
+   "correct": 25,
+   "incorrect": 1
+  },
+  "OA-OMA-002": {
+   "correct": 61,
+   "correct-nonruntime": 2
+  },
+  "OA-SH-002": {
+   "incorrect": 34
+  },
+  "OA-SH-003": {
+   "correct": 5
+  },
+  "OA-SH-004": {
+   "correct": 3,
+   "correct-nonruntime": 4
+  },
+  "OA-SH-005": {
+   "correct": 1,
+   "incorrect": 1
+  },
+  "OA-SH-007": {
+   "correct": 2
+  },
+  "OA-SH-009": {
+   "correct-nonruntime": 6,
+   "correct": 1
+  },
+  "OA-SH-011": {
+   "correct": 2
+  },
+  "OA-SYSD-001": {
+   "correct": 1
+  }
+ },
+ "missed": [
+  {
+   "plugin": "hancore.keyboard-center",
+   "location": "ctrl_swap.py",
+   "what": "A Python helper uses pkexec to write /etc/keyd/hancore-ctrl-swap.conf, enables and restarts the keyd system service, and clones and builds keyd from source with make. These are root-level system changes. The report verdict is \"minor-notes\" because Python logic is not analysed."
+  },
+  {
+   "plugin": "io.github.karpage.omaraptor",
+   "location": "install.sh:33-45",
+   "what": "The installer copies a Lua file into ~/.config/hypr and adds a require line to ~/.config/hypr/hyprland.lua, which Hyprland loads at session start. It asks first and makes a backup, but the change to the session config is not reported; only README findings were produced for this repository."
+  }
+ ],
+ "plugins": {
+  "andreconde.project-focus": {
+   "repository": "https://github.com/andreconde21/omarchy-project-focus",
+   "commit": "633add883f9bb41ae05a9cc4d898eb2c2fd3bd80",
+   "findings": {
+    "dd1ae021718fcc81": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "aa8efa8825cdfc30": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    }
+   }
+  },
+  "apach.notification-engine": {
+   "repository": "https://github.com/ApachaiZ/omarchy-notification-engine",
+   "commit": "dca2f16e5370d4c377131c43a103cce38b896243",
+   "findings": {
+    "f5b41e0aa978a9e0": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Service.qml:914",
+     "label": "correct",
+     "note": ""
+    },
+    "8626990ced4a959e": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "aa8efa8825cdfc30": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "e4f618465cb4518e": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Service.qml:6",
+     "label": "correct",
+     "note": ""
+    },
+    "d30d0e238dd1ce28": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Service.qml:1323",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "dailen.omarcharium": {
+   "repository": "https://github.com/DailenG/omarcharium",
+   "commit": "59ede1d7f1f0ee6053e644b26717324ee90d3e2d",
+   "findings": {
+    "da3749a99b97ea88": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Config.qml:289",
+     "label": "correct",
+     "note": ""
+    },
+    "a539ac0b8b27fe2d": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Service.qml:175",
+     "label": "correct",
+     "note": ""
+    },
+    "94c2a1ed4536ea3b": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Config.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "a8bc81c9ec273833": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Config.qml:369",
+     "label": "correct",
+     "note": ""
+    },
+    "fb7bea4e2644ef0d": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "aa8efa8825cdfc30": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "b7e1b056c1232ae4": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Service.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "cd42f853603ed64e": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Service.qml:145",
+     "label": "correct",
+     "note": ""
+    },
+    "715cceffdebc26e4": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Service.qml:262",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "dailen.omartfy": {
+   "repository": "https://github.com/DailenG/omartfy",
+   "commit": "81107fbb6f617d8b4f4f65b192accaee021175ca",
+   "findings": {
+    "2e4a6cb7b217e4e7": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Service.qml:264",
+     "label": "correct",
+     "note": ""
+    },
+    "c30ba3f8f93defe5": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "aa8efa8825cdfc30": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "6134250a69662b26": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Service.qml:3",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "hancore.keyboard-center": {
+   "repository": "https://github.com/iamcheyan/omarchy-keyboard-indicator",
+   "commit": "34a5f2fa80e286a12371dbcc5c8f063d875bf808",
+   "findings": {
+    "9b5b47c9bc69cede": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "bar/widget.qml:62",
+     "label": "correct",
+     "note": ""
+    },
+    "8f1edfc6bbfdc8a8": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "CtrlSwapPanel.qml:143",
+     "label": "correct",
+     "note": ""
+    },
+    "8c36e0392232e795": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "bar/widget.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "48575379aa8fba31": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "CtrlSwapPanel.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "f7704bd83c919079": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    }
+   }
+  },
+  "hoppcx.op1we": {
+   "repository": "https://github.com/HoppCX/OP1we-Control",
+   "commit": "f4e25951f0182c0749bf6ad0abbb64d21f222602",
+   "findings": {
+    "cfa666172796bf4f": {
+     "ruleId": "OA-SH-004",
+     "severity": "medium",
+     "location": "README.md:57",
+     "label": "correct",
+     "note": ""
+    },
+    "238d4cf0f8a446f0": {
+     "ruleId": "OA-SH-005",
+     "severity": "medium",
+     "location": "README.md:57",
+     "label": "correct",
+     "note": ""
+    },
+    "cbab0f93cb8d7f3b": {
+     "ruleId": "OA-SH-005",
+     "severity": "medium",
+     "location": "scripts/check.sh:49",
+     "label": "incorrect",
+     "note": "ln -s takes the system path as its source and creates the link inside a temporary lint directory; nothing under /usr/share is modified"
+    },
+    "946e5c29a261d8b3": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "qml/Controller.qml:447",
+     "label": "correct",
+     "note": ""
+    },
+    "429b46ce9e29e365": {
+     "ruleId": "OA-SH-004",
+     "severity": "low",
+     "location": "README.md:58",
+     "label": "correct",
+     "note": ""
+    },
+    "624aa7926aa9fcdf": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "af3e11678b484fbb": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "qml/Controller.qml:2",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "io.github.danmacdonald.fleetpods": {
+   "repository": "https://github.com/DanMacDonald/fleetpods",
+   "commit": "6cc77a412d63f00c911a948890346c04213e6404",
+   "findings": {
+    "e1059c31ea4a2773": {
+     "ruleId": "OA-SH-003",
+     "severity": "medium",
+     "location": "docs/installation.md:29",
+     "label": "correct",
+     "note": ""
+    },
+    "81e7b1d5d7fb1379": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "setup:51",
+     "label": "correct",
+     "note": ""
+    },
+    "7dd7d5926198288d": {
+     "ruleId": "OA-CI-001",
+     "severity": "low",
+     "location": ".github/workflows/ci.yml:16",
+     "label": "correct-nonruntime",
+     "note": "CI or test code only"
+    },
+    "b2f459f3ad3727da": {
+     "ruleId": "OA-CI-001",
+     "severity": "low",
+     "location": ".github/workflows/ci.yml:33",
+     "label": "correct-nonruntime",
+     "note": "CI or test code only"
+    },
+    "430b2c391bbfb501": {
+     "ruleId": "OA-CI-001",
+     "severity": "low",
+     "location": ".github/workflows/ci.yml:41",
+     "label": "correct-nonruntime",
+     "note": "CI or test code only"
+    },
+    "d71fec15a7a73553": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "plugin/NativeNotification.qml:183",
+     "label": "correct",
+     "note": ""
+    },
+    "afbe4dc61f33f128": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "plugin/Service.qml:24",
+     "label": "correct",
+     "note": ""
+    },
+    "11dafcaa6091c183": {
+     "ruleId": "OA-SH-007",
+     "severity": "low",
+     "location": "setup:74",
+     "label": "correct",
+     "note": ""
+    },
+    "1954e2a0476531ca": {
+     "ruleId": "OA-SH-004",
+     "severity": "info",
+     "location": ".github/workflows/ci.yml:14",
+     "label": "correct-nonruntime",
+     "note": "CI or test code only"
+    },
+    "8362cc95675d541f": {
+     "ruleId": "OA-SH-009",
+     "severity": "info",
+     "location": ".github/workflows/ci.yml:15",
+     "label": "correct-nonruntime",
+     "note": "CI or test code only"
+    },
+    "e0569e0d5b769345": {
+     "ruleId": "OA-SH-009",
+     "severity": "info",
+     "location": ".github/workflows/ci.yml:32",
+     "label": "correct-nonruntime",
+     "note": "CI or test code only"
+    },
+    "91d32d1bba1b0b70": {
+     "ruleId": "OA-SH-009",
+     "severity": "info",
+     "location": ".github/workflows/ci.yml:57",
+     "label": "correct-nonruntime",
+     "note": "CI or test code only"
+    },
+    "73a5961fa2ba6ece": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "cfe01d8cb5bedaba": {
+     "ruleId": "OA-SYSD-001",
+     "severity": "info",
+     "location": "packaging/fleetpods.service:1",
+     "label": "correct",
+     "note": ""
+    },
+    "12eba000e4dabca9": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "plugin/NativeNotification.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "4f0acf23bb3c9faa": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "plugin/Panel.qml:5",
+     "label": "correct",
+     "note": ""
+    },
+    "e4a1c3eb0cb6d7fa": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "plugin/Panel.qml:18",
+     "label": "correct",
+     "note": ""
+    },
+    "0392aabd58c21358": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "plugin/Service.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "9df5ccb3641db544": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "plugin/Service.qml:382",
+     "label": "correct",
+     "note": ""
+    },
+    "593c1435579d212d": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "plugin/tests/tst_ConnectionNotification.qml:3",
+     "label": "correct-nonruntime",
+     "note": "CI or test code only"
+    },
+    "cd02c14ec817cb11": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "plugin/tests/tst_NativeNotification.qml:4",
+     "label": "correct-nonruntime",
+     "note": "CI or test code only"
+    }
+   }
+  },
+  "io.github.davidboulay.truenas-apps-watcher": {
+   "repository": "https://github.com/davidboulay/omarchy-truenas-apps-watcher",
+   "commit": "cb62a4a1a23093195efaf057d7055c780005c462",
+   "findings": {
+    "71bb0f50cb30e457": {
+     "ruleId": "OA-SH-003",
+     "severity": "medium",
+     "location": "README.md:302",
+     "label": "correct",
+     "note": ""
+    },
+    "0025ad7f0c953330": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Service.qml:899",
+     "label": "correct",
+     "note": ""
+    },
+    "81f5c3749931e143": {
+     "ruleId": "OA-SH-004",
+     "severity": "info",
+     "location": ".github/workflows/ci.yml:41",
+     "label": "correct-nonruntime",
+     "note": "CI or test code only"
+    },
+    "5b8a3f892b436b34": {
+     "ruleId": "OA-SH-009",
+     "severity": "info",
+     "location": ".github/workflows/ci.yml:42",
+     "label": "correct-nonruntime",
+     "note": "CI or test code only"
+    },
+    "c30d0a49da3c41d1": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "eb3a2767412ebe50": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "6134250a69662b26": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Service.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "f5a1266b78e2848e": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Service.qml:1051",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "io.github.jimjeffers.lumen": {
+   "repository": "https://github.com/jimjeffers/omarchy-lumen",
+   "commit": "ee5d2f8312ad73c1d627e9c877ace4e63d9c8c87",
+   "findings": {
+    "cb188e95ada2e3e0": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Panel.qml:235",
+     "label": "correct",
+     "note": ""
+    },
+    "4bfb390d9b71d5e5": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "eb3a2767412ebe50": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:4",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "io.github.karpage.omaraptor": {
+   "repository": "https://github.com/KarPage/omaraptor-player",
+   "commit": "2d83f7c44ceace6806e29d2c8ec5c49cb294a60e",
+   "findings": {
+    "aee13a2aeb43efb8": {
+     "ruleId": "OA-SH-003",
+     "severity": "medium",
+     "location": "README.md:71",
+     "label": "correct",
+     "note": ""
+    },
+    "a905ec45917bd7eb": {
+     "ruleId": "OA-SH-004",
+     "severity": "low",
+     "location": "README.md:79",
+     "label": "correct",
+     "note": ""
+    },
+    "f26e8888adcf9439": {
+     "ruleId": "OA-SH-004",
+     "severity": "info",
+     "location": ".github/workflows/test.yml:20",
+     "label": "correct-nonruntime",
+     "note": "CI or test code only"
+    },
+    "4b6ad412d851a6d0": {
+     "ruleId": "OA-SH-009",
+     "severity": "info",
+     "location": ".github/workflows/test.yml:20",
+     "label": "correct-nonruntime",
+     "note": "CI or test code only"
+    },
+    "6e863fff82a59ef8": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "2dbb479be9753e42": {
+     "ruleId": "OA-SH-009",
+     "severity": "info",
+     "location": "README.md:79",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "io.github.raeganwyble.per-app-audio": {
+   "repository": "https://github.com/raeganwyble/per-app-audio",
+   "commit": "0ae3d60f73f414f4044de36f39f3d930e98033d1",
+   "findings": {
+    "4f838d0e47907bb8": {
+     "ruleId": "OA-SH-011",
+     "severity": "medium",
+     "location": "query-audio.sh:62",
+     "label": "correct",
+     "note": ""
+    },
+    "e42b0d858b5fcbd9": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Panel.qml:98",
+     "label": "correct",
+     "note": ""
+    },
+    "1b254ed00d5fdd49": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "eb3a2767412ebe50": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:4",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "io.github.regionallyfamous.iromihon": {
+   "repository": "https://github.com/RegionallyFamous/iromihon",
+   "commit": "655dbc9d27711b94b13939eb15bc1b0a546ca122",
+   "findings": {
+    "cb1cf60036f19e2b": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Iromihon.qml:356",
+     "label": "correct",
+     "note": ""
+    },
+    "966873f42ab23e8c": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Service.qml:17",
+     "label": "correct",
+     "note": ""
+    },
+    "abe6fc0747023aa4": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Iromihon.qml:6",
+     "label": "correct",
+     "note": ""
+    },
+    "15c16ae519d986b0": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "aa8efa8825cdfc30": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "6134250a69662b26": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Service.qml:3",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "io.github.zachsa999.machine-switcher": {
+   "repository": "https://github.com/zachsa999/bar-machine-switcher",
+   "commit": "594b7dd4b8b93e424af731263a861deb3a4e64e2",
+   "findings": {
+    "d056dedab57d31f4": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Service.qml:188",
+     "label": "correct",
+     "note": ""
+    },
+    "8d7b6716af2a58ba": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "5a3c0d68288bf934": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:5",
+     "label": "correct",
+     "note": ""
+    },
+    "6134250a69662b26": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Service.qml:3",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "ismoil.memory": {
+   "repository": "https://github.com/ismoil77/omarchy-memory",
+   "commit": "71636d655797f6d913356aebfc6ce5ce0b280cd7",
+   "findings": {
+    "bf774fb31c71f63a": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Panel.qml:206",
+     "label": "correct",
+     "note": ""
+    },
+    "995a1c83a0e7a3b6": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "129b25ba53e24222": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "ebcffa36bbca8178": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:72",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "markschellhas.omasong": {
+   "repository": "https://github.com/markschellhas/omasong",
+   "commit": "ec8a580ac052df31f7a927c0d524a7c89c27ecd4",
+   "findings": {
+    "54c3b81ee67c7817": {
+     "ruleId": "OA-OMA-001",
+     "severity": "medium",
+     "location": "manifest.json:1",
+     "label": "incorrect",
+     "note": "Songwriter.qml exists at the repository root. The scan hit its byte budget on large audio samples and truncated the tree, then reported the unread file as missing"
+    },
+    "cba9ebb66417da68": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "BarWidget.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "328e1a8bd3fd10b5": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "BarWidget.qml:33",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "max.scene": {
+   "repository": "https://github.com/gmaxxxie/Scene-Switcher",
+   "commit": "c19f9e005ef253f07f1164c2eac918a4389810d5",
+   "findings": {
+    "7b8147082f1544d2": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "omarchy-scene:1276",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "ab624c9b1f053347": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:234",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "11e03f22fbfd50be": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:235",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "48fafb9eb5435799": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:248",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "91881d7220b99079": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:250",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "290e3ee6b109fd4a": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:254",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "6dd7a4c575389a1a": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:276",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "36bc78bd7f5e6202": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:283",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "c2fd10645c9bd76f": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:388",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "0c444a502a37e0c6": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:415",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "ab29ea4423c57eca": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:533",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "e7f9befb5846c664": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:534",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "a36fffb8a67b1931": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:535",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "4976f0028ae0333f": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:536",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "a23520122eff50f1": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:537",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "0d173554b61552c8": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:538",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "c14a81bf2580230e": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:539",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "532a18ba5fe80088": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:560",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "2c9325e987c50e66": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:580",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "f2b8a1606c51d122": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:671",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "720c0697c6072273": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:673",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "5943d9b343450f12": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:691",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "3f4f41f77ef2f988": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:777",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "b9dca0403140a20b": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:785",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "0d2a0f859c1a3802": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:786",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "b69d9223d2deab5d": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:808",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "a0f357e500333e79": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:809",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "5930577cc6711cb5": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:815",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "383f5a3322789f52": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:829",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "a4f3995107df7a06": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:830",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "ec2289b2e8abf112": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:831",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "86da7c71a27243d1": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:845",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "cb7038d8393e3d7a": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:846",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "d4beb729aeccc6c6": {
+     "ruleId": "OA-SH-002",
+     "severity": "high",
+     "location": "tests/run-tests.sh:850",
+     "label": "incorrect",
+     "note": "no download exists anywhere in this repository. The variable holds the path of the project's own script (SCENE=\"$REPO/omarchy-scene\") or the user's editor ($EDITOR); running it is not executing a downloaded file"
+    },
+    "b95b6e1e0452b452": {
+     "ruleId": "OA-SH-011",
+     "severity": "medium",
+     "location": "omarchy-scene:671",
+     "label": "correct",
+     "note": ""
+    },
+    "4577e9034a9ce4e2": {
+     "ruleId": "OA-SH-003",
+     "severity": "medium",
+     "location": "README.md:66",
+     "label": "correct",
+     "note": ""
+    },
+    "9f7411fadcd56980": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "ConfigPanel.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "3122a4168200bbcd": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "ConfigPanel.qml:326",
+     "label": "correct",
+     "note": ""
+    },
+    "70d8ff29fd9262db": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "15d416c4c1557f06": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Scene.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "660c956af1c5a8d1": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Scene.qml:128",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "patrickfanella.monitor-bar": {
+   "repository": "https://github.com/PatrickFanella/omarchy-monitor-bar",
+   "commit": "f6df64c3ce5b62cdcea25a2338960e013e6a8102",
+   "findings": {
+    "8adea8ef6b93453a": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Bar.qml:1243",
+     "label": "correct",
+     "note": ""
+    },
+    "f301832741464860": {
+     "ruleId": "OA-OMA-001",
+     "severity": "low",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "04e7f13ea1be0328": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "SettingsPanel.qml:476",
+     "label": "correct",
+     "note": ""
+    },
+    "bffa872395e7fe89": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Bar.qml:6",
+     "label": "correct",
+     "note": ""
+    },
+    "b58b0aedb1c5e995": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Bar.qml:28",
+     "label": "correct",
+     "note": ""
+    },
+    "1c096f17604c0731": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "bac3a8636dc402e3": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "SettingsPanel.qml:7",
+     "label": "correct",
+     "note": ""
+    },
+    "49df28b1020b5e5c": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "SettingsPanel.qml:27",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "peter.hangar-store": {
+   "repository": "https://github.com/PeterVinter/omarchy-hangar-store",
+   "commit": "976bde88b42ec95adf47ec61c489d9ae22e48a9d",
+   "findings": {
+    "d49e9539061d493c": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "HangarStore.qml:387",
+     "label": "correct",
+     "note": ""
+    },
+    "631c2f38b259f0bb": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "HangarStore.qml:2",
+     "label": "correct",
+     "note": ""
+    },
+    "b208172569698f3e": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    }
+   }
+  },
+  "szaidi.scoring-matrix": {
+   "repository": "https://github.com/szaidi-code/scoring-matrix",
+   "commit": "b3163afb0f75e906ed05836d1be05e929cf7a70e",
+   "findings": {
+    "25a6105c1f265c2f": {
+     "ruleId": "OA-SH-003",
+     "severity": "medium",
+     "location": "README.md:44",
+     "label": "correct",
+     "note": ""
+    },
+    "020e12c25d88b5cd": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Widget.qml:63",
+     "label": "correct",
+     "note": ""
+    },
+    "24f0df75f33a352a": {
+     "ruleId": "OA-SH-004",
+     "severity": "info",
+     "location": ".github/workflows/test.yml:20",
+     "label": "correct-nonruntime",
+     "note": "CI or test code only"
+    },
+    "a7899e0a2e0535c9": {
+     "ruleId": "OA-SH-009",
+     "severity": "info",
+     "location": ".github/workflows/test.yml:21",
+     "label": "correct-nonruntime",
+     "note": "CI or test code only"
+    },
+    "4e2774fbf773a442": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "34a5d361c950f7ce": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Widget.qml:5",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "szalikdev.plugin-updates": {
+   "repository": "https://github.com/szalikdev/omarchy-plugin-updates",
+   "commit": "89e1210c525349104cfe6c640ed40b72a46c538f",
+   "findings": {
+    "1b2ee11f3919ba98": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "PluginUpdates.qml:105",
+     "label": "correct",
+     "note": ""
+    },
+    "fdeded034a5d9913": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "fceeaa8f4e58648f": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "PluginUpdates.qml:3",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  }
+ }
+}
