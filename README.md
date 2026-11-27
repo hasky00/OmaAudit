@@ -79,4 +79,4 @@ Version 0.1.0, first vertical slice. Verified on 2026-11-27 against `goodroot/hy
 
 ## Licence
 
-Apache-2.0 (proposed; see `NOTICE`). OmaAudit is a Hasky Lab project and is not affiliated with Omarchy or Basecamp.
+Apache-2.0 (proposed; see `NOTICE`). OmaAudit is a Hasky Labs project and is not affiliated with Omarchy or Basecamp.

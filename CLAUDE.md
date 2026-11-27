@@ -1,6 +1,6 @@
 # OmaAudit — Engineering instructions for Claude Code
 
-**Organization:** Hasky Lab | **Repository:** `omaaudit`
+**Organization:** Hasky Labs | **Repository:** `hasky00/OmaAudit`
 
 ## Mission
 Act as a principal software engineer and security researcher. Build an installable, lightweight developer utility for discovering, comparing and auditing Omarchy tools before installation. Deliver immediate value first; evolve into an ecosystem intelligence platform later. Do not duplicate existing scanners or claim novelty without evidence.
@@ -34,7 +34,7 @@ Test malicious fixtures, safe privileged operations, malformed files, unavailabl
 Add ecosystem indexing (100 repositories only if independently discovered), capability taxonomy, dependency graph, functional similarity, compatibility analysis, evidence-backed gap discovery, SARIF, historical monitoring and optional dashboard/API. Absence of evidence is not proof a tool does not exist. Keep ecosystem adapters independent so Bitcoin, Nostr and other communities can be supported later.
 
 ## Coordination with OmaBridge
-OmaBridge is a separate Codex project. Provide evidence-backed comparisons of existing mobile bridges and audit its source when authorized. Define a versioned JSON report schema before introducing a shared API. Do not require OmaBridge to run OmaAudit or vice versa. Apply identical audit standards to Hasky Lab and third-party code.
+OmaBridge is a separate Codex project. Provide evidence-backed comparisons of existing mobile bridges and audit its source when authorized. Define a versioned JSON report schema before introducing a shared API. Do not require OmaBridge to run OmaAudit or vice versa. Apply identical audit standards to Hasky Labs and third-party code.
 
 ## Execution workflow
 1. Inspect repository and environment; preserve existing work.
@@ -42,5 +42,6 @@ OmaBridge is a separate Codex project. Provide evidence-backed comparisons of ex
 3. Implement `check` end-to-end first, then local scan, find, compare and doctor.
 4. Run tests and document actual outcomes after each increment.
 5. Prepare small reviewable commits/PRs; do not merge, publish, deploy or modify unrelated repositories without authorization.
+6. Commit as `hasky00 <239224029+hasky00@users.noreply.github.com>`. Never use a real name or personal email.
 
 Deliver source, README, CLI reference, threat model, tests, CI, dependency inventory, contributor and security disclosure guidance. Start now with Phase 0 and the first vertical slice. Build the useful tool before the research platform.
