@@ -38,7 +38,7 @@ export async function checkRepository(input: string, o: CheckOptions): Promise<R
     dir,
     resolved.target,
     { limits, offline: o.offline ?? false, shellcheck: !o.noShellcheck, osv: !o.noOsv, minSeverity: severityOpt(o.minSeverity, 'info') },
-    { repository: resolved.metadata, ...(marketplace ? { marketplace } : {}), startedAt: started },
+    { repository: resolved.metadata, ...(marketplace ? { marketplace } : {}), startedAt: started, sourceTruncated: stats.truncated },
   );
   if (stats.rejected.length) report.coverage.unknown.push(`${stats.rejected.length} archive entr${stats.rejected.length === 1 ? 'y was' : 'ies were'} rejected during extraction (symlinks, special files or unsafe paths)`);
   if (stats.truncated) {

@@ -156,6 +156,15 @@ function isOpaqueDownloader(c: ShellCommand, u?: ShellUnit): boolean {
   if (c.name === 'fetch') return !bypassesFunctions(c);
   return !DOWNLOADERS.has(c.name);
 }
+/** A URL, or a variable that holds one: a literal `scheme://`, `$URL`-style names, or a name whose literal assignments include a URL. */
+function isUrlWord(w: string, vars: Map<string, string[]>): boolean {
+  const URL = /^[a-z][a-z0-9+.-]*:\/\//i;
+  if (URL.test(w)) return true;
+  const v = /^\$\{?([A-Za-z_][A-Za-z0-9_]*)\}?/.exec(w)?.[1];
+  if (!v) return false;
+  if (/URL|URI/i.test(v)) return true;
+  return (vars.get(v) ?? []).some((val) => URL.test(unquote(val)));
+}
 /** A local function the rules treat as a downloader (wrapper) or as unresolvable (opaque), by name. */
 function isLocalDownloadFunction(c: ShellCommand, u: ShellUnit): boolean {
   return (u.downloaderWrappers.has(c.name) && (!DOWNLOADERS.has(c.name) || c.name === 'fetch')) || isOpaqueDownloader(c, u);
@@ -293,10 +302,15 @@ export const downloadThenExecute: Rule = {
         }
       };
       for (const c of u.commands) {
-        if (isDownloader(c, u) || isOpaqueDownloader(c, u)) {
+        // Only a visible download seeds the downloaded set: a real downloader, or a local function whose chain reaches
+        // one. An opaque function (eval, variable-named command) is not a download: `expect_fast_fail "t" 5 "$SCENE" config`
+        // passes the project's own script around, and taking "$SCENE" as downloaded would flag every later "$SCENE" call.
+        if (isDownloader(c, u)) {
           if (isLocalDownloadFunction(c, u)) {
-            // dl URL /tmp/x.sh: the function's parameter order is unknown, so every path-like non-URL argument may be
-            // the output file.
+            // dl URL /tmp/x.sh: the call must name a URL, literally or through a variable that holds one; without it
+            // nothing visibly downloads. The function's parameter order is unknown, so every other path-like argument
+            // may be the output file.
+            if (!c.args.some((a) => isUrlWord(unquote(a), allVars))) continue;
             for (const a of c.args) {
               const w = unquote(a);
               if (w.startsWith('-') || /^[a-z][a-z0-9+.-]*:\/\//i.test(w) || !/[\/$]|\.\w{1,8}$/.test(w)) continue;
@@ -430,6 +444,22 @@ export const privilegeEscalation: Rule = {
   },
 };
 
+/**
+ * The operands a writer modifies. `ln -s SOURCE DEST`, `cp`, `mv`, `install` and `rsync` change only their destination:
+ * the last operand, or the directory named by -t/--target-directory. A lone operand (`ln -s /usr/share/x`) links into
+ * the current directory. `install -d DIR…` creates every operand. Every other writer touches each path it names.
+ */
+function writeTargets(c: ShellCommand): string[] {
+  if (!/^(?:ln|cp|mv|install|rsync)$/.test(c.name)) return c.args;
+  const t = c.args.findIndex((a) => a === '-t' || a === '--target-directory');
+  if (t >= 0 && c.args[t + 1]) return [c.args[t + 1]!];
+  const tEq = c.args.find((a) => a.startsWith('--target-directory='));
+  if (tEq) return [tEq.slice('--target-directory='.length)];
+  const operands = c.args.filter((a) => !a.startsWith('-'));
+  if (c.name === 'install' && c.args.some((a) => /^-[a-zA-Z]*d|^--directory$/.test(a))) return operands;
+  return operands.length >= 2 ? [operands[operands.length - 1]!] : [];
+}
+
 export const systemPathWrite: Rule = {
   id: 'OA-SH-005',
   title: 'Files under system paths are written or modified',
@@ -454,7 +484,7 @@ export const systemPathWrite: Rule = {
         if (!writers.has(c.name)) continue;
         if (c.name === 'sed' && !c.args.some((a) => /^-[a-zA-Z]*i/.test(a) || a === '--in-place')) continue;
         if (c.name === 'rm' || c.name === 'unlink') continue; // destructive rule covers these
-        const targetRaw = c.args.find((a) => targetsSystemPath(expandWord(a, vars)));
+        const targetRaw = writeTargets(c).find((a) => targetsSystemPath(expandWord(a, vars)));
         const target = targetRaw ? expandWord(targetRaw, vars) : undefined;
         if (target && (/\/etc\/sudoers/.test(target) || POLKIT_PATHS.test(target))) continue; // OA-SH-006 covers policy paths
         if (target) {
