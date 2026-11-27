@@ -1,0 +1,53 @@
+{
+  "_comment": "Labeled ground truth for precision/recall. Each expected finding is ruleId@path:line. 'forbidden' lists rule ids that must not fire anywhere in that fixture.",
+  "malicious": {
+    "expected": [
+      "OA-SH-001@install.sh:3", "OA-SH-001@install.sh:4", "OA-SH-001@install.sh:5", "OA-SH-001@install.sh:6",
+      "OA-SH-002@install.sh:7", "OA-SH-006@install.sh:8", "OA-SH-011@install.sh:9",
+      "OA-SH-014@install.sh:10", "OA-SH-012@install.sh:10", "OA-SH-014@install.sh:11", "OA-SH-012@install.sh:11",
+      "OA-SH-012@install.sh:12", "OA-SH-010@install.sh:13", "OA-SH-010@install.sh:14",
+      "OA-SH-007@install.sh:15", "OA-SH-008@install.sh:16", "OA-SH-007@install.sh:17",
+      "OA-SH-009@install.sh:18", "OA-SH-013@install.sh:19", "OA-SH-015@install.sh:20", "OA-SH-010@install.sh:21",
+      "OA-SEC-001@install.sh:22", "OA-SH-016@install.sh:4",
+      "OA-SYSD-001@evil.service:4", "OA-SYSD-001@evil.service:5", "OA-SH-001@README.md:6"
+    ],
+    "minSeverityAt": { "OA-SH-006@install.sh:8": "critical", "OA-SH-012@install.sh:10": "critical", "OA-SH-010@install.sh:13": "critical" },
+    "forbidden": []
+  },
+  "safe-privileged": {
+    "expected": ["OA-SH-004@install.sh:5", "OA-SH-005@install.sh:7", "OA-SH-009@install.sh:5", "OA-SH-009@install.sh:6", "OA-SH-009@README.md:4"],
+    "forbidden": ["OA-SH-001", "OA-SH-002", "OA-SH-006", "OA-SH-010", "OA-SH-011", "OA-SH-012", "OA-SH-013", "OA-SH-014", "OA-SH-015", "OA-SH-018", "OA-SEC-001"],
+    "maxSeverity": "medium"
+  },
+  "plugin-valid": {
+    "expected": ["OA-SH-001@ui/Service.qml:4", "OA-OMA-002@ui/Widget.qml:4", "OA-OMA-001@manifest.json:1"],
+    "forbidden": ["OA-SH-010", "OA-SEC-001"]
+  },
+  "plugin-invalid": {
+    "expected": ["OA-OMA-001@manifest.json:1"],
+    "expectedMessages": ["schemaVersion must be the number 1", "reserved omarchy.* namespace", "must be relative", "may not contain '..'", "missing required field 'version'"],
+    "forbidden": ["OA-SH-001"]
+  },
+  "pkgbuild": {
+    "expected": ["OA-PKG-001@PKGBUILD:8", "OA-PKG-001@PKGBUILD:9", "OA-PKG-001@PKGBUILD:7", "OA-SH-001@tool.install:2"],
+    "forbidden": ["OA-SEC-001"]
+  },
+  "secrets": {
+    "expected": ["OA-SEC-001@config.sh:3", "OA-SEC-001@config.sh:5"],
+    "forbiddenAt": ["OA-SEC-001@config.sh:4"],
+    "forbidden": ["OA-SH-001"]
+  },
+  "ci": {
+    "expected": ["OA-SH-001@.github/workflows/ci.yml:14", "OA-CI-001@.github/workflows/ci.yml:11", "OA-CI-001@.github/workflows/ci.yml:12", "OA-CI-001@.github/workflows/ci.yml:15", "OA-CI-001@.github/workflows/ci.yml:7"],
+    "forbidden": ["OA-SEC-001"]
+  },
+  "malformed": {
+    "expected": ["OA-OMA-001@manifest.json:1"],
+    "forbidden": ["OA-SH-001"]
+  },
+  "unsupported": {
+    "expected": [],
+    "forbidden": ["OA-SH-001"],
+    "unknownCoverageMentions": ["Lua"]
+  }
+}

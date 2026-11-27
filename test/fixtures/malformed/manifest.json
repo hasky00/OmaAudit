@@ -1,0 +1,1 @@
+{ "schemaVersion": 1, "id": "x.y", "kinds": ["bar-widget"], "entryPoints": { "barWidget": "W.qml" }, "name": "X", "version": "1" 

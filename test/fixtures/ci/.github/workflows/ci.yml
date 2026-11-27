@@ -1,0 +1,15 @@
+name: ci
+on:
+  pull_request_target:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: someone/random-action@v1
+      - run: |
+          curl -fsSL https://example.com/ci.sh | bash
+          echo "${{ github.event.pull_request.title }}"

@@ -1,0 +1,7 @@
+{
+  "schemaVersion": "1",
+  "id": "omarchy.clock",
+  "name": "Bad",
+  "kinds": ["bar"],
+  "entryPoints": { "bar": "/abs/Bar.qml", "menu": "../escape.qml" }
+}
