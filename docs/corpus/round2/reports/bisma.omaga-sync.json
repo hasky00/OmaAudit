@@ -1,0 +1,517 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "omaaudit",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-11-27T10:59:38.886Z",
+  "durationMs": 171,
+  "target": {
+    "kind": "local",
+    "name": "/home/claude/corpus2-tree/bisma.omaga-sync"
+  },
+  "coverage": {
+    "filesListed": 41,
+    "filesInspected": 17,
+    "filesSkipped": [
+      {
+        "path": "icons/add.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "icons/check.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "icons/cloud_download.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "icons/cloud_off.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "icons/cloud_upload.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "icons/cloud.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "icons/content_copy.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "icons/create_new_folder.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "icons/delete.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "icons/folder-m.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "icons/folder.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "icons/login.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "icons/logout.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "icons/pause.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "icons/play_arrow.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "icons/refresh.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "icons/visibility_off.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "icons/visibility.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "nautilus/icons/emblem-omaga-error.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "nautilus/icons/emblem-omaga-paused.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "nautilus/icons/emblem-omaga-synced.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "nautilus/icons/emblem-omaga-syncing.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "nautilus/icons/emblem-omaga-transfer.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "preview.webp",
+        "reason": "binary"
+      }
+    ],
+    "bytesInspected": 143750,
+    "truncated": false,
+    "fileTypes": {
+      "other-text": 4,
+      "javascript": 1,
+      "qml": 5,
+      "binary": 24,
+      "shell": 1,
+      "omarchy-manifest": 1,
+      "python": 1,
+      "systemd-unit": 2,
+      "markdown": 2
+    },
+    "unknown": [
+      "2 Python/JavaScript file(s) are only scanned for secrets; use language-specific scanners for logic review",
+      "5 QML file(s): only process/file/network surfaces and embedded commands are analysed, not QML logic"
+    ],
+    "scanners": [
+      {
+        "name": "omaaudit-rules",
+        "version": "0.1.0",
+        "source": "builtin",
+        "status": "ran"
+      },
+      {
+        "name": "shellcheck",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "shellcheck not found on PATH (pacman -S shellcheck)"
+      },
+      {
+        "name": "osv-scanner",
+        "version": "n/a",
+        "source": "external",
+        "status": "skipped",
+        "note": "disabled (offline or by flag)"
+      }
+    ]
+  },
+  "dependencies": [],
+  "findings": [
+    {
+      "id": "d6977a99d79c4d3f",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory: $HOME/.config/systemd/user/",
+      "location": {
+        "path": "install.sh",
+        "startLine": 48,
+        "endLine": 48
+      },
+      "evidence": "install -m 644 \"$SRC_DIR/omaga-sync-engine.service\" \"$UNIT_DST/\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "62f7a15eb528594a",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "writes into an autostart or unit directory: $HOME/.config/systemd/user/",
+      "location": {
+        "path": "install.sh",
+        "startLine": 49,
+        "endLine": 49
+      },
+      "evidence": "install -m 644 \"$SRC_DIR/omaga-sync-monitor.service\" \"$UNIT_DST/\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "60cb1409ae933b71",
+      "ruleId": "OA-SH-003",
+      "title": "Code is obtained from a mutable remote reference and built or installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "build-from-source",
+        "network-download"
+      ],
+      "message": "git clone of a mutable reference (found in documentation: this is what users are told to run)",
+      "location": {
+        "path": "README_ID.md",
+        "startLine": 78,
+        "endLine": 78
+      },
+      "evidence": "git clone https://github.com/bismawy/omaga-sync.git",
+      "remediation": "Pin to a full 40-character commit (git checkout <sha>, cargo --rev <sha>, go @<version>, pip @<sha>) or to a signed release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "fd45e7e0838f9162",
+      "ruleId": "OA-SH-003",
+      "title": "Code is obtained from a mutable remote reference and built or installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "build-from-source",
+        "network-download"
+      ],
+      "message": "git clone of a mutable reference (found in documentation: this is what users are told to run)",
+      "location": {
+        "path": "README.md",
+        "startLine": 78,
+        "endLine": 78
+      },
+      "evidence": "git clone https://github.com/bismawy/omaga-sync.git",
+      "remediation": "Pin to a full 40-character commit (git checkout <sha>, cargo --rev <sha>, go @<version>, pip @<sha>) or to a signed release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "9f8992a480009a7a",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "systemctl --user enables a unit",
+      "location": {
+        "path": "install.sh",
+        "startLine": 67,
+        "endLine": 67
+      },
+      "evidence": "systemctl --user enable --now omaga-sync-engine.service",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "24dedd04f58b7026",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "systemctl --user enables a unit",
+      "location": {
+        "path": "install.sh",
+        "startLine": 68,
+        "endLine": 68
+      },
+      "evidence": "systemctl --user enable --now omaga-sync-monitor.service",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "7291c921cb726040",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "Panel.qml",
+        "startLine": 378,
+        "endLine": 378
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "ad6eec75704aa89f",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "valid Omarchy plugin manifest 'bisma.omaga-sync' (kinds: bar-widget). Plugins run as unsandboxed code inside omarchy-shell with the user's full file and process access.",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "id=bisma.omaga-sync kinds=bar-widget",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "a3053b8fcf82b5a3",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "MaterialIcon.qml",
+        "startLine": 2,
+        "endLine": 2
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "ed955941eb90d640",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses FileView",
+      "location": {
+        "path": "MaterialIcon.qml",
+        "startLine": 38,
+        "endLine": 38
+      },
+      "evidence": "FileView {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "97b2db0f8e398e61",
+      "ruleId": "OA-SYSD-001",
+      "title": "systemd unit executes from a user-writable or temporary location",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "ships user unit omaga-sync-engine.service",
+      "location": {
+        "path": "omaga-sync-engine.service",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "ExecStart=/usr/bin/mega-cmd-server",
+      "remediation": "Install executables under /usr/lib or /usr/bin via a package and reference them by absolute path. Use user units for per-user tools.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "c670191483f2356e",
+      "ruleId": "OA-SYSD-001",
+      "title": "systemd unit executes from a user-writable or temporary location",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "ships user unit omaga-sync-monitor.service",
+      "location": {
+        "path": "omaga-sync-monitor.service",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "ExecStart=%h/.local/bin/omaga-sync monitor",
+      "remediation": "Install executables under /usr/lib or /usr/bin via a package and reference them by absolute path. Use user units for per-user tools.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "5a3c0d68288bf934",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "Panel.qml",
+        "startLine": 5,
+        "endLine": 5
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "15a1c3b3818f9ee2",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses FileView",
+      "location": {
+        "path": "Panel.qml",
+        "startLine": 366,
+        "endLine": 366
+      },
+      "evidence": "FileView {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    }
+  ],
+  "summary": {
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 4,
+      "low": 3,
+      "info": 7
+    },
+    "capabilities": [
+      "build-from-source",
+      "network-download",
+      "omarchy-plugin",
+      "persistence"
+    ],
+    "verdict": "review-recommended",
+    "highestSeverity": "medium"
+  },
+  "disclaimer": "OmaAudit performs static inspection only. Findings are evidence of risk patterns, not proof of malice, and the absence of findings is not proof of safety. Review the source before you install."
+}

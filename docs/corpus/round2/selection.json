@@ -1,0 +1,193 @@
+{
+ "round": 2,
+ "catalogCommit": "4cb2ef3bc8e2cf566180bc9cdf2b56168a36f218",
+ "generatedAt": "2026-11-27T07:55:55.111Z",
+ "total": 7155,
+ "eligible": {
+  "verified": 4364,
+  "unverified": 2751
+ },
+ "method": "Same filter as round 1. Each status group sorted by plugin id; 10 taken at the midpoints between round 1 indices, floor((i+0.5)*n/10) for i in 0..9, skipping forward past any repository used in round 1 or already selected.",
+ "selection": [
+  {
+   "id": "azterisk.idle",
+   "repo": "https://github.com/Azteriisk/omarchy-idle-manager",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "e1e25fafade98a5530303ebedcfefb3f9c5d3c2c",
+   "upstreamObservedCommit": "e1e25fafade98a5530303ebedcfefb3f9c5d3c2c",
+   "stars": 0,
+   "category": "System"
+  },
+  {
+   "id": "digitalbase.openrouter-plus-improved",
+   "repo": "https://github.com/digitalbase/omarchy-openrouter-plus-improved",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "473ae6f73debc13fb0d505b6437278ecb6ec08c7",
+   "upstreamObservedCommit": "473ae6f73debc13fb0d505b6437278ecb6ec08c7",
+   "stars": 0,
+   "category": "Widgets"
+  },
+  {
+   "id": "io.github.adham2023.screen-layout",
+   "repo": "https://github.com/Adham2023/omarchy-screen-layout",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "43dfa82584fc10752e847a937a7143702f9686f8",
+   "upstreamObservedCommit": "43dfa82584fc10752e847a937a7143702f9686f8",
+   "stars": 0,
+   "category": "Desktop"
+  },
+  {
+   "id": "io.github.ef-code.omarchy-flow",
+   "repo": "https://github.com/EF-Code/omarchy-flow",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "583bacf68ae8b3a174f1d3eb9befefc82a5c8b3e",
+   "upstreamObservedCommit": "583bacf68ae8b3a174f1d3eb9befefc82a5c8b3e",
+   "stars": 1,
+   "category": "Productivity"
+  },
+  {
+   "id": "io.github.macd2.agent-pulse",
+   "repo": "https://github.com/macd2/OmarchyAgentOrbStatus",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "da83908d9479fae95e8a22c53a960cbb959debb1",
+   "upstreamObservedCommit": "da83908d9479fae95e8a22c53a960cbb959debb1",
+   "stars": 0,
+   "category": "Widgets"
+  },
+  {
+   "id": "io.github.second-state.omarchy-remote",
+   "repo": "https://github.com/second-state/omarchy-remote-plugin",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "3d84968f38dfd840c2cae1a1f90fa7ea237528e9",
+   "upstreamObservedCommit": "3d84968f38dfd840c2cae1a1f90fa7ea237528e9",
+   "stars": 2,
+   "category": "System"
+  },
+  {
+   "id": "jkarmel.plugin-search",
+   "repo": "https://github.com/jkarmel/omarchy-plugin-search",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "f80412efa48f62bfdf7f385da408c79559b71fdd",
+   "upstreamObservedCommit": "f80412efa48f62bfdf7f385da408c79559b71fdd",
+   "stars": 0,
+   "category": "Productivity"
+  },
+  {
+   "id": "msegoviadev.walkingpad",
+   "repo": "https://github.com/msegoviadev/omarchy-walkingpad",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "ea784eadf663071dc151c015f072e5c41645a44c",
+   "upstreamObservedCommit": "ea784eadf663071dc151c015f072e5c41645a44c",
+   "stars": 1,
+   "category": "Widgets"
+  },
+  {
+   "id": "remote-nvidia",
+   "repo": "https://github.com/tonydelligatti-boop/omarchy-remote-nvidia",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "c5a644bda90ec272e9023be0ab434581ffc1577e",
+   "upstreamObservedCommit": "c5a644bda90ec272e9023be0ab434581ffc1577e",
+   "stars": 0,
+   "category": "Hardware"
+  },
+  {
+   "id": "turntable",
+   "repo": "https://github.com/techmandan/turntable",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "2ff172eb331ceab8cd4bf955dc6ed3151edc8143",
+   "upstreamObservedCommit": "2ff172eb331ceab8cd4bf955dc6ed3151edc8143",
+   "stars": 0,
+   "category": "Widgets"
+  },
+  {
+   "id": "bisma.omaga-sync",
+   "repo": "https://github.com/bismawy/omaga-sync",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "2b4c3cf1c04b99658e7955a128730dd5e6a39acd",
+   "upstreamObservedCommit": "065fd541ac92bfc353d0eb795c1b7d432f09fe0d",
+   "stars": 1,
+   "category": "Productivity"
+  },
+  {
+   "id": "disaster-alert",
+   "repo": "https://github.com/a-gracia/disaster-alert",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "7f0d67d183dedb8a99dd57c5168935f01088a7d6",
+   "upstreamObservedCommit": "84add1e40a500c0cd345a3ae04935dbc6ab7c7c3",
+   "stars": 0,
+   "category": "Widgets"
+  },
+  {
+   "id": "io.github.5d0tal1gat0r.agent-watcher",
+   "repo": "https://github.com/5d0tal1gat0r/omarchy-agent-watcher",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "976a715823c029822e2aaa7aa7b698c92e9af049",
+   "upstreamObservedCommit": "e969810f600bb95a55a5af287c97bdf955f30304",
+   "stars": 0,
+   "category": "Widgets"
+  },
+  {
+   "id": "io.github.e1i3or-commits.scrim",
+   "repo": "https://github.com/e1i3or-commits/scrim",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "b4bd6baf1d8a2213e7b6520d0b9c3e81a0e622de",
+   "upstreamObservedCommit": "7fe0cd9ef0f9e38d629d777ca5722b287d5c0a6d",
+   "stars": 0,
+   "category": "Productivity"
+  },
+  {
+   "id": "io.github.kusumaindraputra.daily-deen",
+   "repo": "https://github.com/kusumaindraputra/omarchy-daily-deen",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "c2c83ec74017e6b9ed3225a06e4a15c10669ccb3",
+   "upstreamObservedCommit": "cd1666e7dcc7fe9e50c59093b78a83177e7dab36",
+   "stars": 0,
+   "category": "Widgets"
+  },
+  {
+   "id": "io.github.salimhabeshawi.wakatime",
+   "repo": "https://github.com/salimhabeshawi/wakatime-omarchy-plugin",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "fc491b9bb5dfaf253ab9d7d9a8b6b8c64a80710b",
+   "upstreamObservedCommit": "87ef2797fbe8f9bc86aa57bfaabecc45a5eedcae",
+   "stars": 1,
+   "category": "Productivity"
+  },
+  {
+   "id": "jmaeder.frenchdict-cnrtl",
+   "repo": "https://github.com/jmaeder/omarchy-frenchdict-cnrtl",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "0f49b120f2838a35b1a8e67bc8a0c089bfda82e4",
+   "upstreamObservedCommit": "957dca80b8678e42f05f45373b685f71dedd16cd",
+   "stars": 1,
+   "category": "Widgets"
+  },
+  {
+   "id": "n0d3x.input-language",
+   "repo": "https://github.com/n0d3xt-max/n0d3x.input-language",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "075bd085e96699c2fa4bc9509caba4b9ae3a6a1a",
+   "upstreamObservedCommit": "5c386256cd6d6504157c61b45775df003236af63",
+   "stars": 0,
+   "category": "System"
+  },
+  {
+   "id": "raavail.islands-bar",
+   "repo": "https://github.com/raavail-lasso/Omarchy-Islands-Bar",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "6d9539578e1607327c3e9a640800c8cd9332effe",
+   "upstreamObservedCommit": "c2eb9df8cf7f331f1ce134879b483886234ff3dd",
+   "stars": 3,
+   "category": "Appearance"
+  },
+  {
+   "id": "tonibergholm.ruuvi",
+   "repo": "https://github.com/tonibergholm/RuuviOmarchy",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "31429236be10e5c9cf2278ab6da3d9545f5050da",
+   "upstreamObservedCommit": "a626ad2e462a2346f3eddf9551d204b3cb23d3b8",
+   "stars": 0,
+   "category": "Hardware"
+  }
+ ]
+}

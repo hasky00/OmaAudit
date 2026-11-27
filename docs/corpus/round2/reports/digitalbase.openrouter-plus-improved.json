@@ -1,0 +1,269 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "omaaudit",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-11-27T10:59:39.741Z",
+  "durationMs": 227,
+  "target": {
+    "kind": "local",
+    "name": "/home/claude/corpus2-tree/digitalbase.openrouter-plus-improved"
+  },
+  "coverage": {
+    "filesListed": 14,
+    "filesInspected": 10,
+    "filesSkipped": [
+      {
+        "path": "assets/openrouter-light.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "assets/openrouter.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "assets/screenshot.png",
+        "reason": "binary"
+      },
+      {
+        "path": "preview.png",
+        "reason": "binary"
+      }
+    ],
+    "bytesInspected": 81008,
+    "truncated": false,
+    "fileTypes": {
+      "other-text": 4,
+      "qml": 3,
+      "binary": 4,
+      "omarchy-manifest": 1,
+      "markdown": 1,
+      "python": 1
+    },
+    "unknown": [
+      "1 shell file(s) had parse errors; commands in those regions may be missed: bin/collect",
+      "1 Python/JavaScript file(s) are only scanned for secrets; use language-specific scanners for logic review",
+      "3 QML file(s): only process/file/network surfaces and embedded commands are analysed, not QML logic"
+    ],
+    "notes": [
+      "1 statement boundary was restored where the bash grammar merged lines: bin/collect",
+      "1 script(s) inside excluded or oversized locations were read because another script invokes them: bin/collect (by README.md)"
+    ],
+    "scanners": [
+      {
+        "name": "omaaudit-rules",
+        "version": "0.1.0",
+        "source": "builtin",
+        "status": "ran"
+      },
+      {
+        "name": "shellcheck",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "shellcheck not found on PATH (pacman -S shellcheck)"
+      },
+      {
+        "name": "osv-scanner",
+        "version": "n/a",
+        "source": "external",
+        "status": "skipped",
+        "note": "disabled (offline or by flag)"
+      }
+    ]
+  },
+  "dependencies": [],
+  "findings": [
+    {
+      "id": "782fba2e75bd2de6",
+      "ruleId": "OA-SEC-001",
+      "title": "Secret material appears in the repository",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "secret-material"
+      ],
+      "message": "OpenAI-style API key detected",
+      "location": {
+        "path": "examples/config/omarchy/agents/openrouter.json",
+        "startLine": 2,
+        "endLine": 2
+      },
+      "evidence": "sk-o…[redacted 41 chars]",
+      "remediation": "Revoke the credential, remove it from history, and load secrets from the environment or a keyring at runtime.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      },
+      "externalId": "openai-key"
+    },
+    {
+      "id": "6f85cc566b6f4c1b",
+      "ruleId": "OA-SEC-001",
+      "title": "Secret material appears in the repository",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "secret-material"
+      ],
+      "message": "OpenAI-style API key detected",
+      "location": {
+        "path": "README.md",
+        "startLine": 23,
+        "endLine": 23
+      },
+      "evidence": "sk-o…[redacted 41 chars]",
+      "remediation": "Revoke the credential, remove it from history, and load secrets from the environment or a keyring at runtime.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      },
+      "externalId": "openai-key"
+    },
+    {
+      "id": "586b164760fd06d5",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "Main.qml",
+        "startLine": 43,
+        "endLine": 43
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "9a4a79d56df5e8e6",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "Main.qml",
+        "startLine": 3,
+        "endLine": 3
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "0130d7c697342a47",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "valid Omarchy plugin manifest 'digitalbase.openrouter-plus-improved' (kinds: bar-widget). Plugins run as unsandboxed code inside omarchy-shell with the user's full file and process access.",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "id=digitalbase.openrouter-plus-improved kinds=bar-widget",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "35f264029fb5e357",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "Panel.qml",
+        "startLine": 6,
+        "endLine": 6
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "f1c188323b77048b",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Qt.openUrlExternally",
+      "location": {
+        "path": "Panel.qml",
+        "startLine": 58,
+        "endLine": 58
+      },
+      "evidence": "Qt.openUrlExternally(href)",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    }
+  ],
+  "summary": {
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 2,
+      "low": 1,
+      "info": 4
+    },
+    "capabilities": [
+      "omarchy-plugin",
+      "secret-material"
+    ],
+    "verdict": "review-recommended",
+    "highestSeverity": "medium"
+  },
+  "disclaimer": "OmaAudit performs static inspection only. Findings are evidence of risk patterns, not proof of malice, and the absence of findings is not proof of safety. Review the source before you install."
+}
