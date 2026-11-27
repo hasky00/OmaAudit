@@ -29,6 +29,11 @@ export interface RuleContext {
    * Findings in these files are never downgraded by scope.
    */
   runtimeReachable: Set<string>;
+  /**
+   * The source tree is incomplete: the directory walk or the archive extraction hit a resource limit. A file that is
+   * not listed may still exist, so rules must not report it as missing.
+   */
+  truncated: boolean;
 }
 
 export interface FindingDraft {

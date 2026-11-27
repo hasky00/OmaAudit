@@ -26,12 +26,12 @@ export async function scanDirectory(
   dir: string,
   target: Target,
   opts: ScanOptions = {},
-  extras: { repository?: RepositoryMetadata; marketplace?: MarketplaceStatus; startedAt?: number; forceInclude?: string[] } = {},
+  extras: { repository?: RepositoryMetadata; marketplace?: MarketplaceStatus; startedAt?: number; forceInclude?: string[]; sourceTruncated?: boolean } = {},
 ): Promise<ScanOutcome> {
   const started = extras.startedAt ?? Date.now();
   const limits = opts.limits ?? DEFAULT_LIMITS;
   const tree = await loadTree(dir, limits, { forceInclude: extras.forceInclude ?? [] });
-  const ctx = await buildContext(tree, { targetName: target.kind === 'github' ? target.name : undefined });
+  const ctx = await buildContext(tree, { targetName: target.kind === 'github' ? target.name : undefined, sourceTruncated: extras.sourceTruncated });
   let findings: Finding[] = runRules(ctx);
   const sc = await runShellCheck(ctx, { enabled: opts.shellcheck ?? true });
   const osv = await runOsvScanner(ctx, { enabled: (opts.osv ?? true) && !(opts.offline ?? false) });

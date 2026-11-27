@@ -102,7 +102,7 @@ function candidatesFor(unitPath: string, rel: string, known?: Iterable<string>):
   return [...out];
 }
 
-export async function buildContext(tree: SourceTree, opts: { targetName?: string | undefined } = {}): Promise<RuleContext> {
+export async function buildContext(tree: SourceTree, opts: { targetName?: string | undefined; sourceTruncated?: boolean | undefined } = {}): Promise<RuleContext> {
   const files: ClassifiedFile[] = tree.files.map((file) => ({ file, type: classify(file), text: file.text ?? '' }));
   const byPath = new Map(files.map((cf) => [cf.file.path, cf]));
   const entryPoints = manifestEntryPoints(files);
@@ -264,7 +264,7 @@ export async function buildContext(tree: SourceTree, opts: { targetName?: string
       queue.push(next);
     }
   }
-  return { files, shellUnits, manifestEntryPoints: entryPoints, root: tree.root, targetName: opts.targetName, invokedScripts, sourcedScripts, runtimeReachable };
+  return { files, shellUnits, manifestEntryPoints: entryPoints, root: tree.root, targetName: opts.targetName, invokedScripts, sourcedScripts, runtimeReachable, truncated: tree.truncated || (opts.sourceTruncated ?? false) };
 }
 
 export const TEST_PATH = /(?:^|\/)(?:tests?|__tests__|spec|specs|test-fixtures|fixtures|testdata|e2e)\//i;

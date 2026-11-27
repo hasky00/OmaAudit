@@ -187,6 +187,8 @@ export const omarchyManifest: Rule = {
         continue;
       }
       const problems: string[] = [];
+      /** Entry points absent from a truncated listing: they may well exist, so they are reported as unread, not missing. */
+      const unread: string[] = [];
       if (manifest.schemaVersion !== 1) problems.push(`schemaVersion must be the number 1 (got ${JSON.stringify(manifest.schemaVersion)})`);
       for (const f of ['id', 'name', 'version', 'kinds', 'entryPoints'] as const) if (!(f in manifest)) problems.push(`missing required field '${f}'`);
       const id = typeof manifest.id === 'string' ? manifest.id : '';
@@ -205,7 +207,10 @@ export const omarchyManifest: Rule = {
           else if (v.startsWith('/')) problems.push(`entry point '${k}' must be relative: ${v}`);
           else if (v.includes('..')) problems.push(`entry point '${k}' may not contain '..': ${v}`);
           else if (v.includes('\n')) problems.push(`entry point '${k}' contains a newline`);
-          else if (!present.has(dir + v)) problems.push(`entry point file not found: ${v}`);
+          else if (!present.has(dir + v)) {
+            if (ctx.truncated) unread.push(v);
+            else problems.push(`entry point file not found: ${v}`);
+          }
         }
         for (const k of kinds ?? []) {
           const ep = typeof k === 'string' ? KIND_ENTRY[k] : undefined;
@@ -216,8 +221,10 @@ export const omarchyManifest: Rule = {
       const sec = manifest.barWidget?.defaultSection;
       if (sec !== undefined && !['left', 'centerBegin', 'center', 'centerEnd', 'tray', 'right'].includes(String(sec))) problems.push(`barWidget.defaultSection '${String(sec)}' is not a valid section`);
       for (const pr of problems) out.push({ path: p, startLine: 1, endLine: 1, message: pr, evidence: cf.text.slice(0, 160).replace(/\s+/g, ' ') });
+      for (const v of unread) out.push({ path: p, startLine: 1, endLine: 1, message: `entry point file not read: ${v} (the source tree was truncated by resource limits before this file was listed, so whether it exists is unknown)`, evidence: cf.text.slice(0, 160).replace(/\s+/g, ' '), severity: 'info', confidence: 'low' });
       if (problems.length === 0 && kinds) {
-        out.push({ path: p, startLine: 1, endLine: 1, message: `valid Omarchy plugin manifest '${id}' (kinds: ${kinds.map(String).join(', ')}${manifest.keepLoaded === true ? ', keepLoaded' : ''}). Plugins run as unsandboxed code inside omarchy-shell with the user's full file and process access.`, evidence: `id=${id} kinds=${kinds.map(String).join(',')}`, severity: 'info', confidence: 'high' });
+        const unreadNote = unread.length ? `; entry point${unread.length > 1 ? 's' : ''} ${unread.join(', ')} not read because the tree was truncated` : '';
+        out.push({ path: p, startLine: 1, endLine: 1, message: `valid Omarchy plugin manifest '${id}' (kinds: ${kinds.map(String).join(', ')}${manifest.keepLoaded === true ? ', keepLoaded' : ''})${unreadNote}. Plugins run as unsandboxed code inside omarchy-shell with the user's full file and process access.`, evidence: `id=${id} kinds=${kinds.map(String).join(',')}`, severity: 'info', confidence: unread.length ? 'medium' : 'high' });
       }
       if (kinds && kinds.includes('bar')) out.push({ path: p, startLine: 1, endLine: 1, message: 'full bar replacement: receives bar configuration, widget catalog snapshots and lifecycle control over other UI plugins', evidence: 'kinds includes "bar"', severity: 'low', confidence: 'high' });
       if (kinds && kinds.includes('service')) out.push({ path: p, startLine: 1, endLine: 1, message: 'headless service: runs for the whole session without a visible surface', evidence: 'kinds includes "service"', severity: 'info', confidence: 'high', capabilities: ['omarchy-plugin', 'persistence'] });
