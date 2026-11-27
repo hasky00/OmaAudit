@@ -156,6 +156,15 @@ function isOpaqueDownloader(c: ShellCommand, u?: ShellUnit): boolean {
   if (c.name === 'fetch') return !bypassesFunctions(c);
   return !DOWNLOADERS.has(c.name);
 }
+/** A URL, or a variable that holds one: a literal `scheme://`, `$URL`-style names, or a name whose literal assignments include a URL. */
+function isUrlWord(w: string, vars: Map<string, string[]>): boolean {
+  const URL = /^[a-z][a-z0-9+.-]*:\/\//i;
+  if (URL.test(w)) return true;
+  const v = /^\$\{?([A-Za-z_][A-Za-z0-9_]*)\}?/.exec(w)?.[1];
+  if (!v) return false;
+  if (/URL|URI/i.test(v)) return true;
+  return (vars.get(v) ?? []).some((val) => URL.test(unquote(val)));
+}
 /** A local function the rules treat as a downloader (wrapper) or as unresolvable (opaque), by name. */
 function isLocalDownloadFunction(c: ShellCommand, u: ShellUnit): boolean {
   return (u.downloaderWrappers.has(c.name) && (!DOWNLOADERS.has(c.name) || c.name === 'fetch')) || isOpaqueDownloader(c, u);
@@ -293,10 +302,15 @@ export const downloadThenExecute: Rule = {
         }
       };
       for (const c of u.commands) {
-        if (isDownloader(c, u) || isOpaqueDownloader(c, u)) {
+        // Only a visible download seeds the downloaded set: a real downloader, or a local function whose chain reaches
+        // one. An opaque function (eval, variable-named command) is not a download: `expect_fast_fail "t" 5 "$SCENE" config`
+        // passes the project's own script around, and taking "$SCENE" as downloaded would flag every later "$SCENE" call.
+        if (isDownloader(c, u)) {
           if (isLocalDownloadFunction(c, u)) {
-            // dl URL /tmp/x.sh: the function's parameter order is unknown, so every path-like non-URL argument may be
-            // the output file.
+            // dl URL /tmp/x.sh: the call must name a URL, literally or through a variable that holds one; without it
+            // nothing visibly downloads. The function's parameter order is unknown, so every other path-like argument
+            // may be the output file.
+            if (!c.args.some((a) => isUrlWord(unquote(a), allVars))) continue;
             for (const a of c.args) {
               const w = unquote(a);
               if (w.startsWith('-') || /^[a-z][a-z0-9+.-]*:\/\//i.test(w) || !/[\/$]|\.\w{1,8}$/.test(w)) continue;

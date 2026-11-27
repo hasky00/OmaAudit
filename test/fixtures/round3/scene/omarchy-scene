@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Reduced from gmaxxxie/Scene-Switcher (corpus round 3): the project's own CLI. Nothing here downloads anything.
+set -euo pipefail
+SCENES_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/scenes.json"
+require_scenes() { [[ -f "$SCENES_FILE" ]] || { echo "no scenes.json" >&2; exit 1; }; }
+cmd_edit() {
+  require_scenes
+  local editor="${EDITOR:-nano}"
+  command -v "$editor" >/dev/null 2>&1 || editor=nano
+  "$editor" "$SCENES_FILE"
+}
+case "${1:-}" in
+  edit) cmd_edit ;;
+  *) echo "usage: omarchy-scene edit" ;;
+esac

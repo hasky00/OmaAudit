@@ -398,5 +398,11 @@
     "forbidden": [
       "OA-SH-018"
     ]
+  },
+  "round3": {
+    "expected": [],
+    "forbidden": [
+      "OA-SH-002"
+    ]
   }
 }
