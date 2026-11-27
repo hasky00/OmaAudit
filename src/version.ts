@@ -4,4 +4,4 @@ const require = createRequire(import.meta.url);
 const pkg = require('../package.json') as { version: string };
 
 export const VERSION: string = pkg.version;
-export const RULESET_VERSION = '2026.11.2';
+export const RULESET_VERSION = '2026.11.3';

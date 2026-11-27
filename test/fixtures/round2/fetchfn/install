@@ -1,0 +1,5 @@
+#!/usr/bin/python3 -I
+"""Install/remove the plugin; preserve other plugins and menu entries."""
+import json, os, sys
+if len(sys.argv) > 1:
+    print("echo sudo pacman curl wget set -e")

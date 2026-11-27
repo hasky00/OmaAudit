@@ -45,9 +45,14 @@ export interface ShellUnit {
   hasStrictMode: boolean;
   /** Statement boundaries the parser had to restore because the grammar merged lines (see repairMergedStatements). */
   parseRepairs: number;
+  /** Shell functions defined in this unit. A function named `fetch` or `curl` shadows the downloader of the same name. */
+  definedFunctions: Set<string>;
+  /** Functions whose body invokes a real downloader: `curl() { command curl "$@"; }` still downloads. */
+  downloaderWrappers: Set<string>;
 }
 
 const PRIVILEGE_WRAPPERS = new Set(['sudo', 'doas', 'pkexec', 'run0', 'su']);
+const DOWNLOADER_NAMES = /^(?:curl|wget|fetch|aria2c|xh|http|https)$/;
 const PLAIN_WRAPPERS = new Set(['env', 'exec', 'nohup', 'command', 'time', 'nice', 'ionice', 'setsid', 'stdbuf', 'timeout', 'xargs', 'builtin', 'chronic', 'caffeinate', 'uwsm-app', 'uwsm']);
 
 let languagePromise: Promise<Language> | null = null;
@@ -121,7 +126,7 @@ function unwrap(words: string[], privVars: Set<string> = new Set()): { name: str
   let privileged = false;
   let rest = words.slice();
   for (let guard = 0; guard < 6 && rest.length > 0; guard++) {
-    const head = unquote(rest[0]!);
+    const head = unquote(rest[0]!).replace(/^\\/, ''); // `\curl` bypasses aliases, not us
     const base = head.split('/').pop() ?? head;
     // "${elevate[@]}" cmd … or "$SUDO" cmd …: a wrapper held in a variable. Privileged when the variable is
     // assigned a privilege tool anywhere in the unit, or when its name says so.
@@ -178,7 +183,7 @@ function unwrap(words: string[], privVars: Set<string> = new Set()): { name: str
     }
     break;
   }
-  const name = rest.length > 0 ? unquote(rest[0]!) : (words[0] ? unquote(words[0]) : '');
+  const name = (rest.length > 0 ? unquote(rest[0]!) : (words[0] ? unquote(words[0]) : '')).replace(/^\\/, '');
   return { name: name.split('/').pop() ?? name, args: rest.slice(1), wrappers, privileged };
 }
 
@@ -248,7 +253,7 @@ export async function parseShell(text: string, opts: ParseOptions): Promise<Shel
   let parseErrors = 0;
   let parseRepairs = 0;
   if (!tree) {
-    return { path: opts.path, origin: opts.origin, context: opts.context, commands, text, lineOffset: offset, parseErrors: 1, hasStrictMode: false, parseRepairs: 0 };
+    return { path: opts.path, origin: opts.origin, context: opts.context, commands, text, lineOffset: offset, parseErrors: 1, hasStrictMode: false, parseRepairs: 0, definedFunctions: new Set(), downloaderWrappers: new Set() };
   }
   // Up to two repair rounds: insert statement separators where the grammar merged lines, then re-parse.
   let parsedText = text;
@@ -263,6 +268,15 @@ export async function parseShell(text: string, opts: ParseOptions): Promise<Shel
   }
   const root = tree.rootNode;
   const privVars = privilegeVariables(text);
+  const definedFunctions = new Set<string>();
+  {
+    const fns: Node[] = [];
+    collect(root, new Set(['function_definition']), fns);
+    for (const f of fns) {
+      const n = f.childForFieldName('name');
+      if (n) definedFunctions.add(n.text);
+    }
+  }
   const cmdNodes: Node[] = [];
   const errNodes: Node[] = [];
   collect(root, new Set(['command']), cmdNodes);
@@ -363,5 +377,9 @@ export async function parseShell(text: string, opts: ParseOptions): Promise<Shel
   }
 
   const hasStrictMode = /^\s*set\s+(?:-[a-zA-Z]*[eu][a-zA-Z]*\b|-o\s+(?:errexit|nounset))/m.test(text);
-  return { path: opts.path, origin: opts.origin, context: opts.context, commands, text, lineOffset: offset, parseErrors, hasStrictMode, parseRepairs };
+  // A function named after a downloader whose body calls one (`curl() { command curl "$@"; }`, `fetch() { curl … }`)
+  // is itself a downloader; only a body with no downloader shadows the name.
+  const downloaderWrappers = new Set<string>();
+  for (const c of commands) if (c.enclosingFunction && DOWNLOADER_NAMES.test(c.name)) downloaderWrappers.add(c.enclosingFunction);
+  return { path: opts.path, origin: opts.origin, context: opts.context, commands, text, lineOffset: offset, parseErrors, hasStrictMode, parseRepairs, definedFunctions, downloaderWrappers };
 }

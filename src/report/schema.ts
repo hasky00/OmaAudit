@@ -43,6 +43,7 @@ export const Capability = z.enum([
   'ci-risk',
   'omarchy-plugin',
   'shell-config-change',
+  'ai-agent-config',
 ]);
 export type Capability = z.infer<typeof Capability>;
 

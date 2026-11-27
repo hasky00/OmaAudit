@@ -18,6 +18,8 @@ describe('file classification and embedded shell extraction', () => {
     expect(cf('.github/workflows/ci.yml', 'on: push').type).toBe('github-workflow');
     expect(cf('bin/omarchy-foo', '#!/bin/bash\necho', true).type).toBe('shell');
     expect(cf('install', 'set -e\nsudo pacman -S x', false).type).toBe('shell');
+    expect(cf('install', '#!/usr/bin/python3 -I\nimport os\nprint("sudo pacman set -e")', true).type).toBe('python');
+    expect(cf('run', '#!/usr/bin/env node\nconsole.log(1)', true).type).toBe('javascript');
     expect(cf('ui/W.qml', 'import QtQuick').type).toBe('qml');
     expect(cf('x.hook', '[Trigger]\n[Action]\nExec=/bin/true').type).toBe('pacman-hook');
   });

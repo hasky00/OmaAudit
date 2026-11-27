@@ -347,7 +347,10 @@ export const secretMaterial: Rule = {
         while ((m = re.exec(t)) && count < 5) {
           count++;
           const value = m[1] ?? m[0];
-          if (/example|placeholder|your[_-]?(?:api|key|token)|xxxx|changeme|<[^>]+>|\$\{|\$[A-Z_]+/i.test(m[0])) continue;
+          if (/example|placeholder|your[_-]?\w*(?:api|key|token|secret)|replace[_-]?(?:with|me)|_here\b|insert[_-]?your|changeme|change[_-]?this|dummy|sample|redacted|xxxx|\.{3}|<[^>]+>|\$\{|\$[A-Z_]+/i.test(m[0])) continue;
+          // Mostly upper-case words and underscores after the prefix is a template, not key material.
+          const tail = (m[1] ?? m[0]).replace(/^(?:sk|rk|xox[abprs]|ghp|gho|ghu|ghs|ghr|github_pat|AKIA|ASIA|AIza|nsec1)[-_]?(?:[a-z0-9]{1,4}-)*/i, '');
+          if (/^[A-Z_]{10,}$/.test(tail)) continue;
           if (p.id === 'generic-assignment' && /(?:process\.env|os\.environ|getenv|secret-tool|\$\{?[A-Z_]{3,})/.test(t.slice(Math.max(0, m.index - 80), m.index + m[0].length + 20))) continue;
           const line = lineAt(t, m.index);
           out.push({ path: cf.file.path, startLine: line, endLine: line, message: `${p.title} detected`, evidence: redactSecret(value), confidence: p.confidence, severity: p.confidence === 'high' ? 'high' : p.confidence === 'medium' ? 'medium' : 'low', externalId: p.id });

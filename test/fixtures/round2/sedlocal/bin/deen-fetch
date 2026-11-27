@@ -1,0 +1,3 @@
+#!/bin/bash
+bounded_get() { curl -fsSL --max-filesize "$2" -o "$3" -- "$1"; }
+fetch() { bounded_get "$1" 100000 "$2"; }

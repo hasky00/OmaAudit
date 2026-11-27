@@ -88,9 +88,10 @@ export function expandWord(word: string, vars: Map<string, string>): string {
   let w = unquote(word);
   for (let i = 0; i < 2; i++) {
     const before = w;
-    w = w.replace(/\$\{([A-Za-z_][A-Za-z0-9_]*)(?::-[^}]*)?\}|\$([A-Za-z_][A-Za-z0-9_]*)/g, (m, a: string | undefined, b: string | undefined) => {
+    w = w.replace(/\$\{([A-Za-z_][A-Za-z0-9_]*)(?::?-([^}]*))?\}|\$([A-Za-z_][A-Za-z0-9_]*)/g, (m, a: string | undefined, def: string | undefined, b: string | undefined) => {
       const v = vars.get(a ?? b ?? '');
-      return v === undefined ? m : v;
+      if (v !== undefined) return v;
+      return def !== undefined ? def : m;
     });
     if (w === before) break;
   }
@@ -105,16 +106,48 @@ function argText(c: ShellCommand): string {
   return c.args.map(unquote).join(' ');
 }
 
-function isDownloader(c: ShellCommand): boolean {
-  return DOWNLOADERS.has(c.name) && !(c.name === 'curl' && c.args.some((a) => /^-[a-zA-Z]*I/.test(a) || a === '--head'));
+/** A function named after a downloader shadows it only when its body never calls a real downloader. */
+function shadowsDownloader(name: string, u?: ShellUnit): boolean {
+  // Only `fetch` can be shadowed: on Linux it is normally a user function, while curl/wget/aria2c/xh are the real
+  // tools and a same-named function elsewhere in the repository is no reason to stop reporting them. The engine
+  // puts `fetch` into definedFunctions only for the unit that defines it and for units that source that file.
+  if (name !== 'fetch') return false;
+  return u !== undefined && u.definedFunctions.has(name) && !u.downloaderWrappers.has(name);
+}
+
+/** `command fetch …`, `builtin`, or a path such as /usr/bin/fetch bypasses shell functions: the real tool runs. */
+function bypassesFunctions(c: ShellCommand): boolean {
+  if (c.wrappers.some((w) => w === 'command' || w === 'builtin' || w === 'exec' || w === 'env')) return true;
+  const tok = c.text.split(/\s+/).find((w) => (unquoteWord(w).replace(/^\\/, '').split('/').pop() ?? '') === c.name);
+  return tok !== undefined && (tok.includes('/') || tok.startsWith('\\'));
+}
+function unquoteWord(w: string): string {
+  return w.replace(/^["']+|["']+$/g, '');
+}
+
+function isDownloader(c: ShellCommand, u?: ShellUnit): boolean {
+  if (!DOWNLOADERS.has(c.name)) return false;
+  if (shadowsDownloader(c.name, u) && !bypassesFunctions(c)) return false; // a plain shell function named fetch is not the network tool
+  return !(c.name === 'curl' && c.args.some((a) => /^-[a-zA-Z]*I/.test(a) || a === '--head'));
 }
 
 function isInterpreter(c: ShellCommand): boolean {
   return INTERPRETERS.has(c.name);
 }
 
-function containsDownload(text: string): boolean {
-  return /\b(?:curl|wget|fetch|aria2c)\b/.test(text);
+/** True when the text runs a downloader as a command (not merely mentions one, e.g. in a path like bin/deen-fetch). */
+function containsDownload(text: string, u?: ShellUnit): boolean {
+  // A downloader behind any path prefix (/usr/local/bin/curl), a leading backslash (\curl) or quotes counts; a
+  // name that merely contains one (bin/deen-fetch) does not, because `-` and `_` are not word boundaries here.
+  const re = /(?:^|[\s(|;&`{"'])(\\?(?:\/?(?:[\w.~+-]+\/)+)?)(curl|wget|aria2c|xh|fetch)(?=[\s"')|;&`}]|$)/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text))) {
+    const name = m[2]!;
+    const viaCommand = /(?:^|[\s(|;&`{])(?:command|builtin|exec|env)\s+$/.test(text.slice(0, m.index + (m[0].length - m[1]!.length - name.length)));
+    if (shadowsDownloader(name, u) && m[1] === '' && !viaCommand) continue;
+    return true;
+  }
+  return false;
 }
 
 function docNote(u: ShellUnit): string {
@@ -154,7 +187,7 @@ export const remoteScriptExecution: Rule = {
     for (const u of ctx.shellUnits) {
       for (const c of u.commands) {
         // curl … | bash   /   wget -qO- … | sudo sh
-        if (c.pipeline && isDownloader(c)) {
+        if (c.pipeline && isDownloader(c, u)) {
           const later = c.pipeline.slice(c.pipelineIndex + 1);
           const interp = later.find((m) => isInterpreter(m));
           if (interp) {
@@ -169,12 +202,12 @@ export const remoteScriptExecution: Rule = {
           }
         }
         // bash <(curl …) / source <(wget …)
-        if (isInterpreter(c) && c.processSubstitutions.some((p) => containsDownload(p))) {
+        if (isInterpreter(c) && c.processSubstitutions.some((p) => containsDownload(p, u))) {
           out.push({ ...loc(u, c), message: `${c.name} executes a process substitution that downloads from the network${docNote(u)}`, evidence: c.text, confidence: confidenceFor(u, 'high') });
           continue;
         }
         // bash -c "$(curl …)" / eval "$(curl …)" / sh -c "`wget …`"
-        if (isInterpreter(c) && c.commandSubstitutions.some((s) => containsDownload(s))) {
+        if (isInterpreter(c) && c.commandSubstitutions.some((s) => containsDownload(s, u))) {
           out.push({ ...loc(u, c), message: `${c.name} executes the output of a network download via command substitution${docNote(u)}`, evidence: c.text, confidence: confidenceFor(u, 'high') });
           continue;
         }
@@ -216,7 +249,7 @@ export const downloadThenExecute: Rule = {
         }
       };
       for (const c of u.commands) {
-        if (isDownloader(c)) {
+        if (isDownloader(c, u)) {
           for (let i = 0; i < c.args.length; i++) {
             const a = c.args[i]!;
             if (a === '-o' || a === '--output' || a === '-O' || a === '--output-document') {
@@ -808,7 +841,7 @@ export const insecureDownload: Rule = {
     const out: FindingDraft[] = [];
     for (const u of ctx.shellUnits) {
       for (const c of u.commands) {
-        if (!isDownloader(c) && !(c.name === 'git' && c.args[0] === 'clone') && c.name !== 'pip' && c.name !== 'pip3') continue;
+        if (!isDownloader(c, u) && !(c.name === 'git' && c.args[0] === 'clone') && c.name !== 'pip' && c.name !== 'pip3') continue;
         const bad = urlsIn(c).find((x) => /^(?:http|ftp):\/\//i.test(x) && !/^http:\/\/(?:localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0)/.test(x));
         if (bad) out.push({ ...loc(u, c), message: `${c.name} fetches ${bad.slice(0, 120)} over an unencrypted protocol${docNote(u)}`, evidence: c.text });
       }
@@ -831,7 +864,7 @@ export const unverifiedArtifactDownload: Rule = {
     for (const u of ctx.shellUnits) {
       if (u.origin !== 'script') continue;
       if (/\b(?:sha256sum|sha512sum|shasum|b2sum|gpg\s+--verify|gpgv|minisign|cosign|signify|md5sum)\b/.test(u.text)) continue;
-      const downloads = u.commands.filter((c) => isDownloader(c) && urlsIn(c).length > 0 && !c.pipeline && !/(?:-o|--output)\s+\/dev\/null|-s?S?\s*-o\s*\/dev\/null|>\s*\/dev\/null/.test(c.text) && !c.redirects.some((r) => /\/dev\/null/.test(r.target)));
+      const downloads = u.commands.filter((c) => isDownloader(c, u) && urlsIn(c).some((x) => !/^https?:\/\/(?:localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0)(?:[:/]|$)/i.test(x)) && !c.pipeline && !/(?:-o|--output)\s+\/dev\/null|-s?S?\s*-o\s*\/dev\/null|>\s*\/dev\/null/.test(c.text) && !c.redirects.some((r) => /\/dev\/null/.test(r.target)));
       if (downloads.length === 0) continue;
       const first = downloads[0]!;
       out.push({ ...loc(u, first), message: `${downloads.length} download${downloads.length > 1 ? 's' : ''} with no verification step anywhere in the script`, evidence: downloads.slice(0, 3).map((d) => d.text).join('\n') });
@@ -864,7 +897,56 @@ export const missingStrictMode: Rule = {
   },
 };
 
+const AI_AGENT_CONFIG = /(?:~|\$HOME|\$\{HOME\}|\/home\/[\w-]+)\/(?:\.claude\/(?:settings(?:\.local)?\.json|hooks\b|plugins\b|CLAUDE\.md)|\.codex\/(?:hooks\.json|config\.toml|AGENTS\.md)|\.gemini\/(?:settings\.json|GEMINI\.md)|\.config\/opencode\/(?:plugins?\b|opencode\.jsonc?)|\.cursor\/(?:hooks|rules|mcp\.json)|\.continue\/|\.aider\.conf\.yml|\.config\/(?:claude|codex|gemini)\/)/;
+const AI_HOOK_WORDS = /\bhooks?\b|SessionStart|SessionEnd|UserPromptSubmit|PreToolUse|PostToolUse|PermissionRequest|BeforeAgent|AfterAgent|AfterTool|\bplugins?\b|mcpServers/;
+
+export const aiAgentHooks: Rule = {
+  id: 'OA-AI-001',
+  title: 'Hooks, plugins or MCP servers are installed into AI coding agent configuration',
+  severity: 'high',
+  confidence: 'high',
+  kind: 'heuristic',
+  capabilities: ['persistence', 'ai-agent-config'],
+  description: 'Writing to ~/.claude/settings.json, ~/.codex/hooks.json, ~/.gemini/settings.json, ~/.config/opencode/plugins or similar registers code that the user\'s AI coding agent runs on every session, prompt, tool call or stop, with the agent\'s permissions and context. It is persistence inside another tool and is easy to overlook.',
+  remediation: 'Ask before touching agent configuration, show the exact hook or plugin being added, scope it to the narrowest events, and provide a removal path.',
+  evaluate(ctx) {
+    const out: FindingDraft[] = [];
+    const WRITERS = new Set(['cp', 'mv', 'install', 'tee', 'ln', 'jq', 'python', 'python3', 'node', 'sed', 'cat', 'echo', 'printf', 'mkdir', 'touch']);
+    for (const u of ctx.shellUnits) {
+      const vars = literalAssignments(u.text);
+      let hit = false;
+      for (const c of u.commands) {
+        const words = [...c.args, ...c.redirects.map((r) => r.target)].map((w) => expandWord(w, vars));
+        const target = words.find((w) => AI_AGENT_CONFIG.test(w));
+        if (!target) continue;
+        const writes = c.redirects.some((r) => /^>/.test(r.op) && AI_AGENT_CONFIG.test(expandWord(r.target, vars))) || (WRITERS.has(c.name) && !(c.name === 'cat' && c.redirects.length === 0));
+        if (!writes) continue;
+        hit = true;
+        const kind = /opencode\/plugins?|\.claude\/plugins/.test(target) ? 'plugin' : /mcp/.test(target) ? 'MCP server configuration' : 'hook configuration';
+        out.push({ ...loc(u, c), message: `${c.name} writes ${kind} into ${target.replace(/^\/home\/[\w-]+/, '~').replace(/^\$\{?HOME\}?/, '~')}${docNote(u)}`, evidence: c.text, severity: u.origin === 'documentation' ? 'medium' : 'high' });
+      }
+      // Indirect writes: the path sits in a variable that a helper function receives. For every agent config path the
+      // unit names that no direct write covered, report once when the unit also manipulates hook/plugin structures
+      // with a write primitive.
+      if (!(AI_HOOK_WORDS.test(u.text) && /\b(?:jq|tee|install|cp|mv|python3?|node)\b|>\s*"?\$/.test(u.text))) continue;
+      const covered = new Set(out.filter((d) => d.path === u.path).map((d) => d.message.match(/into (\S+)/)?.[1]?.replace(/\/[^/]*$/, '') ?? ''));
+      const seenPath = new Set<string>();
+      for (const mention of u.text.matchAll(new RegExp(AI_AGENT_CONFIG.source, 'g'))) {
+        const shown = mention[0].replace(/^\/home\/[\w-]+/, '~').replace(/^\$\{?HOME\}?/, '~');
+        const dir = shown.replace(/\/[^/]*$/, '');
+        if (seenPath.has(dir) || [...covered].some((c) => c.replace(/^\$\{?HOME\}?/, '~').startsWith(dir))) continue;
+        seenPath.add(dir);
+        const line = u.text.slice(0, mention.index).split('\n').length + u.lineOffset;
+        out.push({ path: u.path, startLine: line, endLine: line, message: `script manipulates hooks or plugins for an AI coding agent via ${shown}${docNote(u)}`, evidence: (u.text.split('\n')[line - 1 - u.lineOffset] ?? '').trim().slice(0, 200), confidence: 'medium', severity: u.origin === 'documentation' ? 'medium' : 'high' });
+      }
+      void hit;
+    }
+    return aggregate(out, (d) => `${d.path}|${d.message.replace(/ \(.*$/, '')}`);
+  },
+};
+
 export const SHELL_RULES: Rule[] = [
+  aiAgentHooks,
   remoteScriptExecution,
   downloadThenExecute,
   unpinnedRemoteSource,

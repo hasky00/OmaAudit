@@ -1,0 +1,19 @@
+#!/bin/bash
+set -euo pipefail
+HOOK="$HOME/.local/bin/agent-watcher-hook"
+CLAUDE_SETTINGS="${AGENT_WATCHER_CLAUDE_SETTINGS:-$HOME/.claude/settings.json}"
+CODEX_HOOKS="${AGENT_WATCHER_CODEX_HOOKS:-$HOME/.codex/hooks.json}"
+GEMINI_SETTINGS="${AGENT_WATCHER_GEMINI_SETTINGS:-$HOME/.gemini/settings.json}"
+OPENCODE_PLUGIN="${AGENT_WATCHER_OPENCODE_PLUGIN:-$HOME/.config/opencode/plugins/agent-watcher.js}"
+groups() {
+  jq -n --arg h "$HOOK" '{ SessionStart: [{hooks: [{type: "command", command: ($h + " claude session-start")}]}] }'
+}
+merge_hooks() { # merge_hooks <file> <groupsJson>
+  local file="$1" tmp
+  tmp=$(mktemp)
+  jq --argjson g "$2" '.hooks = ((.hooks // {}) + $g)' "$file" > "$tmp" && mv "$tmp" "$file"
+}
+merge_hooks "$CLAUDE_SETTINGS" "$(groups)"
+merge_hooks "$CODEX_HOOKS" "$(groups)"
+merge_hooks "$GEMINI_SETTINGS" "$(groups)"
+install -Dm644 hooks/opencode-agent-watcher.js "$OPENCODE_PLUGIN"
