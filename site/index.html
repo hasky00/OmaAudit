@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OmaAudit: see what an Omarchy tool will do before you install it</title>
+<meta name="description" content="OmaAudit is a small CLI that reads an Omarchy tool's install scripts, units and plugin files and shows you what it will do to your machine, with the exact line as evidence.">
+<style>
+  :root {
+    --bg: #0f1115; --panel: #171a21; --line: #272c37; --text: #e6e8ee; --muted: #9aa3b5;
+    --accent: #7dd3a8; --crit: #ff6b6b; --high: #ff9f5a; --med: #f2c94c; --low: #7fb4ff;
+    --mono: ui-monospace, "JetBrains Mono", "Cascadia Code", Menlo, Consolas, monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Inter, Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); line-height: 1.6; }
+  a { color: var(--accent); }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 22px; }
+  header.top { border-bottom: 1px solid var(--line); }
+  header.top .wrap { display: flex; align-items: center; justify-content: space-between; padding-top: 16px; padding-bottom: 16px; }
+  .brand { font-family: var(--mono); font-weight: 700; letter-spacing: .02em; }
+  nav a { margin-left: 20px; color: var(--muted); text-decoration: none; font-size: .95rem; }
+  nav a:hover { color: var(--text); }
+  .hero { padding: 72px 0 40px; }
+  h1 { font-size: clamp(1.9rem, 5vw, 3rem); line-height: 1.15; margin: 0 0 18px; letter-spacing: -.01em; }
+  .lead { font-size: 1.15rem; color: var(--muted); max-width: 46rem; margin: 0 0 28px; }
+  .lead strong { color: var(--text); font-weight: 600; }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; }
+  .btn { display: inline-block; padding: 11px 18px; border-radius: 8px; text-decoration: none; font-weight: 600; border: 1px solid var(--line); color: var(--text); }
+  .btn.primary { background: var(--accent); color: #0b1410; border-color: var(--accent); }
+  .preview { margin-top: 18px; display: inline-block; font-size: .85rem; color: var(--med); border: 1px solid #4a4020; background: #1d1a10; padding: 4px 10px; border-radius: 999px; }
+  section { padding: 44px 0; border-top: 1px solid var(--line); }
+  h2 { font-size: 1.45rem; margin: 0 0 14px; }
+  h3 { font-size: 1.05rem; margin: 0 0 6px; }
+  p { margin: 0 0 14px; }
+  .muted { color: var(--muted); }
+  pre { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; overflow-x: auto; font-family: var(--mono); font-size: .86rem; line-height: 1.55; margin: 0 0 16px; }
+  code { font-family: var(--mono); font-size: .92em; background: var(--panel); border: 1px solid var(--line); border-radius: 5px; padding: 1px 5px; }
+  pre code { background: none; border: 0; padding: 0; font-size: inherit; }
+  .crit { color: var(--crit); font-weight: 700; } .high { color: var(--high); font-weight: 700; }
+  .med { color: var(--med); font-weight: 700; } .low { color: var(--low); font-weight: 700; }
+  .dim { color: var(--muted); }
+  .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
+  .card p { margin: 0; color: var(--muted); font-size: .96rem; }
+  table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; }
+  td:first-child { white-space: nowrap; }
+  ul { margin: 0 0 14px; padding-left: 20px; }
+  li { margin-bottom: 6px; }
+  footer { border-top: 1px solid var(--line); padding: 28px 0 44px; color: var(--muted); font-size: .9rem; }
+  footer p { margin: 0 0 6px; }
+  @media (max-width: 560px) { nav a { margin-left: 12px; } .hero { padding-top: 48px; } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <span class="brand">OmaAudit</span>
+    <nav>
+      <a href="#install">Install</a>
+      <a href="#commands">Commands</a>
+      <a href="#accuracy">Accuracy</a>
+      <a href="https://github.com/hasky00/OmaAudit">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="hero">
+    <h1>See what an Omarchy tool will do to your machine before you install it.</h1>
+    <p class="lead">OmaAudit is a small command-line tool. It reads a tool's install scripts, systemd units, Hyprland config and plugin files, and shows you what they do: what gets downloaded and run, where root is requested, what keeps running after you log in. <strong>It reports evidence, not verdicts.</strong> The decision stays with you.</p>
+    <div class="cta">
+      <a class="btn primary" href="#install">Install</a>
+      <a class="btn" href="https://github.com/hasky00/OmaAudit">Source on GitHub</a>
+    </div>
+    <div><span class="preview">Early preview, version 0.1.0</span></div>
+  </div>
+
+  <section>
+    <h2>What a report looks like</h2>
+    <p class="muted">Real output from a real Omarchy plugin, shortened. Every finding names the file, the line and the code itself, so you can check it.</p>
+<pre><code><span class="dim">$</span> omaaudit scan ./omaga-sync
+
+Summary  REVIEW RECOMMENDED  4 medium, 3 low
+  capabilities: build-from-source, network-download, omarchy-plugin, persistence
+
+Findings
+<span class="med">MEDIUM</span>   OA-SH-007 A service, timer or autostart entry is installed
+         install.sh:48  writes into an autostart or unit directory: $HOME/.config/systemd/user/
+         <span class="dim">│ install -m 644 "$SRC_DIR/omaga-sync-engine.service" "$UNIT_DST/"</span>
+<span class="med">MEDIUM</span>   OA-SH-003 Code is obtained from a mutable remote reference and built or installed
+         README.md:78  git clone of a mutable reference (this is what users are told to run)
+         <span class="dim">│ git clone https://github.com/bismawy/omaga-sync.git</span>
+<span class="low">LOW</span>      OA-SH-007 A service, timer or autostart entry is installed
+         install.sh:67  systemctl --user enables a unit
+         <span class="dim">│ systemctl --user enable --now omaga-sync-engine.service</span>
+
+Coverage
+  17 of 41 files inspected (140 KiB); skipped 24
+  unknown: 2 Python/JavaScript file(s) are only scanned for secrets
+  unknown: 5 QML file(s): only process/file/network surfaces are analysed
+
+<span class="dim">Findings are evidence of risk patterns, not proof of malice, and the
+absence of findings is not proof of safety.</span></code></pre>
+  </section>
+
+  <section>
+    <h2>How to read it</h2>
+    <div class="grid">
+      <div class="card"><h3>Severity describes the action</h3><p>"High-risk indicators" means this is what the files show, not that the author is malicious. Plenty of honest tools need root or a background service. You should know before you run them.</p></div>
+      <div class="card"><h3>Clean is not a certificate</h3><p>No findings means these rules found nothing in the files they could read. Each report lists what it could not inspect.</p></div>
+      <div class="card"><h3>Nothing is executed</h3><p>OmaAudit only reads. It never runs the scripts, hooks, builds or binaries of the tool it is looking at.</p></div>
+    </div>
+  </section>
+
+  <section id="install">
+    <h2>Install</h2>
+    <p>OmaAudit needs Node.js 24 or newer. Omarchy ships Node through <code>mise</code>. It is not on npm yet, so install it from source:</p>
+<pre><code>git clone https://github.com/hasky00/OmaAudit.git
+cd OmaAudit
+npm ci --ignore-scripts
+npm run build
+npm link</code></pre>
+    <p>Then check your setup:</p>
+<pre><code>omaaudit doctor</code></pre>
+    <p class="muted">Optional, for more findings: <code>sudo pacman -S shellcheck osv-scanner</code>. To remove OmaAudit: <code>npm unlink -g omaaudit</code> and <code>rm -rf ~/.cache/omaaudit</code>.</p>
+  </section>
+
+  <section id="commands">
+    <h2>Commands</h2>
+    <table>
+      <tr><th>Command</th><th>What it does</th></tr>
+      <tr><td><code>omaaudit check owner/repo</code></td><td>Fetches the repository at an exact commit and inspects install scripts, privileges, downloads, persistence, secrets and dependencies.</td></tr>
+      <tr><td><code>omaaudit scan .</code></td><td>Audits a local folder, offline, without uploading anything. Works on a plugin you already have, or one you are writing.</td></tr>
+      <tr><td><code>omaaudit find "query"</code></td><td>Searches the Omarchy plugin marketplace catalog and GitHub, and shows why each result matched.</td></tr>
+      <tr><td><code>omaaudit compare a b</code></td><td>Puts two tools side by side: capabilities, dependencies, maintenance and findings.</td></tr>
+      <tr><td><code>omaaudit doctor</code></td><td>Read-only check of your Node version, optional scanners and GitHub access.</td></tr>
+    </table>
+    <p class="muted" style="margin-top:14px">Every command takes <code>--json</code>. Full reference: <a href="https://github.com/hasky00/OmaAudit/blob/main/docs/cli.md">docs/cli.md</a>.</p>
+  </section>
+
+  <section>
+    <h2>For plugin authors</h2>
+    <p>Run <code>omaaudit scan .</code> on your own plugin before you publish. It shows you what a careful user will see, and it is quicker to hear "your installer enables a service at login" from a tool than from a bug report.</p>
+    <p>If a finding about your project is wrong, please <a href="https://github.com/hasky00/OmaAudit/issues">open an issue</a>. False alarms are treated as bugs.</p>
+  </section>
+
+  <section id="accuracy">
+    <h2>How accurate is it</h2>
+    <p>This is an early preview, and it has been measured rather than promised. The rules were run on 20 marketplace plugins they had never seen, and every finding was labeled by an AI reviewer (Claude) working separately from the session that wrote the rules. One reviewer, one pass, a small sample.</p>
+    <ul>
+      <li>Every finding checked pointed at the right file and line.</li>
+      <li>About 90% of all findings were correct, most of them informational notes such as "this plugin spawns processes".</li>
+      <li>The louder warnings were weaker: 9 of 21 findings at medium or above were correct for code a user runs.</li>
+      <li>All five critical findings in that run were false alarms with one shared cause. That bug is being fixed.</li>
+      <li>It also missed behaviours that had no rule yet, such as a plugin adding hooks to AI coding agent settings.</li>
+    </ul>
+    <p class="muted">The full data, labels and method are in the repository under <a href="https://github.com/hasky00/OmaAudit/tree/main/docs/corpus">docs/corpus</a>. Python and JavaScript logic is not analysed yet, only scanned for secrets.</p>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>&copy; 2026 Hasky Labs, Copenhagen. All rights reserved. Made by Hasky Labs.</p>
+    <p>OmaAudit's source code is open source under the <a href="https://github.com/hasky00/OmaAudit/blob/main/LICENSE">Apache-2.0 licence</a>. OmaAudit is not affiliated with Omarchy or Basecamp.</p>
+  </div>
+</footer>
+
+</body>
+</html>
