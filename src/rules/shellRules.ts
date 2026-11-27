@@ -108,12 +108,26 @@ function argText(c: ShellCommand): string {
 
 /** A function named after a downloader shadows it only when its body never calls a real downloader. */
 function shadowsDownloader(name: string, u?: ShellUnit): boolean {
+  // Only `fetch` can be shadowed: on Linux it is normally a user function, while curl/wget/aria2c/xh are the real
+  // tools and a same-named function elsewhere in the repository is no reason to stop reporting them. The engine
+  // puts `fetch` into definedFunctions only for the unit that defines it and for units that source that file.
+  if (name !== 'fetch') return false;
   return u !== undefined && u.definedFunctions.has(name) && !u.downloaderWrappers.has(name);
+}
+
+/** `command fetch …`, `builtin`, or a path such as /usr/bin/fetch bypasses shell functions: the real tool runs. */
+function bypassesFunctions(c: ShellCommand): boolean {
+  if (c.wrappers.some((w) => w === 'command' || w === 'builtin' || w === 'exec' || w === 'env')) return true;
+  const tok = c.text.split(/\s+/).find((w) => (unquoteWord(w).replace(/^\\/, '').split('/').pop() ?? '') === c.name);
+  return tok !== undefined && (tok.includes('/') || tok.startsWith('\\'));
+}
+function unquoteWord(w: string): string {
+  return w.replace(/^["']+|["']+$/g, '');
 }
 
 function isDownloader(c: ShellCommand, u?: ShellUnit): boolean {
   if (!DOWNLOADERS.has(c.name)) return false;
-  if (shadowsDownloader(c.name, u)) return false; // a plain shell function named fetch/curl is not the network tool
+  if (shadowsDownloader(c.name, u) && !bypassesFunctions(c)) return false; // a plain shell function named fetch is not the network tool
   return !(c.name === 'curl' && c.args.some((a) => /^-[a-zA-Z]*I/.test(a) || a === '--head'));
 }
 
@@ -125,11 +139,12 @@ function isInterpreter(c: ShellCommand): boolean {
 function containsDownload(text: string, u?: ShellUnit): boolean {
   // A downloader behind any path prefix (/usr/local/bin/curl), a leading backslash (\curl) or quotes counts; a
   // name that merely contains one (bin/deen-fetch) does not, because `-` and `_` are not word boundaries here.
-  const re = /(?:^|[\s(|;&`{"'])\\?(?:\/?(?:[\w.~+-]+\/)+)?(curl|wget|aria2c|xh|fetch)(?=[\s"')|;&`}]|$)/g;
+  const re = /(?:^|[\s(|;&`{"'])(\\?(?:\/?(?:[\w.~+-]+\/)+)?)(curl|wget|aria2c|xh|fetch)(?=[\s"')|;&`}]|$)/g;
   let m: RegExpExecArray | null;
   while ((m = re.exec(text))) {
-    const name = m[1]!;
-    if (shadowsDownloader(name, u)) continue;
+    const name = m[2]!;
+    const viaCommand = /(?:^|[\s(|;&`{])(?:command|builtin|exec|env)\s+$/.test(text.slice(0, m.index + (m[0].length - m[1]!.length - name.length)));
+    if (shadowsDownloader(name, u) && m[1] === '' && !viaCommand) continue;
     return true;
   }
   return false;

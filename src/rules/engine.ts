@@ -202,19 +202,24 @@ export async function buildContext(tree: SourceTree, opts: { targetName?: string
   }
   await expandInlineCode();
 
-  // A repository that defines its own `fetch` (or curl/wget) function sources or evals it elsewhere; treat that
-  // name as shadowed in every unit, unless some definition wraps a real downloader (`curl() { command curl "$@"; }`).
-  // A wrapper downloads, so its name keeps counting as a downloader everywhere, whatever else defines it.
-  const wrappers = new Set<string>();
-  const plain = new Set<string>();
-  for (const u of shellUnits) for (const fn of u.definedFunctions) if (/^(?:fetch|curl|wget|aria2c|xh)$/.test(fn)) (u.downloaderWrappers.has(fn) ? wrappers : plain).add(fn);
-  for (const u of shellUnits) {
-    for (const fn of wrappers) u.downloaderWrappers.add(fn);
-    for (const fn of plain) if (!wrappers.has(fn)) u.definedFunctions.add(fn);
+  const sourcedScripts = new Set<string>();
+  const sourcesOf = new Map<string, Set<string>>(); // unit path → files it sources
+  for (const u of shellUnits) for (const c of u.commands) if (c.name === 'source' || c.name === '.') for (const rel of invokedScriptPaths(c)) for (const cand of candidatesFor(u.path, rel, byPath.keys())) {
+    sourcedScripts.add(cand);
+    const set = sourcesOf.get(u.path) ?? new Set<string>();
+    set.add(cand);
+    sourcesOf.set(u.path, set);
   }
 
-  const sourcedScripts = new Set<string>();
-  for (const u of shellUnits) for (const c of u.commands) if (c.name === 'source' || c.name === '.') for (const rel of invokedScriptPaths(c)) for (const cand of candidatesFor(u.path, rel, byPath.keys())) sourcedScripts.add(cand);
+  // A plain `fetch` function (one that does not itself call a downloader) shadows the BSD tool only where the shell
+  // can see it: in the file that defines it and in files that source that file. Nothing else is ever shadowed; a
+  // function named curl, wget, aria2c or xh in some other file is no reason to stop reporting those tools.
+  const plainFetchIn = new Set<string>();
+  for (const u of shellUnits) if (u.definedFunctions.has('fetch') && !u.downloaderWrappers.has('fetch')) plainFetchIn.add(u.path);
+  for (const u of shellUnits) {
+    if (u.definedFunctions.has('fetch')) continue;
+    for (const src of sourcesOf.get(u.path) ?? []) if (plainFetchIn.has(src)) { u.definedFunctions.add('fetch'); break; }
+  }
 
   // Runtime reachability: start from every unit that is not itself test/CI code (scripts, embedded config,
   // README instructions) plus manifest entry points, and follow invoke/source edges transitively.

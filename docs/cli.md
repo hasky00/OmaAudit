@@ -89,7 +89,7 @@ omaaudit rules
 
 Commands found in README code blocks are analysed too and tagged "found in documentation"; their confidence is capped at medium because the reader may not run them verbatim.
 
-How the download rules recognise a downloader: `curl`, `wget`, `aria2c`, `xh` and `fetch` count behind any path (`/usr/local/bin/curl`), a leading backslash (`\curl`), quotes, and the `command`, `exec`, `env` and privilege wrappers. A name that merely contains one (`bin/deen-fetch`) does not. A shell function with a downloader's name shadows it only when its body never calls a real downloader; `curl() { command curl "$@"; }` or `fetch() { curl … }` keeps counting as a download wherever the repository uses it. A file that a script or README runs with `bash`, `sh` or `source` is parsed as shell whatever its shebang or extension say, and a `.sh`/`.bash` extension wins over a foreign shebang.
+How the download rules recognise a downloader: `curl`, `wget`, `aria2c`, `xh` and `fetch` count behind any path (`/usr/local/bin/curl`), a leading backslash (`\curl`), quotes, and the `command`, `exec`, `env` and privilege wrappers. A name that merely contains one (`bin/deen-fetch`) does not. A shell function named `curl`, `wget`, `aria2c` or `xh` never hides those tools. Only `fetch`, which on Linux is usually a user function, can be shadowed: by a plain function whose body calls no downloader, only inside the file that defines it and files that source that file, and never when the call goes through `command`, `builtin` or a path. Aliases are not resolved. A file that a script or README runs with `bash`, `sh` or `source` is parsed as shell whatever its shebang or extension say, and a `.sh`/`.bash` extension wins over a foreign shebang.
 
 ## Examples
 

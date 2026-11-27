@@ -298,7 +298,12 @@
       "OA-SH-001@pathcurl/install.sh:3",
       "OA-SH-001@pathcurl/install.sh:4",
       "OA-SH-001@pathcurl/install.sh:5",
-      "OA-SH-001@pathcurl/install.sh:6"
+      "OA-SH-001@pathcurl/install.sh:6",
+      "OA-SH-001@unusedfn/install.sh:3",
+      "OA-SH-001@unusedfn/install.sh:4",
+      "OA-SH-001@fetchscope/other.sh:3",
+      "OA-SH-001@fetchscope/uses-lib.sh:5",
+      "OA-SH-001@fetchscope/uses-lib.sh:6"
     ],
     "expectedMessages": [
       "install writes plugin into ~/.config/opencode/plugins/agent-watcher.js",
@@ -315,7 +320,9 @@
       "OA-SEC-001@placeholder/examples/openrouter.json:2",
       "OA-SEC-001@placeholder/examples/openrouter.json:3",
       "OA-SH-017@sedlocal/tests/inputs.test.sh:5",
-      "OA-SH-001@pathcurl/install.sh:8"
+      "OA-SH-001@pathcurl/install.sh:8",
+      "OA-SH-001@fetchscope/uses-lib.sh:4",
+      "OA-SH-017@fetchscope/uses-lib.sh:4"
     ],
     "minSeverityAt": {
       "OA-AI-001@aihooks/bin/agent-watcher-setup:19": "high",
@@ -326,7 +333,12 @@
       "OA-SH-001@pathcurl/install.sh:3": "critical",
       "OA-SH-001@pathcurl/install.sh:4": "critical",
       "OA-SH-001@pathcurl/install.sh:5": "critical",
-      "OA-SH-001@pathcurl/install.sh:6": "critical"
+      "OA-SH-001@pathcurl/install.sh:6": "critical",
+      "OA-SH-001@unusedfn/install.sh:3": "critical",
+      "OA-SH-001@unusedfn/install.sh:4": "critical",
+      "OA-SH-001@fetchscope/other.sh:3": "critical",
+      "OA-SH-001@fetchscope/uses-lib.sh:5": "critical",
+      "OA-SH-001@fetchscope/uses-lib.sh:6": "critical"
     },
     "forbidden": [
       "OA-SH-018"
