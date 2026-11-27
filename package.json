@@ -2,7 +2,7 @@
   "name": "omaaudit",
   "version": "0.1.0",
   "description": "Discover, compare and statically audit Omarchy tools before you install them.",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "type": "module",
   "bin": {
     "omaaudit": "./bin/omaaudit.js"
@@ -12,8 +12,7 @@
     "dist",
     "rules",
     "README.md",
-    "LICENSE",
-    "NOTICE"
+    "LICENSE"
   ],
   "engines": {
     "node": ">=24"

@@ -86,7 +86,7 @@ Version 0.1.0. Known gaps:
 - Python and JavaScript files are scanned for secrets only. If one of them launches a script, OmaAudit does not follow that link.
 - Omarchy 4 Lua Hyprland configuration is not analysed beyond secret scanning and writes to its autostart files.
 - No data-flow analysis: shell variables are resolved from literal assignments only.
-- Not yet published to npm; licence (Apache-2.0) proposed, pending approval.
+- Not yet published to npm.
 
 ## Documentation
 
@@ -99,4 +99,4 @@ Version 0.1.0. Known gaps:
 
 ## Licence
 
-Apache-2.0 (proposed; see `NOTICE`). OmaAudit is a Hasky Labs project and is not affiliated with Omarchy or Basecamp.
+MIT, see `LICENSE`. OmaAudit is a Hasky Labs project and is not affiliated with Omarchy or Basecamp.

@@ -32,4 +32,4 @@ ShellCheck 0.11 (GPL-3.0), OSV-Scanner 2.7 (Apache-2.0). Neither is bundled or r
 
 ## Licence compatibility
 
-All runtime dependencies are MIT, ISC or BlueOak-1.0.0, compatible with the proposed Apache-2.0 licence. No GPL code is linked or redistributed; ShellCheck is invoked as a separate process when the user has installed it.
+All runtime dependencies are MIT, ISC or BlueOak-1.0.0, compatible with the MIT licence of this project. No GPL code is linked or redistributed; ShellCheck is invoked as a separate process when the user has installed it.

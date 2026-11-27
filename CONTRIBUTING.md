@@ -35,4 +35,4 @@ Please do not open a public issue; see `SECURITY.md`.
 
 ## Licence
 
-By contributing you agree that your contributions are licensed under the Apache-2.0 licence proposed for this project (pending maintainer approval; see `NOTICE`).
+By contributing you agree that your contributions are licensed under the MIT licence (see `LICENSE`).
