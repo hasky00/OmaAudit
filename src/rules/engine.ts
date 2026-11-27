@@ -229,7 +229,7 @@ export async function buildContext(tree: SourceTree, opts: { targetName?: string
   // can see it: in the file that defines it and in files that source that file. Nothing else is ever shadowed; a
   // function named curl, wget, aria2c or xh in some other file is no reason to stop reporting those tools.
   const plainFetchIn = new Set<string>();
-  for (const u of shellUnits) if (u.definedFunctions.has('fetch') && !u.downloaderWrappers.has('fetch')) plainFetchIn.add(u.path);
+  for (const u of shellUnits) if (u.definedFunctions.has('fetch') && !u.downloaderWrappers.has('fetch') && !u.opaqueFunctions.has('fetch')) plainFetchIn.add(u.path);
   for (const u of shellUnits) {
     if (u.definedFunctions.has('fetch')) continue;
     for (const src of sourcesOf.get(u.path) ?? []) if (plainFetchIn.has(src)) { u.definedFunctions.add('fetch'); break; }
