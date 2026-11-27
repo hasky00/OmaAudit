@@ -82,6 +82,7 @@ omaaudit rules
 | OA-SEC-001 | high | Secret material appears in the repository (redacted) | secret-material |
 | OA-BIN-001 | medium–high | Executable binary shipped (cannot be inspected); high when a unit, desktop entry or script starts it | bundled-binary, persistence |
 | OA-SUDO-001 | high–critical | sudoers policy file shipped | privilege-escalation |
+| OA-AI-001 | high | Hooks, plugins or MCP servers installed into AI coding agent configuration (~/.claude, ~/.codex, ~/.gemini, ~/.config/opencode, ~/.cursor) | persistence, ai-agent-config |
 | OA-MKT-001 | info/low | Omarchy plugin marketplace listing and drift from validated snapshot | omarchy-plugin |
 | OA-DEP-002 | varies | Known vulnerability in a declared dependency (osv-scanner, `confirmed`) | — |
 | SCxxxx | low/medium | ShellCheck warnings and errors (external) | — |

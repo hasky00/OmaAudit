@@ -284,5 +284,37 @@
     "forbidden": [
       "OA-SEC-001"
     ]
+  },
+  "round2": {
+    "expected": [
+      "OA-SH-001@sedlocal/tests/inputs.test.sh:7",
+      "OA-AI-001@aihooks/bin/agent-watcher-setup:19",
+      "OA-AI-001@aihooks/bin/agent-watcher-setup:4",
+      "OA-AI-001@aihooks/bin/agent-watcher-setup:5",
+      "OA-AI-001@aihooks/bin/agent-watcher-setup:6"
+    ],
+    "expectedMessages": [
+      "install writes plugin into ~/.config/opencode/plugins/agent-watcher.js",
+      "script manipulates hooks or plugins for an AI coding agent via ~/.claude/settings.json",
+      "via ~/.codex/hooks.json",
+      "via ~/.gemini/settings.json"
+    ],
+    "forbiddenAt": [
+      "OA-SH-001@sedlocal/tests/inputs.test.sh:3",
+      "OA-SH-001@sedlocal/tests/inputs.test.sh:4",
+      "OA-SH-017@fetchfn/t.sh:3",
+      "OA-SH-018@fetchfn/install:1",
+      "OA-SEC-001@placeholder/README.md:4",
+      "OA-SEC-001@placeholder/examples/openrouter.json:2",
+      "OA-SEC-001@placeholder/examples/openrouter.json:3",
+      "OA-SH-017@sedlocal/tests/inputs.test.sh:5"
+    ],
+    "minSeverityAt": {
+      "OA-AI-001@aihooks/bin/agent-watcher-setup:19": "high",
+      "OA-AI-001@aihooks/bin/agent-watcher-setup:4": "high"
+    },
+    "forbidden": [
+      "OA-SH-018"
+    ]
   }
 }

@@ -199,6 +199,12 @@ export async function buildContext(tree: SourceTree, opts: { targetName?: string
   }
   await expandInlineCode();
 
+  // A repository that defines its own `fetch` (or curl/wget wrapper) function sources or evals it elsewhere;
+  // treat that name as shadowed in every unit so the downloader rules do not fire on the function.
+  const shadowed = new Set<string>();
+  for (const u of shellUnits) for (const fn of u.definedFunctions) if (/^(?:fetch|curl|wget|aria2c|xh)$/.test(fn)) shadowed.add(fn);
+  for (const u of shellUnits) for (const fn of shadowed) u.definedFunctions.add(fn);
+
   const sourcedScripts = new Set<string>();
   for (const u of shellUnits) for (const c of u.commands) if (c.name === 'source' || c.name === '.') for (const rel of invokedScriptPaths(c)) for (const cand of candidatesFor(u.path, rel, byPath.keys())) sourcedScripts.add(cand);
 

@@ -38,7 +38,7 @@
 - `scope` (optional, additive in 0.1.x): `runtime | test | ci | documentation`. Test findings are capped at `low` severity and CI findings drop one tier; see `docs/cli.md`.
 - `kind`: `heuristic` (pattern matched), `confirmed` (established scanner matched a known vulnerability or secret), `verified` (positive evidence-backed statement, e.g. marketplace snapshot match), `unknown-coverage` (OmaAudit could not inspect this)
 - `summary.verdict`: `no-findings | minor-notes | review-recommended | high-risk-indicators`
-- `capabilities`: `remote-code-execution, privilege-escalation, system-file-write, persistence, package-management, aur-install, network-download, network-exfiltration, credential-access, destructive-operation, obfuscation, security-downgrade, build-from-source, bundled-binary, kernel-or-driver, secret-material, ci-risk, omarchy-plugin, shell-config-change`
+- `capabilities`: `remote-code-execution, privilege-escalation, system-file-write, persistence, package-management, aur-install, network-download, network-exfiltration, credential-access, destructive-operation, obfuscation, security-downgrade, build-from-source, bundled-binary, kernel-or-driver, secret-material, ci-risk, omarchy-plugin, shell-config-change, ai-agent-config`
 
 ## Stability rules
 

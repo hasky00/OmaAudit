@@ -45,6 +45,8 @@ export interface ShellUnit {
   hasStrictMode: boolean;
   /** Statement boundaries the parser had to restore because the grammar merged lines (see repairMergedStatements). */
   parseRepairs: number;
+  /** Shell functions defined in this unit. A function named `fetch` or `curl` shadows the downloader of the same name. */
+  definedFunctions: Set<string>;
 }
 
 const PRIVILEGE_WRAPPERS = new Set(['sudo', 'doas', 'pkexec', 'run0', 'su']);
@@ -248,7 +250,7 @@ export async function parseShell(text: string, opts: ParseOptions): Promise<Shel
   let parseErrors = 0;
   let parseRepairs = 0;
   if (!tree) {
-    return { path: opts.path, origin: opts.origin, context: opts.context, commands, text, lineOffset: offset, parseErrors: 1, hasStrictMode: false, parseRepairs: 0 };
+    return { path: opts.path, origin: opts.origin, context: opts.context, commands, text, lineOffset: offset, parseErrors: 1, hasStrictMode: false, parseRepairs: 0, definedFunctions: new Set() };
   }
   // Up to two repair rounds: insert statement separators where the grammar merged lines, then re-parse.
   let parsedText = text;
@@ -263,6 +265,15 @@ export async function parseShell(text: string, opts: ParseOptions): Promise<Shel
   }
   const root = tree.rootNode;
   const privVars = privilegeVariables(text);
+  const definedFunctions = new Set<string>();
+  {
+    const fns: Node[] = [];
+    collect(root, new Set(['function_definition']), fns);
+    for (const f of fns) {
+      const n = f.childForFieldName('name');
+      if (n) definedFunctions.add(n.text);
+    }
+  }
   const cmdNodes: Node[] = [];
   const errNodes: Node[] = [];
   collect(root, new Set(['command']), cmdNodes);
@@ -363,5 +374,5 @@ export async function parseShell(text: string, opts: ParseOptions): Promise<Shel
   }
 
   const hasStrictMode = /^\s*set\s+(?:-[a-zA-Z]*[eu][a-zA-Z]*\b|-o\s+(?:errexit|nounset))/m.test(text);
-  return { path: opts.path, origin: opts.origin, context: opts.context, commands, text, lineOffset: offset, parseErrors, hasStrictMode, parseRepairs };
+  return { path: opts.path, origin: opts.origin, context: opts.context, commands, text, lineOffset: offset, parseErrors, hasStrictMode, parseRepairs, definedFunctions };
 }

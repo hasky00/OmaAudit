@@ -1,0 +1,5 @@
+# OpenRouter plugin
+
+```json
+{ "managementKey": "sk-or-v1-REPLACE_WITH_YOUR_MANAGEMENT_KEY" }
+```
