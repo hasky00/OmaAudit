@@ -94,9 +94,9 @@ Join key: rule id at the same path and line. "gone" for an incorrect label means
 
 Verdicts for those repositories after: dishy high-risk-indicators, local.focus high-risk-indicators, appimages high-risk-indicators.
 
-## Notes on what the join cannot show
+## Regression fixes added after review (same PR)
 
-- The one correct-labeled finding that disappeared is a README instruction `git clone <repo-url> ~/.config/omarchy/plugins/...` with a placeholder URL. OA-SH-003 skips placeholders because they are not a fetchable reference; a manual plugin-install instruction is a reasonable thing to surface separately in a later round.
-- The 22 correct-nonruntime findings that are "gone" are OA-SH-007 writes to plain Hyprland config files inside test fixtures. The rule no longer treats ordinary Hyprland config as autostart, so these were removed by the OA-SH-007 fix rather than by scope capping. The 15 that remain are tagged `scope: test` or `scope: ci` and 13 of them now sit at low or info.
-- Counts for 07dcolem.appimages, io.github.nulluserid.dishy and local.focus went up because the three "missed" items are now reported; those verdicts moving to high-risk-indicators is the intended effect, not noise.
-- Nothing in this document is a new label. The after-run has not been reviewed.
+- Scope: a file that a non-test script, a README instruction or the plugin manifest reaches (transitively) is runtime code whatever its directory is called, and is never downgraded. Fixture `test/fixtures/scope-evasion`: `install.sh` runs `tests/setup.sh` (curl | bash stays critical), the README runs `tests/doc-run.sh` (critical), while an unreferenced `tests/unit.sh` is capped at low.
+- OA-SH-011: compressed archives (gzip `H4sI`, zip `UEsDB`, xz, zstd, bzip2) are no longer exempt, every blob in a file is examined rather than only the first, and a blob whose decoded output reaches an interpreter or an install step, directly or through the variable it is assigned to, is always reported at high. Fixture `test/fixtures/blob-exec`.
+- OA-SH-007: Hyprland autostart matches `hypr/(autostart|hyprland).(conf|lua)`. Fixture `test/fixtures/hypr-lua` appends an `exec_once` line to `~/.config/hypr/autostart.lua`; a write to `monitors.conf` stays silent.
+- Parser: tree-sitter-bash merges a four-stage pipeline with a following redirected statement into one pipeline. The parser now restores such statement boundaries (bare newline, not escaped, not inside a literal) and re-parses; repairs are listed in `coverage.notes`. In this corpus it fired on `replicant bin/lib/save.sh` (3 boundaries). Corpus counts above were regenerated after these changes and did not move.

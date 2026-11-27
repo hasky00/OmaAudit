@@ -35,7 +35,7 @@ export async function scanDirectory(
   let findings: Finding[] = runRules(ctx);
   const sc = await runShellCheck(ctx, { enabled: opts.shellcheck ?? true });
   const osv = await runOsvScanner(ctx, { enabled: (opts.osv ?? true) && !(opts.offline ?? false) });
-  findings = [...findings, ...sc.findings.map(scopeFinding), ...osv.findings];
+  findings = [...findings, ...sc.findings.map((f) => scopeFinding(f, ctx.runtimeReachable)), ...osv.findings];
 
   if (extras.marketplace?.listed) {
     const m = extras.marketplace;

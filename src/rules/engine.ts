@@ -201,18 +201,53 @@ export async function buildContext(tree: SourceTree, opts: { targetName?: string
 
   const sourcedScripts = new Set<string>();
   for (const u of shellUnits) for (const c of u.commands) if (c.name === 'source' || c.name === '.') for (const rel of invokedScriptPaths(c)) for (const cand of candidatesFor(u.path, rel, byPath.keys())) sourcedScripts.add(cand);
-  return { files, shellUnits, manifestEntryPoints: entryPoints, root: tree.root, targetName: opts.targetName, invokedScripts, sourcedScripts };
+
+  // Runtime reachability: start from every unit that is not itself test/CI code (scripts, embedded config,
+  // README instructions) plus manifest entry points, and follow invoke/source edges transitively.
+  const edges = new Map<string, Set<string>>();
+  for (const u of shellUnits) {
+    for (const c of u.commands) {
+      for (const rel of invokedScriptPaths(c)) {
+        for (const cand of candidatesFor(u.path, rel, byPath.keys())) {
+          if (!byPath.has(cand)) continue;
+          const set = edges.get(u.path) ?? new Set<string>();
+          set.add(cand);
+          edges.set(u.path, set);
+        }
+      }
+    }
+  }
+  const runtimeReachable = new Set<string>(entryPoints);
+  const queue: string[] = [];
+  for (const u of shellUnits) if (!TEST_PATH.test(u.path) && !CI_PATH.test(u.path)) queue.push(u.path);
+  for (const ep of entryPoints) queue.push(ep);
+  const visited = new Set<string>();
+  while (queue.length) {
+    const cur = queue.pop()!;
+    if (visited.has(cur)) continue;
+    visited.add(cur);
+    for (const next of edges.get(cur) ?? []) {
+      runtimeReachable.add(next);
+      queue.push(next);
+    }
+  }
+  return { files, shellUnits, manifestEntryPoints: entryPoints, root: tree.root, targetName: opts.targetName, invokedScripts, sourcedScripts, runtimeReachable };
 }
 
-const TEST_PATH = /(?:^|\/)(?:tests?|__tests__|spec|specs|test-fixtures|fixtures|testdata|e2e)\//i;
-const CI_PATH = /^\.github\/|^\.gitlab-ci\.yml$|^\.circleci\/|^\.woodpecker\//;
+export const TEST_PATH = /(?:^|\/)(?:tests?|__tests__|spec|specs|test-fixtures|fixtures|testdata|e2e)\//i;
+export const CI_PATH = /^\.github\/|^\.gitlab-ci\.yml$|^\.circleci\/|^\.woodpecker\//;
 const FULL_SEVERITY_RULES = new Set(['OA-SEC-001', 'OA-CI-001', 'OA-BIN-001']);
 const ONE_DOWN: Record<Severity, Severity> = { critical: 'high', high: 'medium', medium: 'low', low: 'info', info: 'info' };
 
-/** Findings in test or CI code are accurate but do not run on a user's machine: tests are capped at low, CI drops one tier. */
-export function scopeFinding(f: Finding): Finding {
+/**
+ * Findings in test or CI code are accurate but do not run on a user's machine: tests are capped at low, CI
+ * drops one tier. A file that a non-test script, documentation or the plugin manifest reaches is runtime code
+ * whatever its directory is called, and keeps full severity.
+ */
+export function scopeFinding(f: Finding, runtimeReachable: Set<string> = new Set()): Finding {
   const p = f.location?.path ?? '';
   if (!p || FULL_SEVERITY_RULES.has(f.ruleId)) return f;
+  if (runtimeReachable.has(p)) return f;
   if (TEST_PATH.test(p)) {
     const sev: Severity = SEVERITY_ORDER[f.severity] > SEVERITY_ORDER['low'] ? 'low' : f.severity;
     return { ...f, scope: 'test', severity: sev, message: `${f.message} (in test code: accurate, but not run on a user machine)` };
@@ -254,7 +289,7 @@ export function runRules(ctx: RuleContext, rules: Rule[] = ALL_RULES): Finding[]
         scanner: { name: 'omaaudit-rules', version: `${VERSION}+rules.${RULESET_VERSION}`, source: 'builtin' },
         ...(d.externalId ? { externalId: d.externalId } : {}),
         ...(d.references ?? rule.references ? { references: d.references ?? rule.references ?? [] } : {}),
-      }));
+      }, ctx.runtimeReachable));
     }
   }
   const order = { critical: 0, high: 1, medium: 2, low: 3, info: 4 } as const;
@@ -296,6 +331,8 @@ export function coverageOf(tree: SourceTree, ctx: RuleContext): Omit<Coverage, '
   }
   if (tree.truncated) unknown.push('the file tree was truncated by resource limits; results are incomplete');
   const notes: string[] = [];
+  const repaired = ctx.shellUnits.filter((u) => u.parseRepairs > 0);
+  if (repaired.length) notes.push(`${repaired.reduce((n, u) => n + u.parseRepairs, 0)} statement boundar${repaired.length === 1 && repaired[0]!.parseRepairs === 1 ? 'y was' : 'ies were'} restored where the bash grammar merged lines: ${repaired.slice(0, 6).map((u) => u.path).join(', ')}`);
   if (ctx.invokedScripts.length) notes.push(`${ctx.invokedScripts.length} script(s) inside excluded or oversized locations were read because another script invokes them: ${ctx.invokedScripts.slice(0, 12).map((i) => `${i.path} (by ${i.invokedBy})`).join('; ')}${ctx.invokedScripts.length > 12 ? '; …' : ''}`);
   return { filesListed: tree.files.length + tree.omitted.length, filesInspected: inspected, filesSkipped: skipped, bytesInspected: bytes, truncated: tree.truncated, fileTypes, unknown, ...(notes.length ? { notes } : {}) };
 }

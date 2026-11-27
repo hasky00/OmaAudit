@@ -235,5 +235,54 @@
     "forbidden": [
       "OA-SEC-001"
     ]
+  },
+  "scope-evasion": {
+    "expected": [
+      "OA-SH-001@tests/setup.sh:2",
+      "OA-SH-001@tests/unit.sh:2",
+      "OA-SH-001@tests/doc-run.sh:2"
+    ],
+    "minSeverityAt": {
+      "OA-SH-001@tests/setup.sh:2": "critical",
+      "OA-SH-001@tests/doc-run.sh:2": "critical"
+    },
+    "maxSeverityAt": {
+      "OA-SH-001@tests/unit.sh:2": "low"
+    },
+    "scopeAt": {
+      "OA-SH-001@tests/unit.sh:2": "test"
+    },
+    "forbidden": [
+      "OA-SEC-001"
+    ]
+  },
+  "blob-exec": {
+    "expected": [
+      "OA-SH-011@run.sh:2",
+      "OA-SH-011@run.sh:3",
+      "OA-SH-011@run.sh:4"
+    ],
+    "minSeverityAt": {
+      "OA-SH-011@run.sh:2": "high",
+      "OA-SH-011@run.sh:3": "high"
+    },
+    "forbiddenAt": [
+      "OA-SH-011@run.sh:5",
+      "OA-SH-011@run.sh:6"
+    ],
+    "forbidden": [
+      "OA-SEC-001"
+    ]
+  },
+  "hypr-lua": {
+    "expected": [
+      "OA-SH-007@install.sh:3"
+    ],
+    "forbiddenAt": [
+      "OA-SH-007@install.sh:4"
+    ],
+    "forbidden": [
+      "OA-SEC-001"
+    ]
   }
 }

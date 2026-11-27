@@ -22,7 +22,7 @@ const CREDENTIAL_PATHS = [
 ];
 const CREDENTIAL_COMMANDS = /^(?:secret-tool|pass|gopass|op|bw|gh auth token|security)$/;
 const SHELL_RC = /(?:~|\$HOME|\$\{HOME\}|\/home\/[\w-]+)\/\.(?:bashrc|zshrc|profile|bash_profile|zprofile|zshenv|bash_login|xprofile|xinitrc|config\/fish\/config\.fish)\b|\/etc\/(?:profile(?:\.d\/[^\s]*)?|bash\.bashrc|zsh\/zshrc|environment)\b/;
-const AUTOSTART_PATHS = /(?:~|\$HOME|\$\{HOME\}|\/home\/[\w-]+)\/\.config\/(?:autostart\b|systemd\/user\b|hypr\/(?:autostart|hyprland)\.conf)|\/etc\/xdg\/autostart\b|\/etc\/systemd\/(?:system|user)\b|\/usr\/lib\/systemd\/(?:system|user)\b|\/etc\/cron\.|\/var\/spool\/cron|\.(?:service|timer)$/;
+const AUTOSTART_PATHS = /(?:~|\$HOME|\$\{HOME\}|\/home\/[\w-]+)\/\.config\/(?:autostart\b|systemd\/user\b|hypr\/(?:autostart|hyprland)\.(?:conf|lua))|\/etc\/xdg\/autostart\b|\/etc\/systemd\/(?:system|user)\b|\/usr\/lib\/systemd\/(?:system|user)\b|\/etc\/cron\.|\/var\/spool\/cron|\.(?:service|timer)$/;
 const POLKIT_PATHS = /\/etc\/polkit-1\/(?:rules\.d|localauthority)|\/usr\/share\/polkit-1\/(?:actions|rules\.d)/;
 
 /**
@@ -601,10 +601,12 @@ export const obfuscatedExecution: Rule = {
     for (const u of ctx.shellUnits) {
       for (const c of u.commands) {
         const a = argText(c);
-        if (c.pipeline && (c.name === 'base64' && /-d|--decode|-D/.test(a) || c.name === 'xxd' && /-r/.test(a) || c.name === 'openssl' && /\benc\b.*-d/.test(a) || c.name === 'gunzip' || c.name === 'zcat' || c.name === 'xz' && /-d/.test(a) || c.name === 'tr' && /\\x|[A-Za-z]-[A-Za-z]\s+[N-ZA-Mn-za-m]/.test(a))) {
+        if (c.pipeline && (c.name === 'base64' && /-d|--decode|-D/.test(a) || c.name === 'xxd' && /-r/.test(a) || c.name === 'openssl' && /\benc\b.*-d/.test(a) || c.name === 'gunzip' || c.name === 'zcat' || c.name === 'gzip' && /-d/.test(a) || c.name === 'xz' && /-d/.test(a) || c.name === 'unxz' || c.name === 'zstd' && /-d/.test(a) || c.name === 'unzstd' || c.name === 'bunzip2' || c.name === 'tr' && /\\x|[A-Za-z]-[A-Za-z]\s+[N-ZA-Mn-za-m]/.test(a))) {
           const later = c.pipeline.slice(c.pipelineIndex + 1);
           if (later.some((m) => isInterpreter(m))) {
-            out.push({ ...loc(u, c), message: `${c.name} output is decoded and executed${docNote(u)}`, evidence: c.pipeline.map((m) => m.text).join(' | '), confidence: 'high' });
+            // One finding per decode chain: report at the first decoder stage only.
+            const earlierDecoder = c.pipeline.slice(0, c.pipelineIndex).some((m) => /^(?:base64|xxd|openssl|gunzip|gzip|zcat|xz|unxz|zstd|unzstd|bunzip2|tr)$/.test(m.name));
+            if (!earlierDecoder) out.push({ ...loc(u, c), message: `${c.pipeline.filter((m) => /^(?:base64|xxd|openssl|gunzip|gzip|zcat|xz|unxz|zstd|unzstd|bunzip2|tr)$/.test(m.name)).map((m) => m.name).join(' | ')} output is decoded and executed by ${later.find((m) => isInterpreter(m))!.name}${docNote(u)}`, evidence: c.pipeline.map((m) => m.text).join(' | '), confidence: 'high' });
             continue;
           }
         }
@@ -621,11 +623,38 @@ export const obfuscatedExecution: Rule = {
           out.push({ ...loc(u, c), message: `escaped byte sequence is executed${docNote(u)}`, evidence: c.text, confidence: 'high' });
         }
       }
-      const longB64 = /\b[A-Za-z0-9+/]{200,}={0,2}\b/.exec(u.text);
-      const isAsset = longB64 ? /^(?:iVBORw0KGgo|\/9j\/|R0lGOD|UklGR|PHN2Zy|UEsDB|JVBERi0|H4sI|Qk0|AAABAA|d09GRg|T2dnUw|SUQz|GkXfo)/.test(longB64[0]) : false;
-      if (longB64 && !isAsset && /base64\s+(?:-d|--decode)/.test(u.text)) {
-        const line = u.text.slice(0, longB64.index).split('\n').length + u.lineOffset;
-        out.push({ path: u.path, startLine: line, endLine: line, message: `long base64 blob with a decoder present in the same file${docNote(u)}`, evidence: `${longB64[0].slice(0, 60)}… (${longB64[0].length} chars)`, severity: 'medium', confidence: 'low' });
+      // Every long base64 blob in the unit, not only the first one.
+      if (/base64\s+(?:-d|--decode|-D)/.test(u.text)) {
+        const decoderOrInterp = (chain: ShellCommand[]): boolean =>
+          chain.some((m) => /^(?:base64|xxd|openssl|gunzip|gzip|zcat|xz|unxz|zstd|unzstd|bzip2|bunzip2|tar|unzip|7z)$/.test(m.name)) &&
+          chain.some((m, i) => isInterpreter(m) || (i > 0 && /^(?:chmod|install|cp|mv|tee)$/.test(m.name)));
+        const reported = new Set<number>();
+        for (const blob of u.text.matchAll(/\b[A-Za-z0-9+/]{200,}={0,2}\b/g)) {
+          const line = u.text.slice(0, blob.index).split('\n').length + u.lineOffset;
+          if (reported.has(line)) continue;
+          const value = blob[0];
+          // Images, fonts, PDFs and media are data. Archives (gzip H4sI, zip UEsDB, xz, zstd) are NOT exempt: they can hold code.
+          const imageLike = /^(?:iVBORw0KGgo|\/9j\/|R0lGOD|UklGR|PHN2Zy|JVBERi0|Qk0|AAABAA|d09GRg|T2dnUw|SUQz|GkXfo)/.test(value);
+          const archiveLike = /^(?:H4sI|UEsDB|\/Td6WFo|KLUv|QlpoOT)/.test(value);
+          // Is the blob (directly, or through the variable it is assigned to) fed into a decode chain that executes?
+          const host = u.commands.find((c) => c.startLine <= line && line <= c.endLine);
+          let executed = host ? decoderOrInterp(host.pipeline ?? [host]) : false;
+          if (!executed) {
+            const lineText = u.text.split('\n')[line - 1 - u.lineOffset] ?? '';
+            const assigned = /^\s*(?:export\s+|local\s+|readonly\s+|declare\s+-?\w*\s+)?([A-Za-z_][A-Za-z0-9_]*)=/.exec(lineText)?.[1];
+            if (assigned) {
+              const ref = new RegExp(`\\$\\{?${assigned}\\b`);
+              executed = u.commands.some((c) => ref.test(c.text) && decoderOrInterp(c.pipeline ?? [c]));
+            }
+          }
+          if (executed) {
+            reported.add(line);
+            out.push({ path: u.path, startLine: line, endLine: line, message: `base64 blob is decoded and its output is executed or installed${docNote(u)}`, evidence: `${value.slice(0, 60)}… (${value.length} chars)`, severity: 'high', confidence: 'high' });
+          } else if (!imageLike) {
+            reported.add(line);
+            out.push({ path: u.path, startLine: line, endLine: line, message: `long base64 blob with a decoder present in the same file${archiveLike ? ' (looks like a compressed archive, which can carry code)' : ''}${docNote(u)}`, evidence: `${value.slice(0, 60)}… (${value.length} chars)`, severity: 'medium', confidence: 'low' });
+          }
+        }
       }
     }
     return out;
