@@ -31,7 +31,7 @@ function age(iso: string | undefined): string {
 export function formatFinding(f: Finding, verbose: boolean): string {
   const c = colors();
   const where = f.location ? `${f.location.path}:${f.location.startLine}${f.location.endLine !== f.location.startLine ? `-${f.location.endLine}` : ''}` : '';
-  const kind = f.kind === 'heuristic' ? '' : c.dim(` [${f.kind}]`);
+  const kind = (f.kind === 'heuristic' ? '' : c.dim(` [${f.kind}]`)) + (f.scope && f.scope !== 'runtime' ? c.dim(` [${f.scope}]`) : '');
   const head = `${sevColor(f.severity, SEV_LABEL[f.severity].padEnd(8))} ${c.bold(f.ruleId)} ${f.title}${kind}`;
   const lines = [head, `         ${c.dim(where)}${where ? '  ' : ''}${f.message} ${c.dim(`(confidence: ${f.confidence})`)}`];
   const ev = f.evidence.split('\n').slice(0, verbose ? 6 : 2).map((l) => `         ${c.dim('│')} ${l.slice(0, 160)}`);

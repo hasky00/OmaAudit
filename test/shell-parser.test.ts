@@ -50,4 +50,17 @@ describe('shell parser', () => {
     const bad = await parseShell('if [ -z "$x" ; then\n  echo "unterminated\n', { path: 'e.sh', origin: 'script', context: 'shell' });
     expect(bad.parseErrors).toBeGreaterThan(0);
   });
+
+  it('restores statement boundaries the grammar merges after a 4-stage pipeline', async () => {
+    const src = 'echo "$P" | base64 -d | gunzip | bash\necho "y=" | base64 -d > f\n';
+    const u = await parseShell(src, { path: 'm.sh', origin: 'script', context: 'shell' });
+    expect(u.parseRepairs).toBe(1);
+    const bash = u.commands.find((c) => c.name === 'bash')!;
+    expect(bash.startLine).toBe(1);
+    expect(bash.endLine).toBe(1);
+    expect(bash.pipeline!.map((c) => c.name)).toEqual(['echo', 'base64', 'gunzip', 'bash']);
+    const second = u.commands.filter((c) => c.startLine === 2).map((c) => c.name);
+    expect(second).toEqual(['echo', 'base64']);
+    expect(u.text).toBe(src); // original text is kept
+  });
 });

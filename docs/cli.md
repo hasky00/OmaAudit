@@ -60,11 +60,11 @@ omaaudit rules
 | OA-SH-003 | medium | Code is obtained from a mutable remote reference and built or installed | build-from-source, network-download |
 | OA-SH-004 | medium/low | Commands run with elevated privileges (aggregated per file and program) | privilege-escalation |
 | OA-SH-005 | medium | Files under system paths are written or modified | system-file-write |
-| OA-SH-006 | high–critical | sudoers policy is created or modified (NOPASSWD, broad command surface) | privilege-escalation, system-file-write |
+| OA-SH-006 | medium–critical | sudoers or polkit policy is created or modified (NOPASSWD, broad command surface, polkit rules returning YES) | privilege-escalation, system-file-write |
 | OA-SH-007 | medium | A service, timer or autostart entry is installed | persistence |
 | OA-SH-008 | medium | Shell startup files are modified | shell-config-change, persistence |
 | OA-SH-009 | info–high | Packages are installed (pacman, AUR helpers, `pacman -U` from URL, pip/npm -g/cargo/go/mise) | package-management, aur-install |
-| OA-SH-010 | high–critical | Destructive filesystem or disk operation (`rm -rf /`, home, bare variables, `dd` to block devices, mkfs) | destructive-operation |
+| OA-SH-010 | medium–critical | Destructive filesystem or disk operation (`rm -rf /`, home, slash-adjacent or unquoted variables, `dd` to block devices, mkfs) | destructive-operation |
 | OA-SH-011 | high | Obfuscated or dynamically constructed code is executed | obfuscation, remote-code-execution |
 | OA-SH-012 | high–critical | Network exfiltration or reverse-shell pattern | network-exfiltration, credential-access |
 | OA-SH-013 | medium–high | A security control is disabled or weakened (TLS, host keys, firewall, pacman SigLevel, chmod 777) | security-downgrade |
@@ -80,7 +80,7 @@ omaaudit rules
 | OA-OMA-002 | info–high | QML plugin spawns processes, touches files, uses network or PAM | omarchy-plugin |
 | OA-CI-001 | low–high | GitHub Actions risk (unpinned actions, `pull_request_target` checkout, script injection) | ci-risk |
 | OA-SEC-001 | high | Secret material appears in the repository (redacted) | secret-material |
-| OA-BIN-001 | medium | Executable binary shipped (cannot be inspected) | bundled-binary |
+| OA-BIN-001 | medium–high | Executable binary shipped (cannot be inspected); high when a unit, desktop entry or script starts it | bundled-binary, persistence |
 | OA-SUDO-001 | high–critical | sudoers policy file shipped | privilege-escalation |
 | OA-MKT-001 | info/low | Omarchy plugin marketplace listing and drift from validated snapshot | omarchy-plugin |
 | OA-DEP-002 | varies | Known vulnerability in a declared dependency (osv-scanner, `confirmed`) | — |
@@ -110,3 +110,7 @@ omaaudit compare swheel33/tailbridge Unayung/omarchy-iphone-clipboard
 # CI gate
 omaaudit scan . --fail-on medium --json
 ```
+
+## Finding scope
+
+Each finding may carry `scope`: `runtime` (default), `test`, `ci` or `documentation`. Evidence under `tests/`, `test/`, `spec/`, `fixtures/` and similar is accurate but does not run on a user's machine, so its severity is capped at `low`; evidence under `.github/` and other CI directories drops one tier. Secret material (OA-SEC-001), CI-specific risks (OA-CI-001) and bundled binaries (OA-BIN-001) keep their full severity everywhere. Commands quoted in README code blocks keep their severity but have confidence capped at `medium`.

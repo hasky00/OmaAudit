@@ -21,6 +21,14 @@ export interface RuleContext {
   targetName?: string | undefined;
   /** Scripts that were read on demand because another script invokes them (e.g. inside build/ or vendor/). */
   invokedScripts: { path: string; invokedBy: string }[];
+  /** Scripts that another script sources (`source x` / `. x`); they inherit the caller's shell options. */
+  sourcedScripts: Set<string>;
+  /**
+   * Files that run on a user's machine even though their path looks like test or CI code: manifest entry
+   * points, and anything invoked or sourced (transitively) by a non-test script or by documentation.
+   * Findings in these files are never downgraded by scope.
+   */
+  runtimeReachable: Set<string>;
 }
 
 export interface FindingDraft {

@@ -239,7 +239,8 @@ export const qmlProcessUsage: Rule = {
     const out: FindingDraft[] = [];
     for (const cf of ctx.files) {
       if (cf.type !== 'qml') continue;
-      const t = cf.text;
+      // Blank out comments so a mention inside `// …` or `/* … */` is not a match, keeping line numbers intact.
+      const t = cf.text.replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, ' ')).replace(/(^|[^:"'])\/\/[^\n]*/g, (m, pre: string) => pre + ' '.repeat(m.length - pre.length));
       const p = cf.file.path;
       const re = /\b(Process|FileView|Socket|SocketServer|DesktopEntries|Quickshell\.Io|XMLHttpRequest|Qt\.openUrlExternally|Pam|PamContext)\b/g;
       const seen = new Set<string>();
@@ -368,10 +369,28 @@ export const bundledBinaries: Rule = {
   remediation: 'Build from source in CI with reproducible steps and publish checksums, or distribute through a package whose PKGBUILD builds from pinned source.',
   evaluate(ctx) {
     const out: FindingDraft[] = [];
+    // Where is each binary started from? systemd ExecStart lines, desktop Exec lines and script commands.
+    const starters: { text: string; where: string }[] = [];
+    for (const cf of ctx.files) {
+      if (cf.type === 'systemd-unit') cf.text.split('\n').forEach((l, i) => { if (/^\s*Exec\w*\s*=/.test(l)) starters.push({ text: l, where: `${cf.file.path}:${i + 1} (systemd unit)` }); });
+      if (cf.type === 'desktop-entry') cf.text.split('\n').forEach((l, i) => { if (/^\s*(?:Try)?Exec\s*=/.test(l)) starters.push({ text: l, where: `${cf.file.path}:${i + 1} (desktop entry)` }); });
+    }
+    for (const u of ctx.shellUnits) if (u.origin !== 'documentation') for (const c of u.commands) starters.push({ text: c.text, where: `${u.path}:${c.startLine}` });
     for (const cf of ctx.files) {
       const fmt = (cf.file as { binaryFormat?: string }).binaryFormat;
-      if (fmt) out.push({ path: cf.file.path, startLine: 1, endLine: 1, message: `${fmt.toUpperCase()} executable (${cf.file.size} bytes) cannot be inspected statically`, evidence: cf.file.path });
-      else if (cf.type === 'binary' && cf.file.executable) out.push({ path: cf.file.path, startLine: 1, endLine: 1, message: `executable binary file (${cf.file.size} bytes) cannot be inspected`, evidence: cf.file.path, severity: 'low' });
+      const isBin = fmt || (cf.type === 'binary' && cf.file.executable);
+      if (!isBin) continue;
+      const base = cf.file.path.split('/').pop() ?? cf.file.path;
+      const wired = base.length >= 3 ? starters.find((s) => new RegExp(`(?:^|[\\s/"'=])${base.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:["'\\s]|$)`).test(s.text)) : undefined;
+      const unitWired = wired && /systemd unit|desktop entry/.test(wired.where);
+      const sizeMb = cf.file.size >= 1024 * 1024 ? `${(cf.file.size / 1024 / 1024).toFixed(1)} MiB` : `${Math.max(1, Math.round(cf.file.size / 1024))} KiB`;
+      if (wired) {
+        out.push({ path: cf.file.path, startLine: 1, endLine: 1, message: `${fmt ? fmt.toUpperCase() : 'binary'} executable (${sizeMb}) cannot be inspected statically and is started by ${wired.where}${unitWired ? ': an opaque program wired to persistence' : ''}`, evidence: wired.text.trim().slice(0, 200), severity: unitWired ? 'high' : 'medium', confidence: 'high', capabilities: unitWired ? ['bundled-binary', 'persistence'] : ['bundled-binary'] });
+      } else if (fmt) {
+        out.push({ path: cf.file.path, startLine: 1, endLine: 1, message: `${fmt.toUpperCase()} executable (${sizeMb}) cannot be inspected statically`, evidence: cf.file.path });
+      } else {
+        out.push({ path: cf.file.path, startLine: 1, endLine: 1, message: `executable binary file (${cf.file.size} bytes) cannot be inspected`, evidence: cf.file.path, severity: 'low' });
+      }
     }
     return out;
   },

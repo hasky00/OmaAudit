@@ -76,6 +76,8 @@ export const Finding = z.object({
   evidence: z.string(),
   remediation: z.string(),
   scanner: Scanner,
+  /** Where the evidence lives. test and ci findings are accurate but do not run on a user's machine; their severity is lowered. */
+  scope: z.enum(['runtime', 'test', 'ci', 'documentation']).optional(),
   /** External rule identifier, e.g. a ShellCheck SC code or an OSV id. */
   externalId: z.string().optional(),
   references: z.array(z.string()).optional(),

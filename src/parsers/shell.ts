@@ -43,6 +43,8 @@ export interface ShellUnit {
   lineOffset: number;
   parseErrors: number;
   hasStrictMode: boolean;
+  /** Statement boundaries the parser had to restore because the grammar merged lines (see repairMergedStatements). */
+  parseRepairs: number;
 }
 
 const PRIVILEGE_WRAPPERS = new Set(['sudo', 'doas', 'pkexec', 'run0', 'su']);
@@ -103,13 +105,35 @@ export function unquote(word: string): string {
   return w;
 }
 
-function unwrap(words: string[]): { name: string; args: string[]; wrappers: string[]; privileged: boolean } {
+/** Names of variables whose assigned value mentions a privilege tool, e.g. `elevate=(sudo)` or `SUDO=pkexec`. */
+export function privilegeVariables(text: string): Set<string> {
+  const out = new Set<string>();
+  const re = /^\s*(?:export\s+|local\s+|declare\s+-?\w*\s+|readonly\s+)?([A-Za-z_][A-Za-z0-9_]*)\+?=\(?\s*["']?(?:\/usr\/bin\/)?(?:sudo|doas|pkexec|run0|su)\b/gm;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text))) out.add(m[1]!);
+  return out;
+}
+
+const VAR_WORD = /^"?\$\{?([A-Za-z_][A-Za-z0-9_]*)(?:\[@\]|\[\*\])?\}?"?$/;
+
+function unwrap(words: string[], privVars: Set<string> = new Set()): { name: string; args: string[]; wrappers: string[]; privileged: boolean } {
   const wrappers: string[] = [];
   let privileged = false;
   let rest = words.slice();
   for (let guard = 0; guard < 6 && rest.length > 0; guard++) {
     const head = unquote(rest[0]!);
     const base = head.split('/').pop() ?? head;
+    // "${elevate[@]}" cmd … or "$SUDO" cmd …: a wrapper held in a variable. Privileged when the variable is
+    // assigned a privilege tool anywhere in the unit, or when its name says so.
+    const vm = VAR_WORD.exec(rest[0]!);
+    if (vm && rest.length > 1) {
+      const v = vm[1]!;
+      wrappers.push(`$${v}`);
+      if (privVars.has(v) || /sudo|doas|pkexec|run0|elevat|escalat|priv|as_?root|root_?cmd/i.test(v)) privileged = true;
+      rest = rest.slice(1);
+      continue;
+    }
+    if (base === 'command' && rest.length > 1 && /^-[vV]$/.test(rest[1]!)) break; // `command -v sudo` looks a tool up; nothing runs
     if (PRIVILEGE_WRAPPERS.has(base)) {
       privileged = true;
       wrappers.push(base);
@@ -158,6 +182,54 @@ function unwrap(words: string[]): { name: string; args: string[]; wrappers: stri
   return { name: name.split('/').pop() ?? name, args: rest.slice(1), wrappers, privileged };
 }
 
+const NO_BREAK_BEFORE = /(?:\\|\||&&|\|\||[({;&]|\bthen|\bdo|\belse|\bin|\bif|\bwhile|\buntil|\bfor|\bcase|\belif)\s*$/;
+const LITERAL_TYPES = new Set(['string', 'raw_string', 'ansi_c_string', 'heredoc_body', 'heredoc_content', 'comment', 'command_substitution', 'process_substitution', 'translated_string', 'string_content']);
+
+/**
+ * tree-sitter-bash sometimes merges a multi-stage pipeline with the statement on the next line
+ * (`a | b | c | d\nx > f` becomes one pipeline). Find command nodes that span rows across a bare
+ * newline — one that is not escaped, not after a continuation token and not inside a literal — and
+ * return the text with ';' inserted before those newlines so a re-parse sees the statement boundary.
+ */
+function repairMergedStatements(text: string, root: Node): { text: string; repairs: number } {
+  const inserts: number[] = [];
+  const cmds: Node[] = [];
+  collect(root, new Set(['command']), cmds);
+  for (const c of cmds) {
+    if (c.startPosition.row === c.endPosition.row) continue;
+    const from = c.startIndex;
+    const to = c.endIndex;
+    for (let i = from; i < to; i++) {
+      if (text.charCodeAt(i) !== 10) continue;
+      const lineStart = text.lastIndexOf('\n', i - 1) + 1;
+      const before = text.slice(lineStart, i);
+      if (before.trim() === '' || NO_BREAK_BEFORE.test(before)) continue;
+      const leaf = root.descendantForIndex(i);
+      if (leaf && (LITERAL_TYPES.has(leaf.type) || hasAncestorOfType(leaf, LITERAL_TYPES))) continue;
+      inserts.push(i);
+    }
+  }
+  if (inserts.length === 0) return { text, repairs: 0 };
+  const uniq = [...new Set(inserts)].sort((a, b) => a - b);
+  let out = '';
+  let last = 0;
+  for (const i of uniq) {
+    out += text.slice(last, i) + ';';
+    last = i;
+  }
+  out += text.slice(last);
+  return { text: out, repairs: uniq.length };
+}
+
+function hasAncestorOfType(node: Node, types: Set<string>): boolean {
+  let cur: Node | null = node.parent;
+  while (cur) {
+    if (types.has(cur.type)) return true;
+    cur = cur.parent;
+  }
+  return false;
+}
+
 export interface ParseOptions {
   path: string;
   origin: ShellUnit['origin'];
@@ -170,14 +242,27 @@ export async function parseShell(text: string, opts: ParseOptions): Promise<Shel
   const lang = await bashLanguage();
   const parser = new Parser();
   parser.setLanguage(lang);
-  const tree = parser.parse(text);
+  let tree = parser.parse(text);
   const offset = opts.lineOffset ?? 0;
   const commands: ShellCommand[] = [];
   let parseErrors = 0;
+  let parseRepairs = 0;
   if (!tree) {
-    return { path: opts.path, origin: opts.origin, context: opts.context, commands, text, lineOffset: offset, parseErrors: 1, hasStrictMode: false };
+    return { path: opts.path, origin: opts.origin, context: opts.context, commands, text, lineOffset: offset, parseErrors: 1, hasStrictMode: false, parseRepairs: 0 };
+  }
+  // Up to two repair rounds: insert statement separators where the grammar merged lines, then re-parse.
+  let parsedText = text;
+  for (let round = 0; round < 2; round++) {
+    const fixed = repairMergedStatements(parsedText, tree.rootNode);
+    if (fixed.repairs === 0) break;
+    parseRepairs += fixed.repairs;
+    parsedText = fixed.text;
+    const next = parser.parse(parsedText);
+    if (!next) break;
+    tree = next;
   }
   const root = tree.rootNode;
+  const privVars = privilegeVariables(text);
   const cmdNodes: Node[] = [];
   const errNodes: Node[] = [];
   collect(root, new Set(['command']), cmdNodes);
@@ -204,7 +289,7 @@ export async function parseShell(text: string, opts: ParseOptions): Promise<Shel
         else procs.push(textOf(f));
       }
     }
-    const { name, args, wrappers, privileged } = unwrap(words);
+    const { name, args, wrappers, privileged } = unwrap(words, privVars);
     const redirects: { op: string; target: string }[] = [];
     let heredoc: string | null = null;
     let cur: Node | null = node.parent;
@@ -277,6 +362,6 @@ export async function parseShell(text: string, opts: ParseOptions): Promise<Shel
     });
   }
 
-  const hasStrictMode = /^\s*set\s+(?:-[a-zA-Z]*e[a-zA-Z]*|-o\s+errexit)/m.test(text) || /^\s*set\s+-euo?\s+pipefail/m.test(text);
-  return { path: opts.path, origin: opts.origin, context: opts.context, commands, text, lineOffset: offset, parseErrors, hasStrictMode };
+  const hasStrictMode = /^\s*set\s+(?:-[a-zA-Z]*[eu][a-zA-Z]*\b|-o\s+(?:errexit|nounset))/m.test(text);
+  return { path: opts.path, origin: opts.origin, context: opts.context, commands, text, lineOffset: offset, parseErrors, hasStrictMode, parseRepairs };
 }

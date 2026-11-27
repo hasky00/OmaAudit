@@ -50,6 +50,16 @@ describe('loadTree', () => {
     expect(executableFormat(Buffer.from([0x4d, 0x5a, 0, 0]))).toBe('pe');
   });
 
+  it('recognises an oversized ELF by probing its header without reading it', async () => {
+    await writeFile(path.join(root, 'huge.bin'), Buffer.concat([Buffer.from([0x7f, 0x45, 0x4c, 0x46]), Buffer.alloc(3000)]));
+    const t = await loadTree(root, { ...DEFAULT_LIMITS, maxTextFileBytes: 1024 });
+    const f = t.files.find((x) => x.path === 'huge.bin')!;
+    expect(f.skipped).toBe(true);
+    expect(f.skipReason).toBe('binary');
+    expect((f as { binaryFormat?: string }).binaryFormat).toBe('elf');
+    expect(f.text).toBeUndefined();
+  });
+
   it('stops at the file count budget and reports truncation', async () => {
     const t = await loadTree(root, { ...DEFAULT_LIMITS, maxFiles: 1 });
     expect(t.truncated).toBe(true);

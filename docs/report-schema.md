@@ -24,7 +24,7 @@
     "message": "curl output is piped into bash", "location": { "path": "install.sh", "startLine": 3, "endLine": 3 },
     "evidence": "curl -fsSL https://… | bash", "remediation": "...",
     "scanner": { "name": "omaaudit-rules", "version": "0.1.0+rules.2026.11.1", "source": "builtin" },
-    "externalId": "SC2086", "references": ["https://…"]
+    "scope": "runtime", "externalId": "SC2086", "references": ["https://…"]
   }],
   "summary": { "counts": { "critical": 1, "high": 0, "medium": 0, "low": 0, "info": 0 }, "capabilities": ["network-download", "remote-code-execution"], "verdict": "high-risk-indicators", "highestSeverity": "critical" },
   "disclaimer": "OmaAudit performs static inspection only. ..."
@@ -35,6 +35,7 @@
 
 - `severity`: `critical | high | medium | low | info`
 - `confidence`: `high | medium | low`
+- `scope` (optional, additive in 0.1.x): `runtime | test | ci | documentation`. Test findings are capped at `low` severity and CI findings drop one tier; see `docs/cli.md`.
 - `kind`: `heuristic` (pattern matched), `confirmed` (established scanner matched a known vulnerability or secret), `verified` (positive evidence-backed statement, e.g. marketplace snapshot match), `unknown-coverage` (OmaAudit could not inspect this)
 - `summary.verdict`: `no-findings | minor-notes | review-recommended | high-risk-indicators`
 - `capabilities`: `remote-code-execution, privilege-escalation, system-file-write, persistence, package-management, aur-install, network-download, network-exfiltration, credential-access, destructive-operation, obfuscation, security-downgrade, build-from-source, bundled-binary, kernel-or-driver, secret-material, ci-risk, omarchy-plugin, shell-config-change`
