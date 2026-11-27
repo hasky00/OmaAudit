@@ -47,8 +47,15 @@ export interface ShellUnit {
   parseRepairs: number;
   /** Shell functions defined in this unit. A function named `fetch` or `curl` shadows the downloader of the same name. */
   definedFunctions: Set<string>;
-  /** Functions whose body invokes a real downloader: `curl() { command curl "$@"; }` still downloads. */
+  /**
+   * Functions whose body reaches a downloader: directly (`dl() { curl … }`), through another local function
+   * (`fetch() { get "$1"; }` with `get() { wget … }`) or through a variable-held command (`DL=curl; "$DL" …`).
+   */
   downloaderWrappers: Set<string>;
+  /** How each wrapper reaches the downloader, for evidence: `fetch → get → wget`, `fetch → $DL=curl`. */
+  downloaderChains: Map<string, string>;
+  /** Functions whose body runs `eval` or a command named by a variable with no literal value: cannot be cleared. */
+  opaqueFunctions: Set<string>;
 }
 
 const PRIVILEGE_WRAPPERS = new Set(['sudo', 'doas', 'pkexec', 'run0', 'su']);
@@ -253,7 +260,7 @@ export async function parseShell(text: string, opts: ParseOptions): Promise<Shel
   let parseErrors = 0;
   let parseRepairs = 0;
   if (!tree) {
-    return { path: opts.path, origin: opts.origin, context: opts.context, commands, text, lineOffset: offset, parseErrors: 1, hasStrictMode: false, parseRepairs: 0, definedFunctions: new Set(), downloaderWrappers: new Set() };
+    return { path: opts.path, origin: opts.origin, context: opts.context, commands, text, lineOffset: offset, parseErrors: 1, hasStrictMode: false, parseRepairs: 0, definedFunctions: new Set(), downloaderWrappers: new Set(), downloaderChains: new Map(), opaqueFunctions: new Set() };
   }
   // Up to two repair rounds: insert statement separators where the grammar merged lines, then re-parse.
   let parsedText = text;
@@ -377,9 +384,97 @@ export async function parseShell(text: string, opts: ParseOptions): Promise<Shel
   }
 
   const hasStrictMode = /^\s*set\s+(?:-[a-zA-Z]*[eu][a-zA-Z]*\b|-o\s+(?:errexit|nounset))/m.test(text);
-  // A function named after a downloader whose body calls one (`curl() { command curl "$@"; }`, `fetch() { curl … }`)
-  // is itself a downloader; only a body with no downloader shadows the name.
-  const downloaderWrappers = new Set<string>();
-  for (const c of commands) if (c.enclosingFunction && DOWNLOADER_NAMES.test(c.name)) downloaderWrappers.add(c.enclosingFunction);
-  return { path: opts.path, origin: opts.origin, context: opts.context, commands, text, lineOffset: offset, parseErrors, hasStrictMode, parseRepairs, definedFunctions, downloaderWrappers };
+  const { downloaderWrappers, downloaderChains, opaqueFunctions } = classifyFunctions(commands, definedFunctions, text);
+  return { path: opts.path, origin: opts.origin, context: opts.context, commands, text, lineOffset: offset, parseErrors, hasStrictMode, parseRepairs, definedFunctions, downloaderWrappers, downloaderChains, opaqueFunctions };
+}
+
+/** `NAME=value` with a plain literal value (optionally quoted), including declare/local/export/readonly forms. */
+const LITERAL_ASSIGN = /^\s*(?:(?:declare|local|readonly|export|typeset)\s+(?:-[a-zA-Z]+\s+)*)?([A-Za-z_][A-Za-z0-9_]*)=(["']?)([^\s"'`$|&;()<>]+)\2\s*(?:#.*)?$/gm;
+function literalValues(text: string): Map<string, Set<string>> {
+  const m = new Map<string, Set<string>>();
+  for (const a of text.matchAll(LITERAL_ASSIGN)) {
+    const set = m.get(a[1]!) ?? new Set<string>();
+    set.add(a[3]!);
+    m.set(a[1]!, set);
+  }
+  return m;
+}
+
+/**
+ * Which local functions download. A function's body reaches a downloader when it runs one directly, runs another
+ * function that does, or runs a command held in a variable whose literal assignment names one (`DL=curl`). A body
+ * that runs `eval`, or a command held in a variable with no literal value, cannot be shown not to download and is
+ * reported as opaque. A variable that only wraps the command (`"$SUDO" curl …`) is ignored when its value or name
+ * says privilege; the wrapped command is what counts.
+ */
+function classifyFunctions(commands: ShellCommand[], definedFunctions: Set<string>, text: string): { downloaderWrappers: Set<string>; downloaderChains: Map<string, string>; opaqueFunctions: Set<string> } {
+  const vars = literalValues(text);
+  const calls = new Map<string, Map<string, string>>(); // fn → callee → how it was written
+  const opaque = new Set<string>();
+  const addCall = (fn: string, callee: string, how: string): void => {
+    const m = calls.get(fn) ?? new Map<string, string>();
+    if (!m.has(callee)) m.set(callee, how);
+    calls.set(fn, m);
+  };
+  const isWrapperName = (base: string): boolean => PRIVILEGE_WRAPPERS.has(base) || PLAIN_WRAPPERS.has(base);
+  for (const c of commands) {
+    const fn = c.enclosingFunction;
+    if (!fn) continue;
+    const varWrapper = c.wrappers.find((w) => w.startsWith('$'))?.slice(1);
+    const varName = varWrapper ?? VAR_WORD.exec(c.name)?.[1] ?? null;
+    if (varName) {
+      const values = vars.get(varName);
+      if (values && values.size > 0) {
+        const bases = [...values].map((v) => v.split('/').pop() ?? v);
+        if (bases.every(isWrapperName)) {
+          if (!VAR_WORD.test(c.name)) addCall(fn, c.name, c.name); // "$SUDO" curl …: the variable was only a wrapper
+          continue;
+        }
+        for (const b of bases) if (!isWrapperName(b)) addCall(fn, b, `$${varName}=${b}`);
+        continue;
+      }
+      if (/sudo|doas|pkexec|run0|elevat|escalat|priv|as_?root|root_?cmd/i.test(varName)) {
+        if (!VAR_WORD.test(c.name)) addCall(fn, c.name, c.name);
+        continue;
+      }
+      opaque.add(fn);
+      continue;
+    }
+    if (c.name === 'eval') {
+      opaque.add(fn);
+      continue;
+    }
+    addCall(fn, c.name, c.name);
+  }
+  const chains = new Map<string, string>();
+  const resolving = new Set<string>();
+  const resolve = (fn: string): string | null => {
+    if (chains.has(fn)) return chains.get(fn)!;
+    if (resolving.has(fn)) return null;
+    resolving.add(fn);
+    let found: string | null = null;
+    for (const [callee, how] of calls.get(fn) ?? []) {
+      if (DOWNLOADER_NAMES.test(callee)) { found = `${fn} → ${how}`; break; }
+      if (definedFunctions.has(callee) && callee !== fn) {
+        const sub = resolve(callee);
+        if (sub) { found = `${fn} → ${sub}`; break; }
+      }
+    }
+    resolving.delete(fn);
+    if (found) chains.set(fn, found);
+    return found;
+  };
+  for (const fn of definedFunctions) resolve(fn);
+  const downloaderWrappers = new Set(chains.keys());
+  // Opacity spreads to callers: a function that runs an opaque function cannot be cleared either.
+  const opaqueFunctions = new Set<string>();
+  for (const fn of opaque) if (!downloaderWrappers.has(fn)) opaqueFunctions.add(fn);
+  for (let changed = true; changed;) {
+    changed = false;
+    for (const fn of definedFunctions) {
+      if (opaqueFunctions.has(fn) || downloaderWrappers.has(fn)) continue;
+      for (const callee of (calls.get(fn) ?? new Map()).keys()) if (opaqueFunctions.has(callee) && callee !== fn) { opaqueFunctions.add(fn); changed = true; break; }
+    }
+  }
+  return { downloaderWrappers, downloaderChains: chains, opaqueFunctions };
 }

@@ -126,6 +126,7 @@ function unquoteWord(w: string): string {
 }
 
 function isDownloader(c: ShellCommand, u?: ShellUnit): boolean {
+  if (u && u.downloaderWrappers.has(c.name) && !DOWNLOADERS.has(c.name)) return true; // a local function that downloads
   if (!DOWNLOADERS.has(c.name)) return false;
   if (shadowsDownloader(c.name, u) && !bypassesFunctions(c)) return false; // a plain shell function named fetch is not the network tool
   return !(c.name === 'curl' && c.args.some((a) => /^-[a-zA-Z]*I/.test(a) || a === '--head'));
@@ -136,7 +137,25 @@ function isInterpreter(c: ShellCommand): boolean {
 }
 
 /** True when the text runs a downloader as a command (not merely mentions one, e.g. in a path like bin/deen-fetch). */
+/** A local function whose body runs `eval` or an unresolved variable command: cannot be cleared, reported at low confidence. */
+function isOpaqueDownloader(c: ShellCommand, u?: ShellUnit): boolean {
+  return u !== undefined && u.opaqueFunctions.has(c.name) && !DOWNLOADERS.has(c.name);
+}
+function wordsOf(text: string): string[] {
+  return text.split(/[\s(|;&`{}"']+/).map((w) => w.replace(/^\\/, '').split('/').pop() ?? '').filter(Boolean);
+}
+function containsOpaqueDownload(text: string, u?: ShellUnit): boolean {
+  return u !== undefined && u.opaqueFunctions.size > 0 && wordsOf(text).some((w) => u.opaqueFunctions.has(w) && !DOWNLOADERS.has(w));
+}
+function localFunctionNote(c: ShellCommand, u: ShellUnit): string {
+  const chain = u.downloaderChains.get(c.name);
+  if (chain) return ` (a local function that downloads: ${chain})`; // also for a local `fetch` wrapper
+  if (isOpaqueDownloader(c, u)) return ' (a local function whose body runs eval or a variable-named command and cannot be resolved statically)';
+  return '';
+}
+
 function containsDownload(text: string, u?: ShellUnit): boolean {
+  if (u && u.downloaderWrappers.size > 0 && wordsOf(text).some((w) => u.downloaderWrappers.has(w) && !DOWNLOADERS.has(w))) return true; // a local function that downloads
   // A downloader behind any path prefix (/usr/local/bin/curl), a leading backslash (\curl) or quotes counts; a
   // name that merely contains one (bin/deen-fetch) does not, because `-` and `_` are not word boundaries here.
   const re = /(?:^|[\s(|;&`{"'])(\\?(?:\/?(?:[\w.~+-]+\/)+)?)(curl|wget|aria2c|xh|fetch)(?=[\s"')|;&`}]|$)/g;
@@ -186,30 +205,35 @@ export const remoteScriptExecution: Rule = {
     const out: FindingDraft[] = [];
     for (const u of ctx.shellUnits) {
       for (const c of u.commands) {
-        // curl … | bash   /   wget -qO- … | sudo sh
-        if (c.pipeline && isDownloader(c, u)) {
+        // curl … | bash   /   wget -qO- … | sudo sh   /   dl … | bash where dl() calls curl
+        if (c.pipeline && (isDownloader(c, u) || isOpaqueDownloader(c, u))) {
           const later = c.pipeline.slice(c.pipelineIndex + 1);
           const interp = later.find((m) => isInterpreter(m));
           if (interp) {
+            const opaque = !isDownloader(c, u);
             out.push({
               ...loc(u, c),
-              message: `${c.name} output is piped into ${interp.privileged ? `${interp.wrappers.join(' ')} ` : ''}${interp.name}${docNote(u)}`,
+              message: `${c.name}${localFunctionNote(c, u)} output is piped into ${interp.privileged ? `${interp.wrappers.join(' ')} ` : ''}${interp.name}${docNote(u)}`,
               evidence: c.pipeline.map((m) => m.text).join(' | '),
               severity: u.origin === 'embedded' && /GitHub Actions|Makefile|Dockerfile|package\.json/.test(u.context) ? 'high' : 'critical',
-              confidence: confidenceFor(u, 'high'),
+              confidence: confidenceFor(u, opaque ? 'low' : 'high'),
             });
             continue;
           }
         }
-        // bash <(curl …) / source <(wget …)
-        if (isInterpreter(c) && c.processSubstitutions.some((p) => containsDownload(p, u))) {
-          out.push({ ...loc(u, c), message: `${c.name} executes a process substitution that downloads from the network${docNote(u)}`, evidence: c.text, confidence: confidenceFor(u, 'high') });
-          continue;
-        }
-        // bash -c "$(curl …)" / eval "$(curl …)" / sh -c "`wget …`"
-        if (isInterpreter(c) && c.commandSubstitutions.some((s) => containsDownload(s, u))) {
-          out.push({ ...loc(u, c), message: `${c.name} executes the output of a network download via command substitution${docNote(u)}`, evidence: c.text, confidence: confidenceFor(u, 'high') });
-          continue;
+        if (isInterpreter(c)) {
+          // bash <(curl …) / source <(wget …) / bash <(dl …)
+          const proc = c.processSubstitutions.some((p) => containsDownload(p, u)) ? 'high' : c.processSubstitutions.some((p) => containsOpaqueDownload(p, u)) ? 'low' : null;
+          if (proc) {
+            out.push({ ...loc(u, c), message: `${c.name} executes a process substitution that downloads from the network${proc === 'low' ? ' through a local function whose body cannot be resolved statically' : ''}${docNote(u)}`, evidence: c.text, confidence: confidenceFor(u, proc) });
+            continue;
+          }
+          // bash -c "$(curl …)" / eval "$(curl …)" / sh -c "`wget …`" / eval "$(dl …)"
+          const cmd = c.commandSubstitutions.some((s) => containsDownload(s, u)) ? 'high' : c.commandSubstitutions.some((s) => containsOpaqueDownload(s, u)) ? 'low' : null;
+          if (cmd) {
+            out.push({ ...loc(u, c), message: `${c.name} executes the output of a network download via command substitution${cmd === 'low' ? ' through a local function whose body cannot be resolved statically' : ''}${docNote(u)}`, evidence: c.text, confidence: confidenceFor(u, cmd) });
+            continue;
+          }
         }
         // python3 -c "$(curl …)" handled above; python <(curl) handled above.
       }

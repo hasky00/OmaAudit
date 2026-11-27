@@ -211,6 +211,20 @@ export async function buildContext(tree: SourceTree, opts: { targetName?: string
     sourcesOf.set(u.path, set);
   }
 
+  // Functions defined in a sourced file are visible where it is sourced: a downloader wrapper or an opaque
+  // function in lib.sh counts in install.sh after `source lib.sh`, unless install.sh defines the same name itself.
+  const byUnitPath = new Map<string, ShellUnit[]>();
+  for (const u of shellUnits) byUnitPath.set(u.path, [...(byUnitPath.get(u.path) ?? []), u]);
+  for (const u of shellUnits) {
+    for (const src of sourcesOf.get(u.path) ?? []) {
+      for (const lib of byUnitPath.get(src) ?? []) {
+        if (lib === u) continue;
+        for (const fn of lib.downloaderWrappers) if (!u.definedFunctions.has(fn)) { u.downloaderWrappers.add(fn); u.downloaderChains.set(fn, `${lib.downloaderChains.get(fn) ?? fn} (defined in ${src})`); }
+        for (const fn of lib.opaqueFunctions) if (!u.definedFunctions.has(fn) && !u.downloaderWrappers.has(fn)) u.opaqueFunctions.add(fn);
+      }
+    }
+  }
+
   // A plain `fetch` function (one that does not itself call a downloader) shadows the BSD tool only where the shell
   // can see it: in the file that defines it and in files that source that file. Nothing else is ever shadowed; a
   // function named curl, wget, aria2c or xh in some other file is no reason to stop reporting those tools.

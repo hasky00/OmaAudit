@@ -343,5 +343,48 @@
     "forbidden": [
       "OA-SH-018"
     ]
+  },
+  "fnwrap": {
+    "expected": [
+      "OA-SH-001@direct.sh:4",
+      "OA-SH-001@varcmd.sh:5",
+      "OA-SH-001@chain.sh:5",
+      "OA-SH-001@subst.sh:4",
+      "OA-SH-001@subst.sh:5",
+      "OA-SH-001@opaque.sh:4",
+      "OA-SH-001@opaque.sh:6",
+      "OA-SH-001@install.sh:4"
+    ],
+    "expectedMessages": [
+      "dl (a local function that downloads: dl \u2192 curl) output is piped into bash",
+      "fetch (a local function that downloads: fetch \u2192 $DL=curl) output is piped into bash",
+      "fetch (a local function that downloads: fetch \u2192 get \u2192 wget) output is piped into bash",
+      "run (a local function whose body runs eval or a variable-named command and cannot be resolved statically) output is piped into bash",
+      "dl \u2192 curl (defined in lib.sh)"
+    ],
+    "forbiddenAt": [
+      "OA-SH-001@plain.sh:4",
+      "OA-SH-001@plain.sh:5"
+    ],
+    "minSeverityAt": {
+      "OA-SH-001@direct.sh:4": "critical",
+      "OA-SH-001@varcmd.sh:5": "critical",
+      "OA-SH-001@chain.sh:5": "critical",
+      "OA-SH-001@subst.sh:4": "critical",
+      "OA-SH-001@subst.sh:5": "critical",
+      "OA-SH-001@install.sh:4": "critical",
+      "OA-SH-001@opaque.sh:4": "critical",
+      "OA-SH-001@opaque.sh:6": "critical"
+    },
+    "confidenceAt": {
+      "OA-SH-001@direct.sh:4": "high",
+      "OA-SH-001@varcmd.sh:5": "high",
+      "OA-SH-001@chain.sh:5": "high",
+      "OA-SH-001@opaque.sh:4": "low",
+      "OA-SH-001@opaque.sh:6": "low"
+    },
+    "forbidden": [
+      "OA-SH-018"
+    ]
   }
 }

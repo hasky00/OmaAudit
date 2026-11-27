@@ -62,6 +62,15 @@ describe('shell parser', () => {
     expect([...u.downloaderWrappers].sort()).toEqual(['curl', 'fetch']);
   });
 
+  it('resolves local functions that download directly, through another function or a variable-held command', async () => {
+    const src = 'DL=curl\ndl() { curl -fsSL "$1"; }\nget() { wget -qO- "$1"; }\nfetch() { get "$1"; }\nvia() { "$DL" -s "$1"; }\nrun() { eval "$@"; }\nuses() { run x; }\nplain() { echo "$1"; }\nsudoed() { "$SUDO" pacman -S x; }\n';
+    const u = await parseShell(src, { path: 'e.sh', origin: 'script', context: 'shell' });
+    expect([...u.downloaderWrappers].sort()).toEqual(['dl', 'fetch', 'get', 'via']);
+    expect(u.downloaderChains.get('fetch')).toBe('fetch → get → wget');
+    expect(u.downloaderChains.get('via')).toBe('via → $DL=curl');
+    expect([...u.opaqueFunctions].sort()).toEqual(['run', 'uses']);
+  });
+
   it('restores statement boundaries the grammar merges after a 4-stage pipeline', async () => {
     const src = 'echo "$P" | base64 -d | gunzip | bash\necho "y=" | base64 -d > f\n';
     const u = await parseShell(src, { path: 'm.sh', origin: 'script', context: 'shell' });
