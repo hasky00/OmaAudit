@@ -1,0 +1,238 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "omaaudit",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-11-27T10:59:47.198Z",
+  "durationMs": 102,
+  "target": {
+    "kind": "local",
+    "name": "/home/claude/corpus2-tree/jkarmel.plugin-search"
+  },
+  "coverage": {
+    "filesListed": 22,
+    "filesInspected": 21,
+    "filesSkipped": [
+      {
+        "path": "preview.png",
+        "reason": "binary"
+      }
+    ],
+    "bytesInspected": 76198,
+    "truncated": false,
+    "fileTypes": {
+      "other-text": 3,
+      "python": 7,
+      "shell": 1,
+      "markdown": 3,
+      "omarchy-manifest": 1,
+      "qml": 4,
+      "javascript": 2,
+      "binary": 1
+    },
+    "unknown": [
+      "1 shell file(s) had parse errors; commands in those regions may be missed: install",
+      "9 Python/JavaScript file(s) are only scanned for secrets; use language-specific scanners for logic review",
+      "4 QML file(s): only process/file/network surfaces and embedded commands are analysed, not QML logic"
+    ],
+    "notes": [
+      "1 script(s) inside excluded or oversized locations were read because another script invokes them: install (by README.md)"
+    ],
+    "scanners": [
+      {
+        "name": "omaaudit-rules",
+        "version": "0.1.0",
+        "source": "builtin",
+        "status": "ran"
+      },
+      {
+        "name": "shellcheck",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "shellcheck not found on PATH (pacman -S shellcheck)"
+      },
+      {
+        "name": "osv-scanner",
+        "version": "n/a",
+        "source": "external",
+        "status": "skipped",
+        "note": "disabled (offline or by flag)"
+      }
+    ]
+  },
+  "dependencies": [],
+  "findings": [
+    {
+      "id": "302772f06b583c27",
+      "ruleId": "OA-SH-003",
+      "title": "Code is obtained from a mutable remote reference and built or installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "build-from-source",
+        "network-download"
+      ],
+      "message": "git clone of a mutable reference (found in documentation: this is what users are told to run)",
+      "location": {
+        "path": "README.md",
+        "startLine": 24,
+        "endLine": 24
+      },
+      "evidence": "git clone https://github.com/jkarmel/omarchy-plugin-search.git",
+      "remediation": "Pin to a full 40-character commit (git checkout <sha>, cargo --rev <sha>, go @<version>, pip @<sha>) or to a signed release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "392ed22cbcc9e45a",
+      "ruleId": "OA-SH-018",
+      "title": "Installer script does not enable strict error handling",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "medium",
+      "capabilities": [],
+      "message": "no set -e / set -u / pipefail in an installer-like script",
+      "location": {
+        "path": "install",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "#!/usr/bin/python3 -I",
+      "remediation": "Start installer scripts with set -euo pipefail and check variables before using them in paths.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "cf37199fe1486ade",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "Service.qml",
+        "startLine": 46,
+        "endLine": 46
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "31aafe498c0a7d3a",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "valid Omarchy plugin manifest 'jkarmel.plugin-search' (kinds: service, panel, keepLoaded). Plugins run as unsandboxed code inside omarchy-shell with the user's full file and process access.",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "id=jkarmel.plugin-search kinds=service,panel",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "aa8efa8825cdfc30",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin",
+        "persistence"
+      ],
+      "message": "headless service: runs for the whole session without a visible surface",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "kinds includes \"service\"",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "6134250a69662b26",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "Service.qml",
+        "startLine": 3,
+        "endLine": 3
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    }
+  ],
+  "summary": {
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 1,
+      "low": 2,
+      "info": 3
+    },
+    "capabilities": [
+      "build-from-source",
+      "network-download",
+      "omarchy-plugin",
+      "persistence"
+    ],
+    "verdict": "review-recommended",
+    "highestSeverity": "medium"
+  },
+  "disclaimer": "OmaAudit performs static inspection only. Findings are evidence of risk patterns, not proof of malice, and the absence of findings is not proof of safety. Review the source before you install."
+}

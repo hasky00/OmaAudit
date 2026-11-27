@@ -1,0 +1,536 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "omaaudit",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-11-27T10:59:44.407Z",
+  "durationMs": 283,
+  "target": {
+    "kind": "local",
+    "name": "/home/claude/corpus2-tree/io.github.kusumaindraputra.daily-deen"
+  },
+  "coverage": {
+    "filesListed": 22,
+    "filesInspected": 21,
+    "filesSkipped": [
+      {
+        "path": "preview.png",
+        "reason": "binary"
+      }
+    ],
+    "bytesInspected": 168306,
+    "truncated": false,
+    "fileTypes": {
+      "other-text": 4,
+      "qml": 3,
+      "shell": 5,
+      "javascript": 6,
+      "omarchy-manifest": 1,
+      "binary": 1,
+      "markdown": 1,
+      "python": 1
+    },
+    "unknown": [
+      "2 shell file(s) had parse errors; commands in those regions may be missed: tests/inputs.test.sh, bin/grades.jq",
+      "1 download command(s) build their URL from variables; the destination could not be determined statically",
+      "7 Python/JavaScript file(s) are only scanned for secrets; use language-specific scanners for logic review",
+      "3 QML file(s): only process/file/network surfaces and embedded commands are analysed, not QML logic"
+    ],
+    "notes": [
+      "3 statement boundaries were restored where the bash grammar merged lines: tests/grades.test.sh",
+      "1 script(s) inside excluded or oversized locations were read because another script invokes them: bin/grades.jq (by README.md)"
+    ],
+    "scanners": [
+      {
+        "name": "omaaudit-rules",
+        "version": "0.1.0",
+        "source": "builtin",
+        "status": "ran"
+      },
+      {
+        "name": "shellcheck",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "shellcheck not found on PATH (pacman -S shellcheck)"
+      },
+      {
+        "name": "osv-scanner",
+        "version": "n/a",
+        "source": "external",
+        "status": "skipped",
+        "note": "disabled (offline or by flag)"
+      }
+    ]
+  },
+  "dependencies": [],
+  "findings": [
+    {
+      "id": "6a277357d46b3028",
+      "ruleId": "OA-SH-001",
+      "title": "Remote content is executed by a shell or interpreter without inspection",
+      "kind": "heuristic",
+      "severity": "critical",
+      "confidence": "high",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "eval executes the output of a network download via command substitution",
+      "location": {
+        "path": "tests/inputs.test.sh",
+        "startLine": 88,
+        "endLine": 88
+      },
+      "evidence": "eval \"$(sed -n '/^bounded_get()/,/^}/p' bin/deen-fetch)\"",
+      "remediation": "Download the script to a file, verify a checksum or signature, read it, then run it. Pin the source to an exact release or commit.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      },
+      "references": [
+        "https://www.omarchy.org",
+        "https://github.com/omacom/omarchy-plugin-marketplace/blob/main/SECURITY.md"
+      ]
+    },
+    {
+      "id": "7bda82f04e724aed",
+      "ruleId": "OA-SH-001",
+      "title": "Remote content is executed by a shell or interpreter without inspection",
+      "kind": "heuristic",
+      "severity": "critical",
+      "confidence": "high",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "eval executes the output of a network download via command substitution",
+      "location": {
+        "path": "tests/inputs.test.sh",
+        "startLine": 147,
+        "endLine": 147
+      },
+      "evidence": "eval \"$(sed -n '/^bounded_get()/,/^}/p' bin/deen-fetch)\"",
+      "remediation": "Download the script to a file, verify a checksum or signature, read it, then run it. Pin the source to an exact release or commit.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      },
+      "references": [
+        "https://www.omarchy.org",
+        "https://github.com/omacom/omarchy-plugin-marketplace/blob/main/SECURITY.md"
+      ]
+    },
+    {
+      "id": "b8e640c7919743df",
+      "ruleId": "OA-SH-001",
+      "title": "Remote content is executed by a shell or interpreter without inspection",
+      "kind": "heuristic",
+      "severity": "critical",
+      "confidence": "high",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "eval executes the output of a network download via command substitution",
+      "location": {
+        "path": "tests/inputs.test.sh",
+        "startLine": 253,
+        "endLine": 253
+      },
+      "evidence": "eval \"$(sed -n '/^write_atomic()/,/^}/p' bin/deen-fetch)\"",
+      "remediation": "Download the script to a file, verify a checksum or signature, read it, then run it. Pin the source to an exact release or commit.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      },
+      "references": [
+        "https://www.omarchy.org",
+        "https://github.com/omacom/omarchy-plugin-marketplace/blob/main/SECURITY.md"
+      ]
+    },
+    {
+      "id": "ff05439630514062",
+      "ruleId": "OA-SH-001",
+      "title": "Remote content is executed by a shell or interpreter without inspection",
+      "kind": "heuristic",
+      "severity": "critical",
+      "confidence": "high",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "eval executes the output of a network download via command substitution",
+      "location": {
+        "path": "tests/inputs.test.sh",
+        "startLine": 285,
+        "endLine": 285
+      },
+      "evidence": "eval \"$(sed -n '/^bounded_get()/,/^}/p' bin/deen-fetch)\"",
+      "remediation": "Download the script to a file, verify a checksum or signature, read it, then run it. Pin the source to an exact release or commit.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      },
+      "references": [
+        "https://www.omarchy.org",
+        "https://github.com/omacom/omarchy-plugin-marketplace/blob/main/SECURITY.md"
+      ]
+    },
+    {
+      "id": "27d8861882248e7f",
+      "ruleId": "OA-SH-001",
+      "title": "Remote content is executed by a shell or interpreter without inspection",
+      "kind": "heuristic",
+      "severity": "critical",
+      "confidence": "high",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "eval executes the output of a network download via command substitution",
+      "location": {
+        "path": "tests/inputs.test.sh",
+        "startLine": 286,
+        "endLine": 286
+      },
+      "evidence": "eval \"$(sed -n '/^fetch()/,/^}/p' bin/deen-fetch)\"",
+      "remediation": "Download the script to a file, verify a checksum or signature, read it, then run it. Pin the source to an exact release or commit.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      },
+      "references": [
+        "https://www.omarchy.org",
+        "https://github.com/omacom/omarchy-plugin-marketplace/blob/main/SECURITY.md"
+      ]
+    },
+    {
+      "id": "9844e5de1c4894fb",
+      "ruleId": "OA-SH-011",
+      "title": "Obfuscated or dynamically constructed code is executed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "low",
+      "capabilities": [
+        "obfuscation",
+        "remote-code-execution"
+      ],
+      "message": "eval executes dynamically built code",
+      "location": {
+        "path": "tests/inputs.test.sh",
+        "startLine": 88,
+        "endLine": 88
+      },
+      "evidence": "eval \"$(sed -n '/^bounded_get()/,/^}/p' bin/deen-fetch)\"",
+      "remediation": "Replace encoded payloads with plain, reviewable source. Avoid eval; use arrays and functions instead.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "f3fd6a08f1206e29",
+      "ruleId": "OA-SH-011",
+      "title": "Obfuscated or dynamically constructed code is executed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "low",
+      "capabilities": [
+        "obfuscation",
+        "remote-code-execution"
+      ],
+      "message": "eval executes dynamically built code",
+      "location": {
+        "path": "tests/inputs.test.sh",
+        "startLine": 147,
+        "endLine": 147
+      },
+      "evidence": "eval \"$(sed -n '/^bounded_get()/,/^}/p' bin/deen-fetch)\"",
+      "remediation": "Replace encoded payloads with plain, reviewable source. Avoid eval; use arrays and functions instead.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "d1cbc1bb7f3aaf04",
+      "ruleId": "OA-SH-011",
+      "title": "Obfuscated or dynamically constructed code is executed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "low",
+      "capabilities": [
+        "obfuscation",
+        "remote-code-execution"
+      ],
+      "message": "eval executes dynamically built code",
+      "location": {
+        "path": "tests/inputs.test.sh",
+        "startLine": 253,
+        "endLine": 253
+      },
+      "evidence": "eval \"$(sed -n '/^write_atomic()/,/^}/p' bin/deen-fetch)\"",
+      "remediation": "Replace encoded payloads with plain, reviewable source. Avoid eval; use arrays and functions instead.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "14a4e9875e440d38",
+      "ruleId": "OA-SH-011",
+      "title": "Obfuscated or dynamically constructed code is executed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "low",
+      "capabilities": [
+        "obfuscation",
+        "remote-code-execution"
+      ],
+      "message": "eval executes dynamically built code",
+      "location": {
+        "path": "tests/inputs.test.sh",
+        "startLine": 285,
+        "endLine": 285
+      },
+      "evidence": "eval \"$(sed -n '/^bounded_get()/,/^}/p' bin/deen-fetch)\"",
+      "remediation": "Replace encoded payloads with plain, reviewable source. Avoid eval; use arrays and functions instead.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "33fc013533e2d2b3",
+      "ruleId": "OA-SH-011",
+      "title": "Obfuscated or dynamically constructed code is executed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "low",
+      "capabilities": [
+        "obfuscation",
+        "remote-code-execution"
+      ],
+      "message": "eval executes dynamically built code",
+      "location": {
+        "path": "tests/inputs.test.sh",
+        "startLine": 286,
+        "endLine": 286
+      },
+      "evidence": "eval \"$(sed -n '/^fetch()/,/^}/p' bin/deen-fetch)\"",
+      "remediation": "Replace encoded payloads with plain, reviewable source. Avoid eval; use arrays and functions instead.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "99aa90c0171e7104",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "Service.qml",
+        "startLine": 144,
+        "endLine": 144
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "0f011cf4d362a159",
+      "ruleId": "OA-SH-017",
+      "title": "Artifacts are downloaded without any checksum or signature check in the script",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "low",
+      "capabilities": [
+        "network-download"
+      ],
+      "message": "1 download with no verification step anywhere in the script",
+      "location": {
+        "path": "tests/inputs.test.sh",
+        "startLine": 289,
+        "endLine": 290
+      },
+      "evidence": "fetch \"http://127.0.0.1:$(cat \"$PORT3\")/x.json\" \"$KEEP\" 1 100000 \\\n        '(.quran | type) == \"array\" and (.quran | length) > 0'",
+      "remediation": "Publish checksums with each release and verify them in the installer.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "cba9ebb66417da68",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "BarWidget.qml",
+        "startLine": 3,
+        "endLine": 3
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "4c0f9242edc73046",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "valid Omarchy plugin manifest 'io.github.kusumaindraputra.daily-deen' (kinds: service, bar-widget). Plugins run as unsandboxed code inside omarchy-shell with the user's full file and process access.",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "id=io.github.kusumaindraputra.daily-deen kinds=service,bar-widget",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "aa8efa8825cdfc30",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin",
+        "persistence"
+      ],
+      "message": "headless service: runs for the whole session without a visible surface",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "kinds includes \"service\"",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "6134250a69662b26",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "Service.qml",
+        "startLine": 3,
+        "endLine": 3
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "d4e7fe573a943df9",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses FileView",
+      "location": {
+        "path": "Service.qml",
+        "startLine": 189,
+        "endLine": 189
+      },
+      "evidence": "FileView {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    }
+  ],
+  "summary": {
+    "counts": {
+      "critical": 5,
+      "high": 0,
+      "medium": 5,
+      "low": 2,
+      "info": 5
+    },
+    "capabilities": [
+      "network-download",
+      "obfuscation",
+      "omarchy-plugin",
+      "persistence",
+      "remote-code-execution"
+    ],
+    "verdict": "high-risk-indicators",
+    "highestSeverity": "critical"
+  },
+  "disclaimer": "OmaAudit performs static inspection only. Findings are evidence of risk patterns, not proof of malice, and the absence of findings is not proof of safety. Review the source before you install."
+}

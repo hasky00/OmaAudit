@@ -1,0 +1,218 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "omaaudit",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-11-27T10:59:45.053Z",
+  "durationMs": 107,
+  "target": {
+    "kind": "local",
+    "name": "/home/claude/corpus2-tree/io.github.macd2.agent-pulse"
+  },
+  "coverage": {
+    "filesListed": 23,
+    "filesInspected": 12,
+    "filesSkipped": [
+      {
+        "path": "preview.png",
+        "reason": "binary"
+      },
+      {
+        "path": "scripts/preview/bar.png",
+        "reason": "binary"
+      },
+      {
+        "path": "scripts/preview/logos/claudecode-color.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "scripts/preview/logos/codex-color.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "scripts/preview/logos/cursor.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "scripts/preview/logos/geminicli-color.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "scripts/preview/logos/githubcopilot.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "scripts/preview/logos/hermesagent.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "scripts/preview/logos/kimi-color.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "scripts/preview/logos/opencode.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "scripts/preview/logos/qwen-color.svg",
+        "reason": "binary"
+      }
+    ],
+    "bytesInspected": 51688,
+    "truncated": false,
+    "fileTypes": {
+      "other-text": 4,
+      "qml": 1,
+      "omarchy-manifest": 1,
+      "binary": 11,
+      "markdown": 2,
+      "shell": 3,
+      "javascript": 1
+    },
+    "unknown": [
+      "1 Python/JavaScript file(s) are only scanned for secrets; use language-specific scanners for logic review",
+      "1 QML file(s): only process/file/network surfaces and embedded commands are analysed, not QML logic"
+    ],
+    "scanners": [
+      {
+        "name": "omaaudit-rules",
+        "version": "0.1.0",
+        "source": "builtin",
+        "status": "ran"
+      },
+      {
+        "name": "shellcheck",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "shellcheck not found on PATH (pacman -S shellcheck)"
+      },
+      {
+        "name": "osv-scanner",
+        "version": "n/a",
+        "source": "external",
+        "status": "skipped",
+        "note": "disabled (offline or by flag)"
+      }
+    ]
+  },
+  "dependencies": [],
+  "findings": [
+    {
+      "id": "31801bdc4ebaac2e",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "AgentPulse.qml",
+        "startLine": 118,
+        "endLine": 118
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "c156358ae5590664",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "AgentPulse.qml",
+        "startLine": 21,
+        "endLine": 21
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "beb5a01147ab7890",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses FileView",
+      "location": {
+        "path": "AgentPulse.qml",
+        "startLine": 91,
+        "endLine": 91
+      },
+      "evidence": "FileView {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "dfdbb346256159c8",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "valid Omarchy plugin manifest 'io.github.macd2.agent-pulse' (kinds: bar-widget). Plugins run as unsandboxed code inside omarchy-shell with the user's full file and process access.",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "id=io.github.macd2.agent-pulse kinds=bar-widget",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    }
+  ],
+  "summary": {
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 1,
+      "info": 3
+    },
+    "capabilities": [
+      "omarchy-plugin"
+    ],
+    "verdict": "minor-notes",
+    "highestSeverity": "low"
+  },
+  "disclaimer": "OmaAudit performs static inspection only. Findings are evidence of risk patterns, not proof of malice, and the absence of findings is not proof of safety. Review the source before you install."
+}

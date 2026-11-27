@@ -1,0 +1,1176 @@
+{
+ "schema": "omaaudit-corpus-labels/1",
+ "round": 2,
+ "labeledAt": "2026-11-27",
+ "toolCommit": "625a671",
+ "labeler": "AI reviewer (Claude), a session separate from the one that wrote the rules. Not yet spot-checked by the maintainer.",
+ "method": "20 marketplace repositories that were not in round 1 and that the rules had never been run on. Each was fetched at its pinned commit and read, never executed. Every finding location was checked against the source line, then judged by rule. Labels as in round 1: correct, correct-nonruntime, incorrect, not-reviewed.",
+ "limits": "One reviewer, one pass. \"missed\" comes from reading installers and grepping for common patterns, not an exhaustive search, so no recall figure can be derived. 20 repositories is a small sample: 136 findings, of which only 21 are medium or above.",
+ "totals": {
+  "correct": 122,
+  "incorrect": 9,
+  "correct-nonruntime": 5
+ },
+ "reviewed": 136,
+ "precision": {
+  "all_findings_strict": 0.897,
+  "all_findings_including_nonruntime": 0.934,
+  "medium_and_above": {
+   "total": 21,
+   "correct": 9,
+   "incorrect": 7,
+   "correct-nonruntime": 5
+  },
+  "critical": {
+   "incorrect": 5
+  }
+ },
+ "bySeverity": {
+  "medium": {
+   "correct": 9,
+   "incorrect": 2,
+   "correct-nonruntime": 5
+  },
+  "low": {
+   "correct": 34,
+   "incorrect": 2
+  },
+  "info": {
+   "correct": 79
+  },
+  "critical": {
+   "incorrect": 5
+  }
+ },
+ "byRule": {
+  "OA-OMA-001": {
+   "correct": 28
+  },
+  "OA-OMA-002": {
+   "correct": 78
+  },
+  "OA-SEC-001": {
+   "incorrect": 2
+  },
+  "OA-SH-001": {
+   "incorrect": 5
+  },
+  "OA-SH-003": {
+   "correct": 6
+  },
+  "OA-SH-007": {
+   "correct": 6
+  },
+  "OA-SH-009": {
+   "correct": 2
+  },
+  "OA-SH-011": {
+   "correct-nonruntime": 5
+  },
+  "OA-SH-017": {
+   "incorrect": 1
+  },
+  "OA-SH-018": {
+   "incorrect": 1
+  },
+  "OA-SYSD-001": {
+   "correct": 2
+  }
+ },
+ "missed": [
+  {
+   "plugin": "io.github.5d0tal1gat0r.agent-watcher",
+   "location": "bin/agent-watcher-setup",
+   "what": "Installs command hooks into ~/.claude/settings.json, ~/.codex/hooks.json and ~/.gemini/settings.json and a plugin into ~/.config/opencode/plugins, so the plugin's script runs on every AI coding agent session start, prompt, tool use and stop. This is persistence in other tools' configuration. No finding was produced; verdict was \"minor-notes\". OmaAudit has no rule for AI-agent hook or plugin directories."
+  },
+  {
+   "plugin": "azterisk.idle",
+   "location": "install.sh:36-70",
+   "what": "An embedded Python heredoc rewrites ~/.config/omarchy/shell.json: registers the plugin, adds it to the bar and adds the built-in omarchy.idle plugin to disabledPlugins. Disabling a built-in component is worth telling the user; Python inside a heredoc is not analysed."
+  },
+  {
+   "plugin": "disaster-alert",
+   "location": "Panel.qml:376,410,435,468",
+   "what": "QML Process commands run curl against ipwho.is (IP geolocation), nominatim.openstreetmap.org and gdacs.org. The report says only \"uses Process\"; the external hosts the plugin contacts are not surfaced."
+  },
+  {
+   "plugin": "jkarmel.plugin-search",
+   "location": "install",
+   "what": "The installer is an extensionless Python script. It was treated as a shell installer (OA-SH-018 fired) and its actual behaviour is not analysed."
+  }
+ ],
+ "plugins": {
+  "azterisk.idle": {
+   "repository": "https://github.com/Azteriisk/omarchy-idle-manager",
+   "commit": "e1e25fafade98a5530303ebedcfefb3f9c5d3c2c",
+   "findings": {
+    "b2596f88f006a482": {
+     "ruleId": "OA-SH-003",
+     "severity": "medium",
+     "location": "README.md:40",
+     "label": "correct",
+     "note": ""
+    },
+    "1492b8d4e1ef5b19": {
+     "ruleId": "OA-SH-003",
+     "severity": "medium",
+     "location": "README.md:61",
+     "label": "correct",
+     "note": ""
+    },
+    "a6693f5b5977730f": {
+     "ruleId": "OA-SH-009",
+     "severity": "low",
+     "location": "README.md:48",
+     "label": "correct",
+     "note": ""
+    },
+    "50fe80fd4cf90d0e": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Service.qml:78",
+     "label": "correct",
+     "note": ""
+    },
+    "cba9ebb66417da68": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "BarWidget.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "ef72192195a9816f": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "BarWidget.qml:21",
+     "label": "correct",
+     "note": ""
+    },
+    "8ae4a119e69f9f96": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "aa8efa8825cdfc30": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "b7e1b056c1232ae4": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Service.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "1a31a0842ef1d0df": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Service.qml:405",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "bisma.omaga-sync": {
+   "repository": "https://github.com/bismawy/omaga-sync",
+   "commit": "2b4c3cf1c04b99658e7955a128730dd5e6a39acd",
+   "findings": {
+    "d6977a99d79c4d3f": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "install.sh:48",
+     "label": "correct",
+     "note": ""
+    },
+    "62f7a15eb528594a": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "install.sh:49",
+     "label": "correct",
+     "note": ""
+    },
+    "60cb1409ae933b71": {
+     "ruleId": "OA-SH-003",
+     "severity": "medium",
+     "location": "README_ID.md:78",
+     "label": "correct",
+     "note": ""
+    },
+    "fd45e7e0838f9162": {
+     "ruleId": "OA-SH-003",
+     "severity": "medium",
+     "location": "README.md:78",
+     "label": "correct",
+     "note": ""
+    },
+    "9f8992a480009a7a": {
+     "ruleId": "OA-SH-007",
+     "severity": "low",
+     "location": "install.sh:67",
+     "label": "correct",
+     "note": ""
+    },
+    "24dedd04f58b7026": {
+     "ruleId": "OA-SH-007",
+     "severity": "low",
+     "location": "install.sh:68",
+     "label": "correct",
+     "note": ""
+    },
+    "7291c921cb726040": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Panel.qml:378",
+     "label": "correct",
+     "note": ""
+    },
+    "ad6eec75704aa89f": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "a3053b8fcf82b5a3": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "MaterialIcon.qml:2",
+     "label": "correct",
+     "note": ""
+    },
+    "ed955941eb90d640": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "MaterialIcon.qml:38",
+     "label": "correct",
+     "note": ""
+    },
+    "97b2db0f8e398e61": {
+     "ruleId": "OA-SYSD-001",
+     "severity": "info",
+     "location": "omaga-sync-engine.service:1",
+     "label": "correct",
+     "note": ""
+    },
+    "c670191483f2356e": {
+     "ruleId": "OA-SYSD-001",
+     "severity": "info",
+     "location": "omaga-sync-monitor.service:1",
+     "label": "correct",
+     "note": ""
+    },
+    "5a3c0d68288bf934": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:5",
+     "label": "correct",
+     "note": ""
+    },
+    "15a1c3b3818f9ee2": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:366",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "digitalbase.openrouter-plus-improved": {
+   "repository": "https://github.com/digitalbase/omarchy-openrouter-plus-improved",
+   "commit": "473ae6f73debc13fb0d505b6437278ecb6ec08c7",
+   "findings": {
+    "782fba2e75bd2de6": {
+     "ruleId": "OA-SEC-001",
+     "severity": "medium",
+     "location": "examples/config/omarchy/agents/openrouter.json:2",
+     "label": "incorrect",
+     "note": "placeholder text (sk-or-v1-REPLACE_WITH_YOUR_MANAGEMENT_KEY), not a credential"
+    },
+    "6f85cc566b6f4c1b": {
+     "ruleId": "OA-SEC-001",
+     "severity": "medium",
+     "location": "README.md:23",
+     "label": "incorrect",
+     "note": "placeholder text (sk-or-v1-REPLACE_WITH_YOUR_MANAGEMENT_KEY), not a credential"
+    },
+    "586b164760fd06d5": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Main.qml:43",
+     "label": "correct",
+     "note": ""
+    },
+    "9a4a79d56df5e8e6": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Main.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "0130d7c697342a47": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "35f264029fb5e357": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:6",
+     "label": "correct",
+     "note": ""
+    },
+    "f1c188323b77048b": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:58",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "disaster-alert": {
+   "repository": "https://github.com/a-gracia/disaster-alert",
+   "commit": "7f0d67d183dedb8a99dd57c5168935f01088a7d6",
+   "findings": {
+    "8f73eb7d8faa84cb": {
+     "ruleId": "OA-SH-003",
+     "severity": "medium",
+     "location": "README.md:37",
+     "label": "correct",
+     "note": ""
+    },
+    "e4be6a5cfae81c22": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Panel.qml:433",
+     "label": "correct",
+     "note": ""
+    },
+    "b203a76612efae44": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "eb3a2767412ebe50": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:4",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "io.github.5d0tal1gat0r.agent-watcher": {
+   "repository": "https://github.com/5d0tal1gat0r/omarchy-agent-watcher",
+   "commit": "976a715823c029822e2aaa7aa7b698c92e9af049",
+   "findings": {
+    "1c777680801bed09": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "BarWidget.qml:173",
+     "label": "correct",
+     "note": ""
+    },
+    "41a77cdb91cbab46": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Panel.qml:186",
+     "label": "correct",
+     "note": ""
+    },
+    "cba9ebb66417da68": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "BarWidget.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "b1a28e1d364eb1e7": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "BarWidget.qml:196",
+     "label": "correct",
+     "note": ""
+    },
+    "f022c5e9df457114": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "129b25ba53e24222": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:3",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "io.github.adham2023.screen-layout": {
+   "repository": "https://github.com/Adham2023/omarchy-screen-layout",
+   "commit": "43dfa82584fc10752e847a937a7143702f9686f8",
+   "findings": {
+    "257c1859b277d4df": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Panel.qml:160",
+     "label": "correct",
+     "note": ""
+    },
+    "33ef7719479bb6e1": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "eb3a2767412ebe50": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "16d030650fe2861f": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:213",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "io.github.e1i3or-commits.scrim": {
+   "repository": "https://github.com/e1i3or-commits/scrim",
+   "commit": "b4bd6baf1d8a2213e7b6520d0b9c3e81a0e622de",
+   "findings": {
+    "9aa0b819044add52": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Service.qml:187",
+     "label": "correct",
+     "note": ""
+    },
+    "a58b5e1652c84a80": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "aa8efa8825cdfc30": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "b7e1b056c1232ae4": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Service.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "b0caf59c33a4ecfe": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Service.qml:178",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "io.github.ef-code.omarchy-flow": {
+   "repository": "https://github.com/EF-Code/omarchy-flow",
+   "commit": "583bacf68ae8b3a174f1d3eb9befefc82a5c8b3e",
+   "findings": {
+    "99d56dbaa71d6de1": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "BarWidget.qml:93",
+     "label": "correct",
+     "note": ""
+    },
+    "0c5469b58eba9787": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "FlowModelCatalog.qml:49",
+     "label": "correct",
+     "note": ""
+    },
+    "eed23d0cbf3a4324": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "FlowModelState.qml:74",
+     "label": "correct",
+     "note": ""
+    },
+    "aba8afbc99bdc90c": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Pill.qml:46",
+     "label": "correct",
+     "note": ""
+    },
+    "c2f4c85237f79e5c": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Service.qml:33",
+     "label": "correct",
+     "note": ""
+    },
+    "035d7145b0fa2142": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "SettingsView.qml:236",
+     "label": "correct",
+     "note": ""
+    },
+    "cba9ebb66417da68": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "BarWidget.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "df0105080027356d": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "FlowModelCatalog.qml:2",
+     "label": "correct",
+     "note": ""
+    },
+    "14088ec40b6da066": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "FlowModelState.qml:2",
+     "label": "correct",
+     "note": ""
+    },
+    "db9404e35b842913": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "aa8efa8825cdfc30": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "94f8402c8db7eaa2": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Pill.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "6134250a69662b26": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Service.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "05e374eae6edbb11": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "SettingsView.qml:2",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "io.github.kusumaindraputra.daily-deen": {
+   "repository": "https://github.com/kusumaindraputra/omarchy-daily-deen",
+   "commit": "c2c83ec74017e6b9ed3225a06e4a15c10669ccb3",
+   "findings": {
+    "6a277357d46b3028": {
+     "ruleId": "OA-SH-001",
+     "severity": "critical",
+     "location": "tests/inputs.test.sh:88",
+     "label": "incorrect",
+     "note": "eval \"$(sed -n ... bin/deen-fetch)\" reads a function out of a local file; there is no network download on this line. sed is being treated as a downloader"
+    },
+    "7bda82f04e724aed": {
+     "ruleId": "OA-SH-001",
+     "severity": "critical",
+     "location": "tests/inputs.test.sh:147",
+     "label": "incorrect",
+     "note": "eval \"$(sed -n ... bin/deen-fetch)\" reads a function out of a local file; there is no network download on this line. sed is being treated as a downloader"
+    },
+    "b8e640c7919743df": {
+     "ruleId": "OA-SH-001",
+     "severity": "critical",
+     "location": "tests/inputs.test.sh:253",
+     "label": "incorrect",
+     "note": "eval \"$(sed -n ... bin/deen-fetch)\" reads a function out of a local file; there is no network download on this line. sed is being treated as a downloader"
+    },
+    "ff05439630514062": {
+     "ruleId": "OA-SH-001",
+     "severity": "critical",
+     "location": "tests/inputs.test.sh:285",
+     "label": "incorrect",
+     "note": "eval \"$(sed -n ... bin/deen-fetch)\" reads a function out of a local file; there is no network download on this line. sed is being treated as a downloader"
+    },
+    "27d8861882248e7f": {
+     "ruleId": "OA-SH-001",
+     "severity": "critical",
+     "location": "tests/inputs.test.sh:286",
+     "label": "incorrect",
+     "note": "eval \"$(sed -n ... bin/deen-fetch)\" reads a function out of a local file; there is no network download on this line. sed is being treated as a downloader"
+    },
+    "9844e5de1c4894fb": {
+     "ruleId": "OA-SH-011",
+     "severity": "medium",
+     "location": "tests/inputs.test.sh:88",
+     "label": "correct-nonruntime",
+     "note": "eval of dynamically built code is real, but this is a developer test script (README lists it under running the tests)"
+    },
+    "f3fd6a08f1206e29": {
+     "ruleId": "OA-SH-011",
+     "severity": "medium",
+     "location": "tests/inputs.test.sh:147",
+     "label": "correct-nonruntime",
+     "note": "eval of dynamically built code is real, but this is a developer test script (README lists it under running the tests)"
+    },
+    "d1cbc1bb7f3aaf04": {
+     "ruleId": "OA-SH-011",
+     "severity": "medium",
+     "location": "tests/inputs.test.sh:253",
+     "label": "correct-nonruntime",
+     "note": "eval of dynamically built code is real, but this is a developer test script (README lists it under running the tests)"
+    },
+    "14a4e9875e440d38": {
+     "ruleId": "OA-SH-011",
+     "severity": "medium",
+     "location": "tests/inputs.test.sh:285",
+     "label": "correct-nonruntime",
+     "note": "eval of dynamically built code is real, but this is a developer test script (README lists it under running the tests)"
+    },
+    "33fc013533e2d2b3": {
+     "ruleId": "OA-SH-011",
+     "severity": "medium",
+     "location": "tests/inputs.test.sh:286",
+     "label": "correct-nonruntime",
+     "note": "eval of dynamically built code is real, but this is a developer test script (README lists it under running the tests)"
+    },
+    "99aa90c0171e7104": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Service.qml:144",
+     "label": "correct",
+     "note": ""
+    },
+    "0f011cf4d362a159": {
+     "ruleId": "OA-SH-017",
+     "severity": "low",
+     "location": "tests/inputs.test.sh:289",
+     "label": "incorrect",
+     "note": "`fetch` here is a shell function under test, pointed at a 127.0.0.1 test server"
+    },
+    "cba9ebb66417da68": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "BarWidget.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "4c0f9242edc73046": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "aa8efa8825cdfc30": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "6134250a69662b26": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Service.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "d4e7fe573a943df9": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Service.qml:189",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "io.github.macd2.agent-pulse": {
+   "repository": "https://github.com/macd2/OmarchyAgentOrbStatus",
+   "commit": "da83908d9479fae95e8a22c53a960cbb959debb1",
+   "findings": {
+    "31801bdc4ebaac2e": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "AgentPulse.qml:118",
+     "label": "correct",
+     "note": ""
+    },
+    "c156358ae5590664": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "AgentPulse.qml:21",
+     "label": "correct",
+     "note": ""
+    },
+    "beb5a01147ab7890": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "AgentPulse.qml:91",
+     "label": "correct",
+     "note": ""
+    },
+    "dfdbb346256159c8": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    }
+   }
+  },
+  "io.github.salimhabeshawi.wakatime": {
+   "repository": "https://github.com/salimhabeshawi/wakatime-omarchy-plugin",
+   "commit": "fc491b9bb5dfaf253ab9d7d9a8b6b8c64a80710b",
+   "findings": {
+    "78c9e3ebacaa12ec": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "WakaService.qml:64",
+     "label": "correct",
+     "note": ""
+    },
+    "40a0c908d2bb1435": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "aa8efa8825cdfc30": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "e9e37f48c9ad7f36": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "WakaService.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "b01f1d3c03d43e52": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "WakaService.qml:23",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "io.github.second-state.omarchy-remote": {
+   "repository": "https://github.com/second-state/omarchy-remote-plugin",
+   "commit": "3d84968f38dfd840c2cae1a1f90fa7ea237528e9",
+   "findings": {
+    "6ec6644ae8d1121c": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Panel.qml:96",
+     "label": "correct",
+     "note": ""
+    },
+    "060b3be4c60ef00c": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "5a3c0d68288bf934": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:5",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "jkarmel.plugin-search": {
+   "repository": "https://github.com/jkarmel/omarchy-plugin-search",
+   "commit": "f80412efa48f62bfdf7f385da408c79559b71fdd",
+   "findings": {
+    "302772f06b583c27": {
+     "ruleId": "OA-SH-003",
+     "severity": "medium",
+     "location": "README.md:24",
+     "label": "correct",
+     "note": ""
+    },
+    "392ed22cbcc9e45a": {
+     "ruleId": "OA-SH-018",
+     "severity": "low",
+     "location": "install:1",
+     "label": "incorrect",
+     "note": "file is a Python script (#!/usr/bin/python3); shell strict-mode rule does not apply"
+    },
+    "cf37199fe1486ade": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Service.qml:46",
+     "label": "correct",
+     "note": ""
+    },
+    "31aafe498c0a7d3a": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "aa8efa8825cdfc30": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "6134250a69662b26": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Service.qml:3",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "jmaeder.frenchdict-cnrtl": {
+   "repository": "https://github.com/jmaeder/omarchy-frenchdict-cnrtl",
+   "commit": "0f49b120f2838a35b1a8e67bc8a0c089bfda82e4",
+   "findings": {
+    "15130b5881c56ffd": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Panel.qml:278",
+     "label": "correct",
+     "note": ""
+    },
+    "c1bf31db95c214e2": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "eb3a2767412ebe50": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "3617d32d24634a7b": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:730",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "msegoviadev.walkingpad": {
+   "repository": "https://github.com/msegoviadev/omarchy-walkingpad",
+   "commit": "ea784eadf663071dc151c015f072e5c41645a44c",
+   "findings": {
+    "ca091c2e754377c5": {
+     "ruleId": "OA-SH-007",
+     "severity": "medium",
+     "location": "backend/install.sh:23",
+     "label": "correct",
+     "note": ""
+    },
+    "46ddbc4e54940c8b": {
+     "ruleId": "OA-SH-007",
+     "severity": "low",
+     "location": "backend/install.sh:38",
+     "label": "correct",
+     "note": ""
+    },
+    "3ca52b1e90289b20": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Panel.qml:142",
+     "label": "correct",
+     "note": ""
+    },
+    "4ef9b8246a208412": {
+     "ruleId": "OA-SH-009",
+     "severity": "info",
+     "location": "backend/install.sh:20",
+     "label": "correct",
+     "note": ""
+    },
+    "126df8ac44bcc73c": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "eb3a2767412ebe50": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Panel.qml:4",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "n0d3x.input-language": {
+   "repository": "https://github.com/n0d3xt-max/n0d3x.input-language",
+   "commit": "075bd085e96699c2fa4bc9509caba4b9ae3a6a1a",
+   "findings": {
+    "44f3988e43c4112b": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "BarWidget.qml:240",
+     "label": "correct",
+     "note": ""
+    },
+    "07426c545966be3e": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "BarWidget.qml:4",
+     "label": "correct",
+     "note": ""
+    },
+    "5243a970a9641811": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "BarWidget.qml:247",
+     "label": "correct",
+     "note": ""
+    },
+    "025856149fcdd283": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    }
+   }
+  },
+  "raavail.islands-bar": {
+   "repository": "https://github.com/raavail-lasso/Omarchy-Islands-Bar",
+   "commit": "6d9539578e1607327c3e9a640800c8cd9332effe",
+   "findings": {
+    "dbfe2562938e1894": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Bar.qml:920",
+     "label": "correct",
+     "note": ""
+    },
+    "dacd33fb96062c9b": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "indicators/Dictation.qml:41",
+     "label": "correct",
+     "note": ""
+    },
+    "92c20b22b51527e4": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "indicators/Reminder.qml:58",
+     "label": "correct",
+     "note": ""
+    },
+    "6dac56f3fead8351": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "indicators/ScreenRecording.qml:31",
+     "label": "correct",
+     "note": ""
+    },
+    "f301832741464860": {
+     "ruleId": "OA-OMA-001",
+     "severity": "low",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "9911aeb791938933": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Bar.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "130eb804ec52b6a9": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Bar.qml:960",
+     "label": "correct",
+     "note": ""
+    },
+    "6e26d5251e00daca": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "indicators/Dictation.qml:2",
+     "label": "correct",
+     "note": ""
+    },
+    "cab1e68623e1e004": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "indicators/Reminder.qml:3",
+     "label": "correct",
+     "note": ""
+    },
+    "143ef903c98c9afc": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "indicators/ScreenRecording.qml:2",
+     "label": "correct",
+     "note": ""
+    },
+    "10df3777bf9025e5": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "219dc09a3afd3576": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "widgets/IslandIndicators.qml:3",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "remote-nvidia": {
+   "repository": "https://github.com/tonydelligatti-boop/omarchy-remote-nvidia",
+   "commit": "c5a644bda90ec272e9023be0ab434581ffc1577e",
+   "findings": {
+    "0ca5e9ee43e4d097": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "Probe.qml:167",
+     "label": "correct",
+     "note": ""
+    },
+    "0af9933fb5cde850": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "77bc3e6fae9dd1a4": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Probe.qml:3",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  },
+  "tonibergholm.ruuvi": {
+   "repository": "https://github.com/tonibergholm/RuuviOmarchy",
+   "commit": "31429236be10e5c9cf2278ab6da3d9545f5050da",
+   "findings": {
+    "16aaff75d7975b85": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "BarWidget.qml:40",
+     "label": "correct",
+     "note": ""
+    },
+    "49cb426b2f868ee5": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "BarWidget.qml:5",
+     "label": "correct",
+     "note": ""
+    },
+    "543c418c58acc3b7": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    }
+   }
+  },
+  "turntable": {
+   "repository": "https://github.com/techmandan/turntable",
+   "commit": "2ff172eb331ceab8cd4bf955dc6ed3151edc8143",
+   "findings": {
+    "b00a03d9d8e469b6": {
+     "ruleId": "OA-OMA-002",
+     "severity": "low",
+     "location": "BarWidget.qml:298",
+     "label": "correct",
+     "note": ""
+    },
+    "49cb426b2f868ee5": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "BarWidget.qml:5",
+     "label": "correct",
+     "note": ""
+    },
+    "acb54366b31fd684": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "aa8efa8825cdfc30": {
+     "ruleId": "OA-OMA-001",
+     "severity": "info",
+     "location": "manifest.json:1",
+     "label": "correct",
+     "note": "matches manifest.json; validity against Omarchy's own validator not independently checked"
+    },
+    "6134250a69662b26": {
+     "ruleId": "OA-OMA-002",
+     "severity": "info",
+     "location": "Service.qml:3",
+     "label": "correct",
+     "note": ""
+    }
+   }
+  }
+ }
+}

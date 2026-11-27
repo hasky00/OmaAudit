@@ -1,0 +1,349 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "omaaudit",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-11-27T10:59:38.055Z",
+  "durationMs": 129,
+  "target": {
+    "kind": "local",
+    "name": "/home/claude/corpus2-tree/azterisk.idle"
+  },
+  "coverage": {
+    "filesListed": 11,
+    "filesInspected": 11,
+    "filesSkipped": [],
+    "bytesInspected": 42024,
+    "truncated": false,
+    "fileTypes": {
+      "other-text": 3,
+      "qml": 2,
+      "javascript": 1,
+      "shell": 2,
+      "omarchy-manifest": 1,
+      "pkgbuild": 1,
+      "markdown": 1
+    },
+    "unknown": [
+      "1 Python/JavaScript file(s) are only scanned for secrets; use language-specific scanners for logic review",
+      "2 QML file(s): only process/file/network surfaces and embedded commands are analysed, not QML logic"
+    ],
+    "scanners": [
+      {
+        "name": "omaaudit-rules",
+        "version": "0.1.0",
+        "source": "builtin",
+        "status": "ran"
+      },
+      {
+        "name": "shellcheck",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "shellcheck not found on PATH (pacman -S shellcheck)"
+      },
+      {
+        "name": "osv-scanner",
+        "version": "n/a",
+        "source": "external",
+        "status": "skipped",
+        "note": "disabled (offline or by flag)"
+      }
+    ]
+  },
+  "dependencies": [
+    {
+      "ecosystem": "pacman:depends",
+      "name": "hyprland",
+      "manifest": "PKGBUILD",
+      "pinned": false
+    },
+    {
+      "ecosystem": "pacman:depends",
+      "name": "quickshell",
+      "manifest": "PKGBUILD",
+      "pinned": false
+    },
+    {
+      "ecosystem": "pacman:makedepends",
+      "name": "git",
+      "manifest": "PKGBUILD",
+      "pinned": false
+    }
+  ],
+  "findings": [
+    {
+      "id": "b2596f88f006a482",
+      "ruleId": "OA-SH-003",
+      "title": "Code is obtained from a mutable remote reference and built or installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "build-from-source",
+        "network-download"
+      ],
+      "message": "git clone of a mutable reference (found in documentation: this is what users are told to run)",
+      "location": {
+        "path": "README.md",
+        "startLine": 40,
+        "endLine": 40
+      },
+      "evidence": "git clone https://github.com/Azteriisk/omarchy-idle-manager.git",
+      "remediation": "Pin to a full 40-character commit (git checkout <sha>, cargo --rev <sha>, go @<version>, pip @<sha>) or to a signed release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "1492b8d4e1ef5b19",
+      "ruleId": "OA-SH-003",
+      "title": "Code is obtained from a mutable remote reference and built or installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "build-from-source",
+        "network-download"
+      ],
+      "message": "git clone of a mutable reference (found in documentation: this is what users are told to run)",
+      "location": {
+        "path": "README.md",
+        "startLine": 61,
+        "endLine": 61
+      },
+      "evidence": "git clone https://github.com/Azteriisk/omarchy-idle-manager.git ~/.config/omarchy/plugins/azterisk.idle",
+      "remediation": "Pin to a full 40-character commit (git checkout <sha>, cargo --rev <sha>, go @<version>, pip @<sha>) or to a signed release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "a6693f5b5977730f",
+      "ruleId": "OA-SH-009",
+      "title": "Packages are installed",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "package-management",
+        "aur-install"
+      ],
+      "message": "yay installs from the AUR: omarchy-plugin-idle-manager-git (found in documentation: this is what users are told to run)",
+      "location": {
+        "path": "README.md",
+        "startLine": 48,
+        "endLine": 48
+      },
+      "evidence": "yay -S omarchy-plugin-idle-manager-git",
+      "remediation": "Prefer official repositories or the Omarchy package repo. For AUR packages, read the PKGBUILD. Avoid pacman -U from URLs.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "50fe80fd4cf90d0e",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "Service.qml",
+        "startLine": 78,
+        "endLine": 78
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "cba9ebb66417da68",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "BarWidget.qml",
+        "startLine": 3,
+        "endLine": 3
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "ef72192195a9816f",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses FileView",
+      "location": {
+        "path": "BarWidget.qml",
+        "startLine": 21,
+        "endLine": 21
+      },
+      "evidence": "FileView {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "8ae4a119e69f9f96",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "valid Omarchy plugin manifest 'azterisk.idle' (kinds: service, bar-widget, keepLoaded). Plugins run as unsandboxed code inside omarchy-shell with the user's full file and process access.",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "id=azterisk.idle kinds=service,bar-widget",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "aa8efa8825cdfc30",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin",
+        "persistence"
+      ],
+      "message": "headless service: runs for the whole session without a visible surface",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "kinds includes \"service\"",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "b7e1b056c1232ae4",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "Service.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "1a31a0842ef1d0df",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses FileView",
+      "location": {
+        "path": "Service.qml",
+        "startLine": 405,
+        "endLine": 405
+      },
+      "evidence": "FileView {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    }
+  ],
+  "summary": {
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 2,
+      "low": 2,
+      "info": 6
+    },
+    "capabilities": [
+      "aur-install",
+      "build-from-source",
+      "network-download",
+      "omarchy-plugin",
+      "package-management",
+      "persistence"
+    ],
+    "verdict": "review-recommended",
+    "highestSeverity": "medium"
+  },
+  "disclaimer": "OmaAudit performs static inspection only. Findings are evidence of risk patterns, not proof of malice, and the absence of findings is not proof of safety. Review the source before you install."
+}

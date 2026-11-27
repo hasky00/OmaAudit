@@ -1,0 +1,449 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "omaaudit",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-11-27T10:59:48.816Z",
+  "durationMs": 125,
+  "target": {
+    "kind": "local",
+    "name": "/home/claude/corpus2-tree/msegoviadev.walkingpad"
+  },
+  "coverage": {
+    "filesListed": 17,
+    "filesInspected": 14,
+    "filesSkipped": [
+      {
+        "path": "docs/bar.png",
+        "reason": "binary"
+      },
+      {
+        "path": "docs/popup.png",
+        "reason": "binary"
+      },
+      {
+        "path": "preview.png",
+        "reason": "binary"
+      }
+    ],
+    "bytesInspected": 83343,
+    "truncated": false,
+    "fileTypes": {
+      "other-text": 2,
+      "python": 5,
+      "shell": 1,
+      "python-requirements": 1,
+      "qml": 2,
+      "binary": 3,
+      "omarchy-manifest": 1,
+      "javascript": 1,
+      "markdown": 1
+    },
+    "unknown": [
+      "6 Python/JavaScript file(s) are only scanned for secrets; use language-specific scanners for logic review",
+      "2 QML file(s): only process/file/network surfaces and embedded commands are analysed, not QML logic"
+    ],
+    "scanners": [
+      {
+        "name": "omaaudit-rules",
+        "version": "0.1.0",
+        "source": "builtin",
+        "status": "ran"
+      },
+      {
+        "name": "shellcheck",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "shellcheck not found on PATH (pacman -S shellcheck)"
+      },
+      {
+        "name": "osv-scanner",
+        "version": "n/a",
+        "source": "external",
+        "status": "skipped",
+        "note": "disabled (offline or by flag)"
+      }
+    ]
+  },
+  "dependencies": [
+    {
+      "ecosystem": "pypi",
+      "name": "walkingpad-controller[wilink]",
+      "version": "==0.5.1 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "ph4-walkingpad",
+      "version": "==1.0.2 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "ph4-acmd2",
+      "version": "==1.0.0 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "bleak",
+      "version": "==3.0.2 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "bleak-retry-connector",
+      "version": "==4.6.3 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "dbus-fast",
+      "version": "==5.0.22 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "bluetooth-adapters",
+      "version": "==2.4.0 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "aiooui",
+      "version": "==0.1.9 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "usb-devices",
+      "version": "==0.5.1 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "uart-devices",
+      "version": "==0.1.1 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "aioconsole",
+      "version": "==0.3.1 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "asyncio",
+      "version": "==4.0.0 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "attrs",
+      "version": "==26.1.0 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "blessed",
+      "version": "==1.48.0 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "cmd2",
+      "version": "==1.5.0 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "colorama",
+      "version": "==0.4.6 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "coloredlogs",
+      "version": "==15.0.1 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "future",
+      "version": "==1.0.0 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "humanfriendly",
+      "version": "==10.0 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "jinxed",
+      "version": "==2.1.0 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "pillow",
+      "version": "==12.3.0 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "pyperclip",
+      "version": "==1.11.0 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "wcwidth",
+      "version": "==0.8.2 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "requests",
+      "version": "==2.34.2 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "certifi",
+      "version": "==2026.7.22 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "charset-normalizer",
+      "version": "==3.5.1 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "idna",
+      "version": "==3.19 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "urllib3",
+      "version": "==2.7.0 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "six",
+      "version": "==1.17.0 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    },
+    {
+      "ecosystem": "pypi",
+      "name": "setuptools",
+      "version": "==84.0.0 \\",
+      "manifest": "backend/requirements.txt",
+      "pinned": true
+    }
+  ],
+  "findings": [
+    {
+      "id": "ca091c2e754377c5",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "installs a systemd unit file: $HOME/.config/systemd/user/walkingpad.service",
+      "location": {
+        "path": "backend/install.sh",
+        "startLine": 23,
+        "endLine": 23
+      },
+      "evidence": "cat > \"$UNIT\" <<EOF\n[Unit]\nDescription=WalkingPad step collector\nStartLimitIntervalSec=0\n\n[Service]\nExecStart=$DATA_DIR/venv/bin/python $PLUGIN_DIR/backend/collector.py\nRestart=always\nRestartSec=5\n\n[Install]\nWantedBy=default.target\nEOF",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "46ddbc4e54940c8b",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "systemctl --user enables a unit",
+      "location": {
+        "path": "backend/install.sh",
+        "startLine": 38,
+        "endLine": 38
+      },
+      "evidence": "systemctl --user enable --now walkingpad.service",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "3ca52b1e90289b20",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "Panel.qml",
+        "startLine": 142,
+        "endLine": 142
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "4ef9b8246a208412",
+      "ruleId": "OA-SH-009",
+      "title": "Packages are installed",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "package-management"
+      ],
+      "message": "pip installs $PLUGIN_DIR/backend/requirements.txt",
+      "location": {
+        "path": "backend/install.sh",
+        "startLine": 20,
+        "endLine": 20
+      },
+      "evidence": "\"$DATA_DIR/venv/bin/pip\" install --quiet --require-hashes --requirement \"$PLUGIN_DIR/backend/requirements.txt\"",
+      "remediation": "Prefer official repositories or the Omarchy package repo. For AUR packages, read the PKGBUILD. Avoid pacman -U from URLs.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "126df8ac44bcc73c",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "valid Omarchy plugin manifest 'msegoviadev.walkingpad' (kinds: bar-widget). Plugins run as unsandboxed code inside omarchy-shell with the user's full file and process access.",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "id=msegoviadev.walkingpad kinds=bar-widget",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "eb3a2767412ebe50",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "Panel.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.2",
+        "source": "builtin"
+      }
+    }
+  ],
+  "summary": {
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 1,
+      "low": 2,
+      "info": 3
+    },
+    "capabilities": [
+      "omarchy-plugin",
+      "package-management",
+      "persistence"
+    ],
+    "verdict": "review-recommended",
+    "highestSeverity": "medium"
+  },
+  "disclaimer": "OmaAudit performs static inspection only. Findings are evidence of risk patterns, not proof of malice, and the absence of findings is not proof of safety. Review the source before you install."
+}
