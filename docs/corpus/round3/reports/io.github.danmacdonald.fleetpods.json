@@ -1,0 +1,1072 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "omaaudit",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-11-27T16:38:46.287Z",
+  "durationMs": 344,
+  "target": {
+    "kind": "local",
+    "name": "/home/claude/corpus3-tree/io.github.danmacdonald.fleetpods"
+  },
+  "coverage": {
+    "filesListed": 301,
+    "filesInspected": 219,
+    "filesSkipped": [
+      {
+        "path": "Cargo.lock",
+        "reason": "binary"
+      },
+      {
+        "path": "docs/images/fleetpods-connections.png",
+        "reason": "binary"
+      },
+      {
+        "path": "docs/images/fleetpods-omarchy-playback.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/airpods-case-closed-large.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/airpods-case-closed.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/airpods-case-open-empty-large.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/airpods-case-open-empty.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/airpods-case-open-left-large.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/airpods-case-open-left-seams.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/airpods-case-open-left.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/airpods-case-open-right-large.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/airpods-case-open-right-seams.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/airpods-case-open-right.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/airpods-case-open-seams.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/airpods-case-open-small.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/airpods-case-open.svg",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-dark/base.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-dark/moonlight.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-dark/rim.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-dark/shadow.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-dark-both/base.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-dark-both/moonlight.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-dark-both/rim.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-dark-both/shadow.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-dark-closed/base-light.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-dark-closed/base.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-dark-closed/moonlight.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-dark-closed/rim.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-dark-closed/shadow.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-dark-empty/base.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-dark-empty/moonlight.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-dark-empty/rim.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-dark-empty/shadow.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-dark-left/base.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-dark-left/moonlight.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-dark-left/rim.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-dark-left/shadow.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-light-both/base.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-light-both/moonlight.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-light-both/rim.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-light-both/shadow.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-light-empty/base.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-light-empty/moonlight.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-light-empty/rim.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-light-empty/shadow.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-light-left/base.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-light-left/moonlight.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-light-left/rim.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-light-left/shadow.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-light-right/base.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-light-right/moonlight.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-light-right/rim.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/case-matrix-light-right/shadow.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/devices/laptop-screen.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/devices/laptop-selected.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/devices/laptop-unselected.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/devices/phone-screen.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/devices/phone-selected.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/devices/phone-unselected.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/earbuds/base.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/earbuds/ink.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/earbuds/moonlight.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/earbuds/rim.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/earbuds/shadow.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/earbuds-dots-dark/dots-128.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/earbuds-dots-dark/dots-256.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/earbuds-dots-dark/dots.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/earbuds-dots-light/dots-128.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/earbuds-dots-light/dots-256.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/earbuds-dots-light/dots.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/earbuds-light/base.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/earbuds-light/moonlight.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/earbuds-light/rim.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/earbuds-light/shadow.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/earbuds-matrix-dark/base.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/earbuds-matrix-dark/moonlight.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/earbuds-matrix-dark/rim.png",
+        "reason": "binary"
+      },
+      {
+        "path": "plugin/assets/earbuds-matrix-dark/shadow.png",
+        "reason": "binary"
+      },
+      {
+        "path": "preview.png",
+        "reason": "binary"
+      },
+      {
+        "path": "tools/artwork/airpods-artwork.blend",
+        "reason": "too-large"
+      },
+      {
+        "path": "tools/artwork/airpods-reference.blend",
+        "reason": "too-large"
+      },
+      {
+        "path": "tools/artwork/max/reference.fbx",
+        "reason": "too-large"
+      }
+    ],
+    "bytesInspected": 4853549,
+    "truncated": false,
+    "fileTypes": {
+      "other-text": 102,
+      "github-workflow": 1,
+      "markdown": 26,
+      "binary": 79,
+      "cargo-toml": 2,
+      "omarchy-manifest": 1,
+      "systemd-unit": 1,
+      "qml": 49,
+      "javascript": 29,
+      "python": 5,
+      "shell": 2,
+      "skipped": 3,
+      "lua": 1
+    },
+    "unknown": [
+      "1 Lua file(s) (e.g. Omarchy 4 Hyprland config) are not analysed beyond secret scanning",
+      "34 Python/JavaScript file(s) are only scanned for secrets; use language-specific scanners for logic review",
+      "49 QML file(s): only process/file/network surfaces and embedded commands are analysed, not QML logic"
+    ],
+    "scanners": [
+      {
+        "name": "omaaudit-rules",
+        "version": "0.1.0",
+        "source": "builtin",
+        "status": "ran"
+      },
+      {
+        "name": "shellcheck",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "shellcheck not found on PATH (pacman -S shellcheck)"
+      },
+      {
+        "name": "osv-scanner",
+        "version": "n/a",
+        "source": "external",
+        "status": "skipped",
+        "note": "disabled (offline or by flag)"
+      }
+    ]
+  },
+  "dependencies": [
+    {
+      "ecosystem": "cargo",
+      "name": "dbus",
+      "version": "0.9",
+      "manifest": "Cargo.toml",
+      "pinned": false
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "libpulse-binding",
+      "version": "2.28",
+      "manifest": "Cargo.toml",
+      "pinned": false
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "libpulse-sys",
+      "version": "1.23",
+      "manifest": "Cargo.toml",
+      "pinned": false
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "chacha20poly1305",
+      "version": "0.10",
+      "manifest": "Cargo.toml",
+      "pinned": false
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "hkdf",
+      "version": "0.12",
+      "manifest": "Cargo.toml",
+      "pinned": false
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "hmac",
+      "version": "0.12",
+      "manifest": "Cargo.toml",
+      "pinned": false
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "libc",
+      "version": "0.2",
+      "manifest": "Cargo.toml",
+      "pinned": false
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "rand",
+      "version": "0.8",
+      "manifest": "Cargo.toml",
+      "pinned": false
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "serde_json",
+      "version": "1",
+      "manifest": "Cargo.toml",
+      "pinned": false
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "sha2",
+      "version": "0.10",
+      "manifest": "Cargo.toml",
+      "pinned": false
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "spake2",
+      "version": "=0.4.0",
+      "manifest": "Cargo.toml",
+      "pinned": true
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "zeroize",
+      "version": "1.8",
+      "manifest": "Cargo.toml",
+      "pinned": false
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "aes",
+      "version": "0.8",
+      "manifest": "Cargo.toml",
+      "pinned": false
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "cc",
+      "version": "1",
+      "manifest": "Cargo.toml",
+      "pinned": false
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "pkg-config",
+      "version": "0.3",
+      "manifest": "Cargo.toml",
+      "pinned": false
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "serde_json",
+      "version": "1",
+      "manifest": "Cargo.toml",
+      "pinned": false
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "name",
+      "version": "accept",
+      "manifest": "Cargo.toml",
+      "pinned": false
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "path",
+      "version": "tests/accept.rs",
+      "manifest": "Cargo.toml",
+      "pinned": false
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "required-features",
+      "manifest": "Cargo.toml",
+      "pinned": false
+    }
+  ],
+  "findings": [
+    {
+      "id": "e1059c31ea4a2773",
+      "ruleId": "OA-SH-003",
+      "title": "Code is obtained from a mutable remote reference and built or installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "build-from-source",
+        "network-download"
+      ],
+      "message": "git clone of a mutable reference (found in documentation: this is what users are told to run)",
+      "location": {
+        "path": "docs/installation.md",
+        "startLine": 29,
+        "endLine": 29
+      },
+      "evidence": "git clone https://github.com/DanMacDonald/fleetpods.git",
+      "remediation": "Pin to a full 40-character commit (git checkout <sha>, cargo --rev <sha>, go @<version>, pip @<sha>) or to a signed release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "81e7b1d5d7fb1379",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "installs a systemd unit file: $HOME/.config/systemd/user/fleetpods.service",
+      "location": {
+        "path": "setup",
+        "startLine": 51,
+        "endLine": 51
+      },
+      "evidence": "install -Dm644 \"$root/packaging/fleetpods.service\" \"$config/systemd/user/fleetpods.service\"",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "7dd7d5926198288d",
+      "ruleId": "OA-CI-001",
+      "title": "GitHub Actions workflow risk",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "ci-risk"
+      ],
+      "message": "third-party action dtolnay/rust-toolchain pinned to mutable ref 'stable'",
+      "location": {
+        "path": ".github/workflows/ci.yml",
+        "startLine": 16,
+        "endLine": 16
+      },
+      "evidence": "- uses: dtolnay/rust-toolchain@stable",
+      "remediation": "Pin actions to a full commit SHA, avoid pull_request_target with checkout of the PR head, and give workflows the least permissions needed.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      },
+      "references": [
+        "https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions"
+      ]
+    },
+    {
+      "id": "b2f459f3ad3727da",
+      "ruleId": "OA-CI-001",
+      "title": "GitHub Actions workflow risk",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "ci-risk"
+      ],
+      "message": "third-party action dtolnay/rust-toolchain pinned to mutable ref 'stable'",
+      "location": {
+        "path": ".github/workflows/ci.yml",
+        "startLine": 33,
+        "endLine": 33
+      },
+      "evidence": "- uses: dtolnay/rust-toolchain@stable",
+      "remediation": "Pin actions to a full commit SHA, avoid pull_request_target with checkout of the PR head, and give workflows the least permissions needed.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      },
+      "references": [
+        "https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions"
+      ]
+    },
+    {
+      "id": "430b2c391bbfb501",
+      "ruleId": "OA-CI-001",
+      "title": "GitHub Actions workflow risk",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "ci-risk"
+      ],
+      "message": "third-party action denoland/setup-deno pinned to mutable ref 'v2'",
+      "location": {
+        "path": ".github/workflows/ci.yml",
+        "startLine": 41,
+        "endLine": 41
+      },
+      "evidence": "- uses: denoland/setup-deno@v2",
+      "remediation": "Pin actions to a full commit SHA, avoid pull_request_target with checkout of the PR head, and give workflows the least permissions needed.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      },
+      "references": [
+        "https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions"
+      ]
+    },
+    {
+      "id": "d71fec15a7a73553",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "plugin/NativeNotification.qml",
+        "startLine": 183,
+        "endLine": 183
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "afbe4dc61f33f128",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Process",
+      "location": {
+        "path": "plugin/Service.qml",
+        "startLine": 24,
+        "endLine": 24
+      },
+      "evidence": "Process {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "11dafcaa6091c183",
+      "ruleId": "OA-SH-007",
+      "title": "A service, timer or autostart entry is installed",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "medium",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "systemctl --user enables a unit",
+      "location": {
+        "path": "setup",
+        "startLine": 74,
+        "endLine": 74
+      },
+      "evidence": "systemctl --user enable fleetpods.service",
+      "remediation": "Document every unit or autostart entry the tool installs and how to remove it. Prefer user units (systemctl --user) over system units.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "1954e2a0476531ca",
+      "ruleId": "OA-SH-004",
+      "title": "Commands run with elevated privileges",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "privilege-escalation"
+      ],
+      "message": "sudo runs apt-get (embedded in GitHub Actions run step) (4 occurrences in this file: lines 14, 15, 31, 32) (in CI configuration: runs in the project's pipeline, not on a user machine)",
+      "location": {
+        "path": ".github/workflows/ci.yml",
+        "startLine": 14,
+        "endLine": 14
+      },
+      "evidence": "sudo apt-get update\nsudo apt-get install -y pkg-config libavcodec-dev libavutil-dev libpipewire-0.3-dev libdbus-1-dev libpulse-dev\nsudo apt-get update",
+      "remediation": "Confirm every privileged command is necessary, scoped to a fixed command surface, and documented. Prefer user-level installation where possible.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      },
+      "scope": "ci"
+    },
+    {
+      "id": "8362cc95675d541f",
+      "ruleId": "OA-SH-009",
+      "title": "Packages are installed",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "package-management"
+      ],
+      "message": "apt-get installs packages (not native to Omarchy/Arch) (embedded in GitHub Actions run step) (in CI configuration: runs in the project's pipeline, not on a user machine)",
+      "location": {
+        "path": ".github/workflows/ci.yml",
+        "startLine": 15,
+        "endLine": 15
+      },
+      "evidence": "sudo apt-get install -y pkg-config libavcodec-dev libavutil-dev libpipewire-0.3-dev libdbus-1-dev libpulse-dev",
+      "remediation": "Prefer official repositories or the Omarchy package repo. For AUR packages, read the PKGBUILD. Avoid pacman -U from URLs.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      },
+      "scope": "ci"
+    },
+    {
+      "id": "e0569e0d5b769345",
+      "ruleId": "OA-SH-009",
+      "title": "Packages are installed",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "package-management"
+      ],
+      "message": "apt-get installs packages (not native to Omarchy/Arch) (embedded in GitHub Actions run step) (in CI configuration: runs in the project's pipeline, not on a user machine)",
+      "location": {
+        "path": ".github/workflows/ci.yml",
+        "startLine": 32,
+        "endLine": 32
+      },
+      "evidence": "sudo apt-get install -y pkg-config libavcodec-dev libavutil-dev libpipewire-0.3-dev libdbus-1-dev libpulse-dev",
+      "remediation": "Prefer official repositories or the Omarchy package repo. For AUR packages, read the PKGBUILD. Avoid pacman -U from URLs.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      },
+      "scope": "ci"
+    },
+    {
+      "id": "91d32d1bba1b0b70",
+      "ruleId": "OA-SH-009",
+      "title": "Packages are installed",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "package-management"
+      ],
+      "message": "pacman installs: git mesa qt6-declarative qt6-5compat qt6-svg ttf-dejavu (embedded in GitHub Actions run step) (in CI configuration: runs in the project's pipeline, not on a user machine)",
+      "location": {
+        "path": ".github/workflows/ci.yml",
+        "startLine": 57,
+        "endLine": 57
+      },
+      "evidence": "pacman -Syu --noconfirm --needed git mesa qt6-declarative qt6-5compat qt6-svg ttf-dejavu",
+      "remediation": "Prefer official repositories or the Omarchy package repo. For AUR packages, read the PKGBUILD. Avoid pacman -U from URLs.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      },
+      "scope": "ci"
+    },
+    {
+      "id": "73a5961fa2ba6ece",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "valid Omarchy plugin manifest 'io.github.danmacdonald.fleetpods' (kinds: bar-widget). Plugins run as unsandboxed code inside omarchy-shell with the user's full file and process access.",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "id=io.github.danmacdonald.fleetpods kinds=bar-widget",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "cfe01d8cb5bedaba",
+      "ruleId": "OA-SYSD-001",
+      "title": "systemd unit executes from a user-writable or temporary location",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "persistence"
+      ],
+      "message": "ships user unit fleetpods.service",
+      "location": {
+        "path": "packaging/fleetpods.service",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "ExecStart=%h/.local/bin/fleetpodsd",
+      "remediation": "Install executables under /usr/lib or /usr/bin via a package and reference them by absolute path. Use user units for per-user tools.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "12eba000e4dabca9",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "plugin/NativeNotification.qml",
+        "startLine": 3,
+        "endLine": 3
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "4f0acf23bb3c9faa",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "plugin/Panel.qml",
+        "startLine": 5,
+        "endLine": 5
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "e4a1c3eb0cb6d7fa",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses FileView",
+      "location": {
+        "path": "plugin/Panel.qml",
+        "startLine": 18,
+        "endLine": 18
+      },
+      "evidence": "FileView {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "0392aabd58c21358",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "plugin/Service.qml",
+        "startLine": 3,
+        "endLine": 3
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "9df5ccb3641db544",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses FileView",
+      "location": {
+        "path": "plugin/Service.qml",
+        "startLine": 382,
+        "endLine": 382
+      },
+      "evidence": "FileView {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "593c1435579d212d",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io (in test code: accurate, but not run on a user machine)",
+      "location": {
+        "path": "plugin/tests/tst_ConnectionNotification.qml",
+        "startLine": 3,
+        "endLine": 3
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      },
+      "scope": "test"
+    },
+    {
+      "id": "cd02c14ec817cb11",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io (in test code: accurate, but not run on a user machine)",
+      "location": {
+        "path": "plugin/tests/tst_NativeNotification.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      },
+      "scope": "test"
+    }
+  ],
+  "summary": {
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 2,
+      "low": 6,
+      "info": 13
+    },
+    "capabilities": [
+      "build-from-source",
+      "ci-risk",
+      "network-download",
+      "omarchy-plugin",
+      "package-management",
+      "persistence",
+      "privilege-escalation"
+    ],
+    "verdict": "review-recommended",
+    "highestSeverity": "medium"
+  },
+  "disclaimer": "OmaAudit performs static inspection only. Findings are evidence of risk patterns, not proof of malice, and the absence of findings is not proof of safety. Review the source before you install."
+}

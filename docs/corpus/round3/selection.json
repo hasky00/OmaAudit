@@ -1,0 +1,192 @@
+{
+ "round": 3,
+ "catalogCommit": "4cb2ef3bc8e2cf566180bc9cdf2b56168a36f218",
+ "total": 7155,
+ "eligible": {
+  "verified": 4364,
+  "unverified": 2751
+ },
+ "method": "Same filter as rounds 1 and 2. Each status group sorted by plugin id; 10 taken at floor((i+0.25)*n/10) for i in 0..9, skipping forward past any repository used in an earlier round or already selected.",
+ "selection": [
+  {
+   "id": "andreconde.project-focus",
+   "repo": "https://github.com/andreconde21/omarchy-project-focus",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "633add883f9bb41ae05a9cc4d898eb2c2fd3bd80",
+   "upstreamObservedCommit": "633add883f9bb41ae05a9cc4d898eb2c2fd3bd80",
+   "stars": 0,
+   "category": "Productivity"
+  },
+  {
+   "id": "dailen.omarcharium",
+   "repo": "https://github.com/DailenG/omarcharium",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "59ede1d7f1f0ee6053e644b26717324ee90d3e2d",
+   "upstreamObservedCommit": "59ede1d7f1f0ee6053e644b26717324ee90d3e2d",
+   "stars": 1,
+   "category": "Appearance"
+  },
+  {
+   "id": "hoppcx.op1we",
+   "repo": "https://github.com/HoppCX/OP1we-Control",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "f4e25951f0182c0749bf6ad0abbb64d21f222602",
+   "upstreamObservedCommit": "f4e25951f0182c0749bf6ad0abbb64d21f222602",
+   "stars": 0,
+   "category": "Hardware"
+  },
+  {
+   "id": "io.github.davidboulay.truenas-apps-watcher",
+   "repo": "https://github.com/davidboulay/omarchy-truenas-apps-watcher",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "cb62a4a1a23093195efaf057d7055c780005c462",
+   "upstreamObservedCommit": "cb62a4a1a23093195efaf057d7055c780005c462",
+   "stars": 0,
+   "category": "System"
+  },
+  {
+   "id": "io.github.karpage.omaraptor",
+   "repo": "https://github.com/KarPage/omaraptor-player",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "2d83f7c44ceace6806e29d2c8ec5c49cb294a60e",
+   "upstreamObservedCommit": "2d83f7c44ceace6806e29d2c8ec5c49cb294a60e",
+   "stars": 1,
+   "category": "Desktop"
+  },
+  {
+   "id": "io.github.regionallyfamous.iromihon",
+   "repo": "https://github.com/RegionallyFamous/iromihon",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "655dbc9d27711b94b13939eb15bc1b0a546ca122",
+   "upstreamObservedCommit": "655dbc9d27711b94b13939eb15bc1b0a546ca122",
+   "stars": 0,
+   "category": "Appearance"
+  },
+  {
+   "id": "io.github.zachsa999.machine-switcher",
+   "repo": "https://github.com/zachsa999/bar-machine-switcher",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "594b7dd4b8b93e424af731263a861deb3a4e64e2",
+   "upstreamObservedCommit": "594b7dd4b8b93e424af731263a861deb3a4e64e2",
+   "stars": 0,
+   "category": "System"
+  },
+  {
+   "id": "markschellhas.omasong",
+   "repo": "https://github.com/markschellhas/omasong",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "ec8a580ac052df31f7a927c0d524a7c89c27ecd4",
+   "upstreamObservedCommit": "ec8a580ac052df31f7a927c0d524a7c89c27ecd4",
+   "stars": 1,
+   "category": "Widgets"
+  },
+  {
+   "id": "peter.hangar-store",
+   "repo": "https://github.com/PeterVinter/omarchy-hangar-store",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "976bde88b42ec95adf47ec61c489d9ae22e48a9d",
+   "upstreamObservedCommit": "976bde88b42ec95adf47ec61c489d9ae22e48a9d",
+   "stars": 2,
+   "category": "Productivity"
+  },
+  {
+   "id": "szalikdev.plugin-updates",
+   "repo": "https://github.com/szalikdev/omarchy-plugin-updates",
+   "verificationStatus": "verified",
+   "listingValidatedCommit": "89e1210c525349104cfe6c640ed40b72a46c538f",
+   "upstreamObservedCommit": "89e1210c525349104cfe6c640ed40b72a46c538f",
+   "stars": 0,
+   "category": "System"
+  },
+  {
+   "id": "apach.notification-engine",
+   "repo": "https://github.com/ApachaiZ/omarchy-notification-engine",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "dca2f16e5370d4c377131c43a103cce38b896243",
+   "upstreamObservedCommit": "cbbfcb79910797befd5046f3f492c58357f67de6",
+   "stars": 1,
+   "category": "System"
+  },
+  {
+   "id": "dailen.omartfy",
+   "repo": "https://github.com/DailenG/omartfy",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "81107fbb6f617d8b4f4f65b192accaee021175ca",
+   "upstreamObservedCommit": "bf5a9595a99fea120a1a3d6c81e4c7968a514c57",
+   "stars": 2,
+   "category": "Widgets"
+  },
+  {
+   "id": "hancore.keyboard-center",
+   "repo": "https://github.com/iamcheyan/omarchy-keyboard-indicator",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "34a5f2fa80e286a12371dbcc5c8f063d875bf808",
+   "upstreamObservedCommit": "9e432bb70ad017ab9061eae7b6ac8de34cff2431",
+   "stars": 3,
+   "category": "Desktop"
+  },
+  {
+   "id": "io.github.danmacdonald.fleetpods",
+   "repo": "https://github.com/DanMacDonald/fleetpods",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "6cc77a412d63f00c911a948890346c04213e6404",
+   "upstreamObservedCommit": "576c9ff07b43226d8d305fedef7602c41b8142ca",
+   "stars": 2,
+   "category": "Hardware"
+  },
+  {
+   "id": "io.github.jimjeffers.lumen",
+   "repo": "https://github.com/jimjeffers/omarchy-lumen",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "ee5d2f8312ad73c1d627e9c877ace4e63d9c8c87",
+   "upstreamObservedCommit": "7b72eda8ffd25fd52e62d1556165a517be495e9e",
+   "stars": 0,
+   "category": "Hardware"
+  },
+  {
+   "id": "io.github.raeganwyble.per-app-audio",
+   "repo": "https://github.com/raeganwyble/per-app-audio",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "0ae3d60f73f414f4044de36f39f3d930e98033d1",
+   "upstreamObservedCommit": "581f6a00f7e99e418a7f963a7ba59b090a120dbd",
+   "stars": 1,
+   "category": "System"
+  },
+  {
+   "id": "ismoil.memory",
+   "repo": "https://github.com/ismoil77/omarchy-memory",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "71636d655797f6d913356aebfc6ce5ce0b280cd7",
+   "upstreamObservedCommit": "e447f50bc0a6bbd78dd31fc94e791c0c6f07f9cd",
+   "stars": 0,
+   "category": "Widgets"
+  },
+  {
+   "id": "max.scene",
+   "repo": "https://github.com/gmaxxxie/Scene-Switcher",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "c19f9e005ef253f07f1164c2eac918a4389810d5",
+   "upstreamObservedCommit": "b5a029f9a50e60fe15bdadf80472216fa4939092",
+   "stars": 2,
+   "category": "Productivity"
+  },
+  {
+   "id": "patrickfanella.monitor-bar",
+   "repo": "https://github.com/PatrickFanella/omarchy-monitor-bar",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "f6df64c3ce5b62cdcea25a2338960e013e6a8102",
+   "upstreamObservedCommit": "748dd564ba8d7b8d88f51eac56b7febe97ca1e30",
+   "stars": 1,
+   "category": "Widgets"
+  },
+  {
+   "id": "szaidi.scoring-matrix",
+   "repo": "https://github.com/szaidi-code/scoring-matrix",
+   "verificationStatus": "unverified",
+   "listingValidatedCommit": "b3163afb0f75e906ed05836d1be05e929cf7a70e",
+   "upstreamObservedCommit": "916e564e2bcf877485204449419e5bcf4f46b24e",
+   "stars": 0,
+   "category": "Hardware"
+  }
+ ]
+}

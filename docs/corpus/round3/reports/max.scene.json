@@ -1,0 +1,1113 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "omaaudit",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-11-27T16:38:53.857Z",
+  "durationMs": 604,
+  "target": {
+    "kind": "local",
+    "name": "/home/claude/corpus3-tree/max.scene"
+  },
+  "coverage": {
+    "filesListed": 12,
+    "filesInspected": 9,
+    "filesSkipped": [
+      {
+        "path": "preview.png",
+        "reason": "too-large"
+      },
+      {
+        "path": "screenshots/scene-config-panel.png",
+        "reason": "too-large"
+      },
+      {
+        "path": "screenshots/scene-popup.png",
+        "reason": "binary"
+      }
+    ],
+    "bytesInspected": 186070,
+    "truncated": false,
+    "fileTypes": {
+      "qml": 2,
+      "shell": 4,
+      "other-text": 1,
+      "omarchy-manifest": 1,
+      "skipped": 2,
+      "markdown": 1,
+      "binary": 1
+    },
+    "unknown": [
+      "2 QML file(s): only process/file/network surfaces and embedded commands are analysed, not QML logic"
+    ],
+    "scanners": [
+      {
+        "name": "omaaudit-rules",
+        "version": "0.1.0",
+        "source": "builtin",
+        "status": "ran"
+      },
+      {
+        "name": "shellcheck",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "shellcheck not found on PATH (pacman -S shellcheck)"
+      },
+      {
+        "name": "osv-scanner",
+        "version": "n/a",
+        "source": "external",
+        "status": "skipped",
+        "note": "disabled (offline or by flag)"
+      }
+    ]
+  },
+  "dependencies": [],
+  "findings": [
+    {
+      "id": "7b8147082f1544d2",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "downloaded file is executed directly without verification",
+      "location": {
+        "path": "omarchy-scene",
+        "startLine": 1276,
+        "endLine": 1276
+      },
+      "evidence": "\"$editor\" \"$SCENES_FILE\"",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "ab624c9b1f053347",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 234,
+        "endLine": 234
+      },
+      "evidence": "expect_fast_fail \"scenes.json=FIFO 时 config 快速失败\" 5 \"$SCENE\" config\n\"$SCENE\" init >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "11e03f22fbfd50be",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 235,
+        "endLine": 235
+      },
+      "evidence": "expect_fast_fail \"scenes.json=FIFO 时 config 快速失败\" 5 \"$SCENE\" config\n\"$SCENE\" add s1 >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "48fafb9eb5435799",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 248,
+        "endLine": 248
+      },
+      "evidence": "expect_fast_fail \"shell.json=FIFO 时 set 快速失败\" 5 \"$SCENE\" set s1\n\"$SCENE\" init >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "91881d7220b99079",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 250,
+        "endLine": 250
+      },
+      "evidence": "expect_fast_fail \"shell.json=FIFO 时 set 快速失败\" 5 \"$SCENE\" set s1\n\"$SCENE\" current 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "290e3ee6b109fd4a",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 254,
+        "endLine": 254
+      },
+      "evidence": "expect_fast_fail \"shell.json=FIFO 时 set 快速失败\" 5 \"$SCENE\" set s1\n\"$SCENE\" init >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "6dd7a4c575389a1a",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 276,
+        "endLine": 276
+      },
+      "evidence": "expect_fast_fail \"shell.json=FIFO 时 set 快速失败\" 5 \"$SCENE\" set s1\n\"$SCENE\" init >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "36bc78bd7f5e6202",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 283,
+        "endLine": 283
+      },
+      "evidence": "expect_fast_fail \"shell.json=FIFO 时 set 快速失败\" 5 \"$SCENE\" set s1\n\"$SCENE\" lock org.cpu >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "c2fd10645c9bd76f",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 388,
+        "endLine": 388
+      },
+      "evidence": "expect_fast_fail \"shell.json=FIFO 时 set 快速失败\" 5 \"$SCENE\" set s1\n\"$SCENE\" init >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "0c444a502a37e0c6",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 415,
+        "endLine": 415
+      },
+      "evidence": "expect_fast_fail \"shell.json=FIFO 时 set 快速失败\" 5 \"$SCENE\" set s1\n\"$SCENE\" init >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "ab29ea4423c57eca",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 533,
+        "endLine": 533
+      },
+      "evidence": "expect_fast_fail \"shell.json=FIFO 时 set 快速失败\" 5 \"$SCENE\" set s1\n\"$SCENE\" init >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "e7f9befb5846c664",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 534,
+        "endLine": 534
+      },
+      "evidence": "expect_fast_fail \"shell.json=FIFO 时 set 快速失败\" 5 \"$SCENE\" set s1\n\"$SCENE\" add s1 >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "a36fffb8a67b1931",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 535,
+        "endLine": 535
+      },
+      "evidence": "expect_fast_fail \"shell.json=FIFO 时 set 快速失败\" 5 \"$SCENE\" set s1\n\"$SCENE\" add-plugin s1 org.cpu >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "4976f0028ae0333f",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 536,
+        "endLine": 536
+      },
+      "evidence": "expect_fast_fail \"shell.json=FIFO 时 set 快速失败\" 5 \"$SCENE\" set s1\n\"$SCENE\" set s1 >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "a23520122eff50f1",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 537,
+        "endLine": 537
+      },
+      "evidence": "expect_fast_fail \"shell.json=FIFO 时 set 快速失败\" 5 \"$SCENE\" set s1\n\"$SCENE\" menu-add >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "0d173554b61552c8",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 538,
+        "endLine": 538
+      },
+      "evidence": "expect_fast_fail \"shell.json=FIFO 时 set 快速失败\" 5 \"$SCENE\" set s1\n\"$SCENE\" menu-remove >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "c14a81bf2580230e",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 539,
+        "endLine": 539
+      },
+      "evidence": "expect_fast_fail \"shell.json=FIFO 时 set 快速失败\" 5 \"$SCENE\" set s1\n\"$SCENE\" lock org.cpu >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "532a18ba5fe80088",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 560,
+        "endLine": 560
+      },
+      "evidence": "expect_fast_fail \"shell.json=FIFO 时 set 快速失败\" 5 \"$SCENE\" set s1\n\"$SCENE\" init >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "2c9325e987c50e66",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 580,
+        "endLine": 580
+      },
+      "evidence": "expect_fast_fail \"FIFO 锁文件 → add 快速拒绝（不阻塞）\" 5 \"$SCENE\" add s1\n\"$SCENE\" add s$i >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "f2b8a1606c51d122",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 671,
+        "endLine": 671
+      },
+      "evidence": "expect_fast_fail \"FIFO 锁文件 → add 快速拒绝（不阻塞）\" 5 \"$SCENE\" add s1\n\"$SCENE\" set default >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "720c0697c6072273",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 673,
+        "endLine": 673
+      },
+      "evidence": "expect_fast_fail \"FIFO 锁文件 → add 快速拒绝（不阻塞）\" 5 \"$SCENE\" add s1\n\"$SCENE\" set dev >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "5943d9b343450f12",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 691,
+        "endLine": 691
+      },
+      "evidence": "expect_fast_fail \"FIFO 锁文件 → add 快速拒绝（不阻塞）\" 5 \"$SCENE\" add s1\n\"$SCENE\" init >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "3f4f41f77ef2f988",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 777,
+        "endLine": 777
+      },
+      "evidence": "expect_fast_fail \"FIFO 锁文件 → add 快速拒绝（不阻塞）\" 5 \"$SCENE\" add s1\n\"$SCENE\" init >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "b9dca0403140a20b",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 785,
+        "endLine": 785
+      },
+      "evidence": "expect_fast_fail \"FIFO 锁文件 → add 快速拒绝（不阻塞）\" 5 \"$SCENE\" add s1\n\"$SCENE\" add dev >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "0d2a0f859c1a3802",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 786,
+        "endLine": 786
+      },
+      "evidence": "expect_fast_fail \"FIFO 锁文件 → add 快速拒绝（不阻塞）\" 5 \"$SCENE\" add s1\n\"$SCENE\" set dev >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "b69d9223d2deab5d",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 808,
+        "endLine": 808
+      },
+      "evidence": "expect_fast_fail \"FIFO 锁文件 → add 快速拒绝（不阻塞）\" 5 \"$SCENE\" add s1\n\"$SCENE\" toggle-plugin dev user.extra on >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "a0f357e500333e79",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 809,
+        "endLine": 809
+      },
+      "evidence": "expect_fast_fail \"FIFO 锁文件 → add 快速拒绝（不阻塞）\" 5 \"$SCENE\" add s1\n\"$SCENE\" set dev >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "5930577cc6711cb5",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 815,
+        "endLine": 815
+      },
+      "evidence": "expect_fast_fail \"FIFO 锁文件 → add 快速拒绝（不阻塞）\" 5 \"$SCENE\" add s1\n\"$SCENE\" set default >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "383f5a3322789f52",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 829,
+        "endLine": 829
+      },
+      "evidence": "expect_fast_fail \"FIFO 锁文件 → add 快速拒绝（不阻塞）\" 5 \"$SCENE\" add s1\n\"$SCENE\" lock user.svc >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "a4f3995107df7a06",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 830,
+        "endLine": 830
+      },
+      "evidence": "expect_fast_fail \"FIFO 锁文件 → add 快速拒绝（不阻塞）\" 5 \"$SCENE\" add s1\n\"$SCENE\" add focus >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "ec2289b2e8abf112",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 831,
+        "endLine": 831
+      },
+      "evidence": "expect_fast_fail \"FIFO 锁文件 → add 快速拒绝（不阻塞）\" 5 \"$SCENE\" add s1\n\"$SCENE\" set focus >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "86da7c71a27243d1",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 845,
+        "endLine": 845
+      },
+      "evidence": "expect_fast_fail \"FIFO 锁文件 → add 快速拒绝（不阻塞）\" 5 \"$SCENE\" add s1\n\"$SCENE\" init >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "cb7038d8393e3d7a",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 846,
+        "endLine": 846
+      },
+      "evidence": "expect_fast_fail \"FIFO 锁文件 → add 快速拒绝（不阻塞）\" 5 \"$SCENE\" add s1\n\"$SCENE\" add dev >/dev/null 2>&1",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "d4beb729aeccc6c6",
+      "ruleId": "OA-SH-002",
+      "title": "A downloaded file is executed in the same script",
+      "kind": "heuristic",
+      "severity": "high",
+      "confidence": "medium",
+      "capabilities": [
+        "remote-code-execution",
+        "network-download"
+      ],
+      "message": "a downloaded file held in a variable is executed with no checksum or signature verification in the script",
+      "location": {
+        "path": "tests/run-tests.sh",
+        "startLine": 850,
+        "endLine": 850
+      },
+      "evidence": "expect_fast_fail \"FIFO 锁文件 → add 快速拒绝（不阻塞）\" 5 \"$SCENE\" add s1\n\"$SCENE\" current",
+      "remediation": "Verify the downloaded artifact with sha256sum or a signature from a key shipped in the repository before executing it, and pin the URL to an immutable release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "b95b6e1e0452b452",
+      "ruleId": "OA-SH-011",
+      "title": "Obfuscated or dynamically constructed code is executed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "low",
+      "capabilities": [
+        "obfuscation",
+        "remote-code-execution"
+      ],
+      "message": "eval executes dynamically built code",
+      "location": {
+        "path": "omarchy-scene",
+        "startLine": 671,
+        "endLine": 671
+      },
+      "evidence": "eval \"$SHELL_RELOAD_CMD\" 2>/dev/null",
+      "remediation": "Replace encoded payloads with plain, reviewable source. Avoid eval; use arrays and functions instead.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "4577e9034a9ce4e2",
+      "ruleId": "OA-SH-003",
+      "title": "Code is obtained from a mutable remote reference and built or installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "build-from-source",
+        "network-download"
+      ],
+      "message": "git clone of a mutable reference (found in documentation: this is what users are told to run)",
+      "location": {
+        "path": "README.md",
+        "startLine": 66,
+        "endLine": 66
+      },
+      "evidence": "git clone https://github.com/gmaxxxie/Scene-Switcher.git",
+      "remediation": "Pin to a full 40-character commit (git checkout <sha>, cargo --rev <sha>, go @<version>, pip @<sha>) or to a signed release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "9f7411fadcd56980",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "ConfigPanel.qml",
+        "startLine": 4,
+        "endLine": 4
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "3122a4168200bbcd",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses FileView",
+      "location": {
+        "path": "ConfigPanel.qml",
+        "startLine": 326,
+        "endLine": 326
+      },
+      "evidence": "FileView {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "70d8ff29fd9262db",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "valid Omarchy plugin manifest 'max.scene' (kinds: bar-widget). Plugins run as unsandboxed code inside omarchy-shell with the user's full file and process access.",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "id=max.scene kinds=bar-widget",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "15d416c4c1557f06",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses Quickshell.Io",
+      "location": {
+        "path": "Scene.qml",
+        "startLine": 3,
+        "endLine": 3
+      },
+      "evidence": "import Quickshell.Io",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "660c956af1c5a8d1",
+      "ruleId": "OA-OMA-002",
+      "title": "QML plugin spawns processes or touches files",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "uses FileView",
+      "location": {
+        "path": "Scene.qml",
+        "startLine": 128,
+        "endLine": 128
+      },
+      "evidence": "FileView {",
+      "remediation": "Keep process invocations minimal, avoid shells (bash -c), and never run privileged commands from a UI plugin.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    }
+  ],
+  "summary": {
+    "counts": {
+      "critical": 0,
+      "high": 34,
+      "medium": 2,
+      "low": 0,
+      "info": 5
+    },
+    "capabilities": [
+      "build-from-source",
+      "network-download",
+      "obfuscation",
+      "omarchy-plugin",
+      "remote-code-execution"
+    ],
+    "verdict": "high-risk-indicators",
+    "highestSeverity": "high"
+  },
+  "disclaimer": "OmaAudit performs static inspection only. Findings are evidence of risk patterns, not proof of malice, and the absence of findings is not proof of safety. Review the source before you install."
+}

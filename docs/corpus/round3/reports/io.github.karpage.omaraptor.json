@@ -1,0 +1,312 @@
+{
+  "schemaVersion": 1,
+  "tool": {
+    "name": "omaaudit",
+    "version": "0.1.0"
+  },
+  "generatedAt": "2026-11-27T16:38:48.745Z",
+  "durationMs": 354,
+  "target": {
+    "kind": "local",
+    "name": "/home/claude/corpus3-tree/io.github.karpage.omaraptor"
+  },
+  "coverage": {
+    "filesListed": 41,
+    "filesInspected": 21,
+    "filesSkipped": [
+      {
+        "path": "media/demo.gif",
+        "reason": "too-large"
+      },
+      {
+        "path": "preview.png",
+        "reason": "too-large"
+      },
+      {
+        "path": "screenshots/01-home.png",
+        "reason": "binary"
+      },
+      {
+        "path": "screenshots/02-cruise.png",
+        "reason": "binary"
+      },
+      {
+        "path": "screenshots/03-combat.png",
+        "reason": "binary"
+      },
+      {
+        "path": "screenshots/04-master-arm.png",
+        "reason": "too-large"
+      },
+      {
+        "path": "screenshots/05-end-ramp.png",
+        "reason": "binary"
+      },
+      {
+        "path": "screenshots/06-ring.png",
+        "reason": "binary"
+      },
+      {
+        "path": "screenshots/07-signal-live.png",
+        "reason": "binary"
+      },
+      {
+        "path": "screenshots/08-signal-muted.png",
+        "reason": "binary"
+      },
+      {
+        "path": "screenshots/09-pin.png",
+        "reason": "binary"
+      },
+      {
+        "path": "screenshots/10-help.png",
+        "reason": "binary"
+      },
+      {
+        "path": "screenshots/11-live.png",
+        "reason": "binary"
+      },
+      {
+        "path": "screenshots/12-sizes.png",
+        "reason": "binary"
+      },
+      {
+        "path": "screenshots/hero-hold.png",
+        "reason": "binary"
+      },
+      {
+        "path": "screenshots/hero.png",
+        "reason": "too-large"
+      },
+      {
+        "path": "share/icons/omaraptor-128.png",
+        "reason": "binary"
+      },
+      {
+        "path": "share/icons/omaraptor-256.png",
+        "reason": "binary"
+      },
+      {
+        "path": "share/icons/omaraptor-48.png",
+        "reason": "binary"
+      },
+      {
+        "path": "share/icons/omaraptor.svg",
+        "reason": "binary"
+      }
+    ],
+    "bytesInspected": 332477,
+    "truncated": false,
+    "fileTypes": {
+      "github-workflow": 1,
+      "other-text": 6,
+      "qml": 1,
+      "shell": 5,
+      "markdown": 2,
+      "lua": 4,
+      "omarchy-manifest": 1,
+      "skipped": 4,
+      "binary": 16,
+      "desktop-entry": 1
+    },
+    "unknown": [
+      "4 Lua file(s) (e.g. Omarchy 4 Hyprland config) are not analysed beyond secret scanning",
+      "1 QML file(s): only process/file/network surfaces and embedded commands are analysed, not QML logic"
+    ],
+    "scanners": [
+      {
+        "name": "omaaudit-rules",
+        "version": "0.1.0",
+        "source": "builtin",
+        "status": "ran"
+      },
+      {
+        "name": "shellcheck",
+        "version": "n/a",
+        "source": "external",
+        "status": "unavailable",
+        "note": "shellcheck not found on PATH (pacman -S shellcheck)"
+      },
+      {
+        "name": "osv-scanner",
+        "version": "n/a",
+        "source": "external",
+        "status": "skipped",
+        "note": "disabled (offline or by flag)"
+      }
+    ]
+  },
+  "dependencies": [],
+  "findings": [
+    {
+      "id": "aee13a2aeb43efb8",
+      "ruleId": "OA-SH-003",
+      "title": "Code is obtained from a mutable remote reference and built or installed",
+      "kind": "heuristic",
+      "severity": "medium",
+      "confidence": "medium",
+      "capabilities": [
+        "build-from-source",
+        "network-download"
+      ],
+      "message": "git clone of a mutable reference (found in documentation: this is what users are told to run)",
+      "location": {
+        "path": "README.md",
+        "startLine": 71,
+        "endLine": 71
+      },
+      "evidence": "git clone https://github.com/KarPage/omaraptor-player",
+      "remediation": "Pin to a full 40-character commit (git checkout <sha>, cargo --rev <sha>, go @<version>, pip @<sha>) or to a signed release.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "a905ec45917bd7eb",
+      "ruleId": "OA-SH-004",
+      "title": "Commands run with elevated privileges",
+      "kind": "heuristic",
+      "severity": "low",
+      "confidence": "medium",
+      "capabilities": [
+        "privilege-escalation"
+      ],
+      "message": "sudo runs pacman (found in documentation: this is what users are told to run)",
+      "location": {
+        "path": "README.md",
+        "startLine": 79,
+        "endLine": 79
+      },
+      "evidence": "sudo pacman -S --needed mpv yt-dlp socat jq wl-clipboard",
+      "remediation": "Confirm every privileged command is necessary, scoped to a fixed command surface, and documented. Prefer user-level installation where possible.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    },
+    {
+      "id": "f26e8888adcf9439",
+      "ruleId": "OA-SH-004",
+      "title": "Commands run with elevated privileges",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "privilege-escalation"
+      ],
+      "message": "sudo runs apt-get (embedded in GitHub Actions run step) (2 occurrences in this file at line 20) (in CI configuration: runs in the project's pipeline, not on a user machine)",
+      "location": {
+        "path": ".github/workflows/test.yml",
+        "startLine": 20,
+        "endLine": 20
+      },
+      "evidence": "sudo apt-get update\nsudo apt-get install -y lua5.1 jq",
+      "remediation": "Confirm every privileged command is necessary, scoped to a fixed command surface, and documented. Prefer user-level installation where possible.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      },
+      "scope": "ci"
+    },
+    {
+      "id": "4b6ad412d851a6d0",
+      "ruleId": "OA-SH-009",
+      "title": "Packages are installed",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "package-management"
+      ],
+      "message": "apt-get installs packages (not native to Omarchy/Arch) (embedded in GitHub Actions run step) (in CI configuration: runs in the project's pipeline, not on a user machine)",
+      "location": {
+        "path": ".github/workflows/test.yml",
+        "startLine": 20,
+        "endLine": 20
+      },
+      "evidence": "sudo apt-get install -y lua5.1 jq",
+      "remediation": "Prefer official repositories or the Omarchy package repo. For AUR packages, read the PKGBUILD. Avoid pacman -U from URLs.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      },
+      "scope": "ci"
+    },
+    {
+      "id": "6e863fff82a59ef8",
+      "ruleId": "OA-OMA-001",
+      "title": "Omarchy shell plugin manifest validation",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "omarchy-plugin"
+      ],
+      "message": "valid Omarchy plugin manifest 'io.github.karpage.omaraptor' (kinds: bar-widget). Plugins run as unsandboxed code inside omarchy-shell with the user's full file and process access.",
+      "location": {
+        "path": "manifest.json",
+        "startLine": 1,
+        "endLine": 1
+      },
+      "evidence": "id=io.github.karpage.omaraptor kinds=bar-widget",
+      "remediation": "Run `omarchy plugin validate <folder>` and fix every reported field before publishing.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      },
+      "references": [
+        "https://github.com/omacom/omarchy/blob/quattro/docs/omarchy-shell.md",
+        "https://github.com/omacom/omarchy/blob/quattro/bin/omarchy-plugin-validate"
+      ]
+    },
+    {
+      "id": "2dbb479be9753e42",
+      "ruleId": "OA-SH-009",
+      "title": "Packages are installed",
+      "kind": "heuristic",
+      "severity": "info",
+      "confidence": "high",
+      "capabilities": [
+        "package-management"
+      ],
+      "message": "pacman installs: mpv yt-dlp socat jq wl-clipboard (found in documentation: this is what users are told to run)",
+      "location": {
+        "path": "README.md",
+        "startLine": 79,
+        "endLine": 79
+      },
+      "evidence": "sudo pacman -S --needed mpv yt-dlp socat jq wl-clipboard",
+      "remediation": "Prefer official repositories or the Omarchy package repo. For AUR packages, read the PKGBUILD. Avoid pacman -U from URLs.",
+      "scanner": {
+        "name": "omaaudit-rules",
+        "version": "0.1.0+rules.2026.11.3",
+        "source": "builtin"
+      }
+    }
+  ],
+  "summary": {
+    "counts": {
+      "critical": 0,
+      "high": 0,
+      "medium": 1,
+      "low": 1,
+      "info": 4
+    },
+    "capabilities": [
+      "build-from-source",
+      "network-download",
+      "omarchy-plugin",
+      "package-management",
+      "privilege-escalation"
+    ],
+    "verdict": "review-recommended",
+    "highestSeverity": "medium"
+  },
+  "disclaimer": "OmaAudit performs static inspection only. Findings are evidence of risk patterns, not proof of malice, and the absence of findings is not proof of safety. Review the source before you install."
+}
