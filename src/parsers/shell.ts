@@ -300,6 +300,6 @@ export async function parseShell(text: string, opts: ParseOptions): Promise<Shel
     });
   }
 
-  const hasStrictMode = /^\s*set\s+(?:-[a-zA-Z]*e[a-zA-Z]*|-o\s+errexit)/m.test(text) || /^\s*set\s+-euo?\s+pipefail/m.test(text);
+  const hasStrictMode = /^\s*set\s+(?:-[a-zA-Z]*[eu][a-zA-Z]*\b|-o\s+(?:errexit|nounset))/m.test(text);
   return { path: opts.path, origin: opts.origin, context: opts.context, commands, text, lineOffset: offset, parseErrors, hasStrictMode };
 }

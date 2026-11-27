@@ -49,6 +49,7 @@ function normaliseInvoked(raw: string): string | null {
     .replace(/^"?\$\{BASH_SOURCE(?:\[0\])?%\/\*\}"?\/+/, '')
     .replace(/^"?\$\{?(?:SCRIPT_DIR|SCRIPTDIR|DIR|HERE|ROOT|ROOT_DIR|REPO_ROOT|PWD|BASEDIR|BASE_DIR)\}?"?\/+/, '')
     .replace(/^"?\$\(\s*pwd\s*\)"?\/+/, '')
+    .replace(/^"?\$\{?[A-Za-z_][A-Za-z0-9_]*\}?"?\/+/, '')
     .replace(/^\.\/+/, '');
   if (!p || p.startsWith('/') || p.includes('$') || p.includes('`') || p.includes('*')) return null;
   if (!/^[\w.@+-][\w.@+\/-]*$/.test(p)) return null;
@@ -88,10 +89,17 @@ export function invokedScriptPaths(c: ShellCommand): string[] {
   return out;
 }
 
-function candidatesFor(unitPath: string, rel: string): string[] {
+function candidatesFor(unitPath: string, rel: string, known?: Iterable<string>): string[] {
   const dir = path.posix.dirname(unitPath);
   const fromUnit = dir === '.' ? rel : path.posix.normalize(path.posix.join(dir, rel));
-  return [...new Set([fromUnit, rel])].filter((p) => !p.startsWith('..'));
+  const out = new Set([fromUnit, rel].filter((p) => !p.startsWith('..')));
+  // "$PLUGIN_DIR/bin/lib/x.sh" lost its prefix: accept a unique file in the tree that ends with the remaining path.
+  if (known) {
+    const suffix = `/${rel}`;
+    const matches = [...known].filter((p) => p.endsWith(suffix) || p === rel);
+    if (matches.length === 1) out.add(matches[0]!);
+  }
+  return [...out];
 }
 
 export async function buildContext(tree: SourceTree, opts: { targetName?: string | undefined } = {}): Promise<RuleContext> {
@@ -160,7 +168,7 @@ export async function buildContext(tree: SourceTree, opts: { targetName?: string
     for (const u of shellUnits) for (const c of u.commands) for (const rel of invokedScriptPaths(c)) wanted.push({ rel, by: u.path });
     let progressed = false;
     for (const { rel, by } of wanted) {
-      for (const cand of candidatesFor(by, rel)) {
+      for (const cand of candidatesFor(by, rel, byPath.keys())) {
         if (tried.has(cand)) continue;
         tried.add(cand);
         let cf = byPath.get(cand);
@@ -192,7 +200,7 @@ export async function buildContext(tree: SourceTree, opts: { targetName?: string
   await expandInlineCode();
 
   const sourcedScripts = new Set<string>();
-  for (const u of shellUnits) for (const c of u.commands) if (c.name === 'source' || c.name === '.') for (const rel of invokedScriptPaths(c)) for (const cand of candidatesFor(u.path, rel)) sourcedScripts.add(cand);
+  for (const u of shellUnits) for (const c of u.commands) if (c.name === 'source' || c.name === '.') for (const rel of invokedScriptPaths(c)) for (const cand of candidatesFor(u.path, rel, byPath.keys())) sourcedScripts.add(cand);
   return { files, shellUnits, manifestEntryPoints: entryPoints, root: tree.root, targetName: opts.targetName, invokedScripts, sourcedScripts };
 }
 

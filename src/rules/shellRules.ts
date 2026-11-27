@@ -68,6 +68,21 @@ export function literalAssignments(text: string): Map<string, string> {
   return out;
 }
 
+/** Every literal assignment of each variable, in source order. Needed when a variable is reassigned on different branches. */
+export function literalAssignmentsAll(text: string): Map<string, string[]> {
+  const out = new Map<string, string[]>();
+  const re = /^\s*(?:export\s+|local\s+|declare\s+-?\w*\s+|readonly\s+)?([A-Za-z_][A-Za-z0-9_]*)\+?=(?:"((?:[^"\\]|\\.)*)"|'([^']*)'|([^\s;&|]+))\s*(?:#.*)?$/gm;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text))) {
+    const name = m[1]!;
+    const value = (m[2] ?? m[3] ?? m[4] ?? '').replace(/\\(["$`\\])/g, '$1');
+    const list = out.get(name) ?? [];
+    list.push(value);
+    out.set(name, list);
+  }
+  return out;
+}
+
 /** Expand `$NAME` / `${NAME}` references in a word using the unit's literal assignments, two levels deep. */
 export function expandWord(word: string, vars: Map<string, string>): string {
   let w = unquote(word);
@@ -185,17 +200,18 @@ export const downloadThenExecute: Rule = {
       const downloaded = new Map<string, ShellCommand>();
       /** Variables that hold a downloaded path, including aliases like SOURCE_FILE="$STAGING". */
       const downloadedVars = new Map<string, ShellCommand>();
-      const vars = literalAssignments(u.text);
+      const allVars = literalAssignmentsAll(u.text);
       const verified = /\b(?:sha256sum|sha512sum|shasum|b2sum|gpg\s+--verify|gpgv|minisign|cosign|signify)\b/.test(u.text);
       const varName = (w: string): string | null => /^"?\$\{?([A-Za-z_][A-Za-z0-9_]*)\}?"?$/.exec(w)?.[1] ?? null;
       const noteVar = (w: string, c: ShellCommand): void => {
         const v = varName(w);
         if (!v) return;
         downloadedVars.set(v, c);
+        // Any branch that assigns X="$Y" where Y holds a download makes X a possible alias.
         for (let round = 0; round < 3; round++) {
-          for (const [k, val] of vars) {
-            const alias = varName(val);
-            if (alias && downloadedVars.has(alias) && !downloadedVars.has(k)) downloadedVars.set(k, c);
+          for (const [k, values] of allVars) {
+            if (downloadedVars.has(k)) continue;
+            if (values.some((val) => { const alias = varName(val); return alias !== null && downloadedVars.has(alias); })) downloadedVars.set(k, c);
           }
         }
       };
@@ -272,7 +288,13 @@ export const unpinnedRemoteSource: Rule = {
         const a = argText(c);
         if (c.name === 'git' && c.args[0] === 'clone') {
           if (c.args.some((x) => /[<>]/.test(x))) continue; // placeholder like <your-fork>
-          if (!/https?:\/\/|git@|ssh:\/\/|git:\/\/|github\.com|gitlab\.com|codeberg\.org|aur\.archlinux\.org|[\w.-]+\.[a-z]{2,}[:/]/i.test(a)) continue; // local path or variable: not a remote fetch
+          if (!/https?:\/\/|git@|ssh:\/\/|git:\/\/|github\.com|gitlab\.com|codeberg\.org|aur\.archlinux\.org|[\w.-]+\.[a-z]{2,}[:/]/i.test(a)) {
+            // A URL decided at runtime ("$url") is still a remote fetch the reader cannot review here; a local path is not.
+            const src = c.args.slice(1).filter((x) => !x.startsWith('-')).map(unquote)[0] ?? '';
+            const inTests = /(?:^|\/)(?:tests?|__tests__|spec|specs|fixtures|testdata|e2e)\//i.test(u.path);
+            if (/^\$/.test(src) && !inTests && !/\/(?:tmp|repo|clone|fixture|test)/i.test(src)) out.push({ ...loc(u, c), message: `git clone of a repository whose URL is decided at runtime (${src})${docNote(u)}`, evidence: c.text, severity: 'low', confidence: 'low' });
+            continue;
+          }
           if (ctx.targetName && new RegExp(`github\\.com[/:]${ctx.targetName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?:\\.git)?(?:\\s|$)`, 'i').test(a)) continue; // cloning the audited repository itself
           const pinnedNearby = u.commands.some((o) => o.name === 'git' && /\b(?:checkout|switch|reset)\b/.test(o.args.join(' ')) && /\b[0-9a-f]{40}\b/.test(o.args.join(' ')));
           const hasTag = /--branch\s+v?\d|-b\s+v?\d/.test(a);
@@ -803,6 +825,7 @@ export const missingStrictMode: Rule = {
     for (const u of ctx.shellUnits) {
       if (u.origin !== 'script' || u.hasStrictMode) continue;
       if (ctx.sourcedScripts.has(u.path)) continue; // a sourced library inherits the caller's set -euo
+      if (/(?:^|\/)libs?\/|(?:^|\/)lib\.sh$|\.lib\.sh$/.test(u.path)) continue; // library code is sourced, not an entry point
       if (u.commands.length < 8) continue;
       if (!/(?:^|\/)[\w.-]*(?:install|setup|bootstrap|uninstall|provision|update)[\w.-]*$/i.test(u.path)) continue;
       if (/#!\s*\/bin\/(?:ba)?sh\s+-[a-z]*e/.test(u.text.split('\n')[0] ?? '')) continue;
