@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Reduced from 5d0tal1gat0r/omarchy-agent-watcher bin/agent-watcher-setup (corpus round 2). config_file prints the
+# path of an agent config file; only merge_hooks and install_agent write to one.
+set -u
+HOOK="$HOME/.local/bin/agent-watcher-hook"
+TEMPLATE="$HOME/.local/share/agent-watcher/opencode-agent-watcher.js"
+CLAUDE_SETTINGS="${AGENT_WATCHER_CLAUDE_SETTINGS:-$HOME/.claude/settings.json}"
+CODEX_HOOKS="${AGENT_WATCHER_CODEX_HOOKS:-$HOME/.codex/hooks.json}"
+GEMINI_SETTINGS="${AGENT_WATCHER_GEMINI_SETTINGS:-$HOME/.gemini/settings.json}"
+OPENCODE_PLUGIN="${AGENT_WATCHER_OPENCODE_PLUGIN:-$HOME/.config/opencode/plugins/agent-watcher.js}"
+config_file() {
+  case "$1" in
+    claude) printf '%s' "$CLAUDE_SETTINGS" ;;
+    codex) printf '%s' "$CODEX_HOOKS" ;;
+    gemini) printf '%s' "$GEMINI_SETTINGS" ;;
+    opencode) printf '%s' "$OPENCODE_PLUGIN" ;;
+    *) return 1 ;;
+  esac
+}
+hook_groups() { jq -n --arg h "$HOOK" '{ SessionStart: [{hooks: [{type: "command", command: ($h + " session-start")}]}] }'; }
+merge_hooks() { # merge_hooks <file> <groupsJson>
+  local target="$1" tmp="$1.tmp.$$"
+  [ -f "$target" ] || printf '{}\n' > "$target"
+  jq --argjson ours "$2" '.hooks = ((.hooks // {}) + $ours)' "$target" > "$tmp" && mv -f "$tmp" "$target"
+}
+install_agent() {
+  case "$1" in
+    claude|codex|gemini) merge_hooks "$(config_file "$1")" "$(hook_groups "$1")" ;;
+    opencode)
+      mkdir -p "$(dirname "$OPENCODE_PLUGIN")"
+      sed "s|__HOOK_PATH__|$HOOK|g" "$TEMPLATE" > "$OPENCODE_PLUGIN" ;;
+  esac
+}
+status_of() { [ -f "$(config_file "$1")" ] && printf 'installed' || printf 'not-installed'; }
+install_agent "${1:-claude}"

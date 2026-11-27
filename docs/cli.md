@@ -93,6 +93,8 @@ How the download rules recognise a downloader: `curl`, `wget`, `aria2c`, `xh` an
 
 Two more conventions. OA-SH-005 reports the destination of `ln`, `cp`, `mv`, `install` and `rsync` (the last operand, or the directory given with `-t`), never their source: `ln -s /usr/share/omarchy/shell/Ui "$tmp/qs/Ui"` reads the system path and writes under `$tmp`. OA-OMA-001 reports a manifest entry point that is not among the listed files as `not found` only when the whole tree was listed; when the directory walk or the archive extraction hit a resource limit (`coverage.truncated`), the entry point is reported as `not read` at info severity, because the file may exist beyond the cut.
 
+OA-AI-001 counts `cat`, `echo` and `printf` as writing agent configuration only when they redirect into the config path; `printf '%s' "$CLAUDE_SETTINGS"` prints a path and is not reported, while `jq … > "$tmp" && mv "$tmp" "$target"`, `sed … > "$OPENCODE_PLUGIN"` and `mkdir -p "$(dirname "$OPENCODE_PLUGIN")"` are.
+
 ## Examples
 
 ```bash

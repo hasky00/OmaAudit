@@ -997,6 +997,8 @@ export const aiAgentHooks: Rule = {
   evaluate(ctx) {
     const out: FindingDraft[] = [];
     const WRITERS = new Set(['cp', 'mv', 'install', 'tee', 'ln', 'jq', 'python', 'python3', 'node', 'sed', 'cat', 'echo', 'printf', 'mkdir', 'touch']);
+    /** cat, echo and printf write only through a redirect into the config path: `printf '%s' "$CLAUDE_SETTINGS"` prints a path. */
+    const PRINTERS = new Set(['cat', 'echo', 'printf']);
     for (const u of ctx.shellUnits) {
       const vars = literalAssignments(u.text);
       let hit = false;
@@ -1004,7 +1006,8 @@ export const aiAgentHooks: Rule = {
         const words = [...c.args, ...c.redirects.map((r) => r.target)].map((w) => expandWord(w, vars));
         const target = words.find((w) => AI_AGENT_CONFIG.test(w));
         if (!target) continue;
-        const writes = c.redirects.some((r) => /^>/.test(r.op) && AI_AGENT_CONFIG.test(expandWord(r.target, vars))) || (WRITERS.has(c.name) && !(c.name === 'cat' && c.redirects.length === 0));
+        const redirectsInto = c.redirects.some((r) => /^>/.test(r.op) && AI_AGENT_CONFIG.test(expandWord(r.target, vars)));
+        const writes = redirectsInto || (WRITERS.has(c.name) && !PRINTERS.has(c.name));
         if (!writes) continue;
         hit = true;
         const kind = /opencode\/plugins?|\.claude\/plugins/.test(target) ? 'plugin' : /mcp/.test(target) ? 'MCP server configuration' : 'hook configuration';
