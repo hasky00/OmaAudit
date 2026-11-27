@@ -10,6 +10,17 @@ export interface EmbeddedSnippet {
   origin: 'embedded' | 'documentation';
 }
 
+/**
+ * Markdown under docs/ whose path marks it as planning or design material (plans, specs, ADRs, roadmaps, research
+ * notes…). Code blocks there are drafts and sketches, not what users are told to run; README files and install or usage
+ * guides keep their 'documentation' origin.
+ */
+export function isDesignDoc(p: string): boolean {
+  const m = /^(?:.*\/)?docs?\/(.+)$/i.exec(p);
+  if (!m) return false;
+  return /(?:^|[\/_.-])(?:plans?|planning|designs?|specs?|specifications?|rfcs?|adrs?|architecture|roadmaps?|proposals?|notes|research|decisions?|brainstorms?|superpowers|changelog|todo|internal|meetings?|retros?)(?:$|[\/_.-])/i.test(m[1]!);
+}
+
 function lineOf(text: string, index: number): number {
   let line = 1;
   for (let i = 0; i < index && i < text.length; i++) if (text.charCodeAt(i) === 10) line++;

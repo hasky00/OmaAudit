@@ -402,22 +402,48 @@
   "round3": {
     "expected": [
       "OA-SH-005@lnsrc/check.sh:9",
-      "OA-SH-005@lnsrc/check.sh:10"
+      "OA-SH-005@lnsrc/check.sh:10",
+      "OA-AI-001@aiprint/bin/agent-watcher-setup:7",
+      "OA-AI-001@aiprint/bin/agent-watcher-setup:8",
+      "OA-AI-001@aiprint/bin/agent-watcher-setup:9",
+      "OA-AI-001@aiprint/bin/agent-watcher-setup:30",
+      "OA-AI-001@aiprint/bin/agent-watcher-setup:31",
+      "OA-SH-001@plandoc/README.md:6",
+      "OA-SH-004@plandoc/docs/install.md:4"
     ],
     "expectedMessages": [
       "ln modifies /usr/share/omarchy/shell/plugins/mine as root",
-      "cp modifies /etc/udev/rules.d as root"
+      "cp modifies /etc/udev/rules.d as root",
+      "sed writes plugin into ~/.config/opencode/plugins/agent-watcher.js",
+      "script manipulates hooks or plugins for an AI coding agent via ~/.claude/settings.json",
+      "sudo runs pacman (found in documentation: this is what users are told to run)"
     ],
     "forbidden": [
       "OA-SH-002"
     ],
     "forbiddenAt": [
       "OA-SH-005@lnsrc/check.sh:7",
-      "OA-SH-005@lnsrc/check.sh:8"
+      "OA-SH-005@lnsrc/check.sh:8",
+      "OA-AI-001@aiprint/bin/agent-watcher-setup:13",
+      "OA-AI-001@aiprint/bin/agent-watcher-setup:14",
+      "OA-AI-001@aiprint/bin/agent-watcher-setup:15",
+      "OA-AI-001@aiprint/bin/agent-watcher-setup:16",
+      "OA-SH-001@plandoc/docs/plans/2026-01-01-design.md:6",
+      "OA-AI-001@plandoc/docs/plans/2026-01-01-design.md:7"
     ],
     "minSeverityAt": {
       "OA-SH-005@lnsrc/check.sh:9": "medium",
-      "OA-SH-005@lnsrc/check.sh:10": "medium"
-    }
+      "OA-SH-005@lnsrc/check.sh:10": "medium",
+      "OA-AI-001@aiprint/bin/agent-watcher-setup:7": "high",
+      "OA-AI-001@aiprint/bin/agent-watcher-setup:8": "high",
+      "OA-AI-001@aiprint/bin/agent-watcher-setup:9": "high",
+      "OA-AI-001@aiprint/bin/agent-watcher-setup:30": "high",
+      "OA-AI-001@aiprint/bin/agent-watcher-setup:31": "high",
+      "OA-SH-001@plandoc/README.md:6": "critical"
+    },
+    "unknownCoverageMentions": [
+      "planning or design material",
+      "plandoc/docs/plans/2026-01-01-design.md"
+    ]
   }
 }
